@@ -1,0 +1,57 @@
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import connectDB from "./config/db.js";
+import errorHandler from "./middleware/errorHandler.js";
+
+import feePlanRoutes from "./routes/feePlanRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
+import reportRoutes from "./routes/reportRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
+import userPaymentStatusRoutes from "./routes/userPaymentStatusRoutes.js";
+import subscriptionRoutes from "./routes/subscriptionRoutes.js";
+import paymentRequestRoutes from "./routes/paymentRequestRoutes.js";
+
+dotenv.config();
+
+const app = express();
+const PORT = process.env.PORT || 5001;
+
+connectDB();
+
+app.use(cors());
+app.use(express.json());
+app.use('/uploads', express.static('uploads'));
+
+// app.use((req,res,next)=>{
+//   console.log(req.method)
+//   console.log(req.url)
+//   next()
+// })
+
+app.use("/api/feeplans", feePlanRoutes);
+app.use("/api/payments", paymentRoutes);
+app.use("/api/reports", reportRoutes);
+app.use("/api/user", userRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/payment-status", userPaymentStatusRoutes);
+app.use("/api/subscriptions", subscriptionRoutes);
+app.use("/api/payment-requests", paymentRequestRoutes);
+
+app.get("/", (req, res) => {
+  res.send("Tikone Cricket Backend is running...");
+});
+
+// Optional: Fallback for unknown routes
+app.use((req, res) => {
+  console.log(req.method)
+  res.status(404).send(`❌ Cannot ${req.method} ${req.originalUrl} here`);
+});
+
+// Global error handler (must be after all routes)
+app.use(errorHandler);
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
