@@ -6,7 +6,7 @@ import { Badge } from '../../components/ui/badge'
 import { Button } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
 import { Label } from '../../components/ui/label'
-import { Users, CreditCard, Book, Settings, LogOut, Trash2, DollarSign, Award, Menu, X, Plus, Edit, Eye } from 'lucide-react'
+import { Users, CreditCard, Book, Settings, LogOut, Trash2, DollarSign, Award, Menu, X, Plus, Edit, Eye, Trophy, UserCircle, TrendingUp, CalendarCheck, CheckCircle, Star, History } from 'lucide-react'
 
 const SIDEBAR_ITEMS = [
   { id: 'overview', label: 'Overview', icon: <Award className="w-5 h-5 mr-2" /> },
@@ -399,28 +399,36 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
+    <div className="min-h-screen flex bg-gradient-to-br from-green-50 via-blue-50 to-purple-100 relative overflow-x-hidden">
+      {/* Decorative SVG background */}
+      <svg className="absolute top-0 left-0 w-full h-64 opacity-10 z-0" viewBox="0 0 1440 320"><path fill="#22c55e" fillOpacity="1" d="M0,160L60,170.7C120,181,240,203,360,197.3C480,192,600,160,720,133.3C840,107,960,85,1080,101.3C1200,117,1320,171,1380,197.3L1440,224L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"></path></svg>
       {/* Sidebar */}
       <aside className={`fixed z-30 inset-y-0 left-0 w-64 bg-white/90 shadow-xl border-r border-gray-100 flex flex-col transition-transform duration-200 ${sidebarOpen ? 'translate-x-0' : '-translate-x-64'} md:translate-x-0 md:static md:w-64`}>
         <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
           <div className="flex items-center space-x-2">
-            <Award className="h-7 w-7 text-green-600" />
-            <span className="font-bold text-lg text-gray-900">Admin Panel</span>
+            <Trophy className="h-7 w-7 text-green-600 animate-bounce" />
+            <span className="font-extrabold text-xl text-green-700 tracking-tight">Tikone Cricket</span>
           </div>
           <button className="md:hidden" onClick={() => setSidebarOpen(false)}><X /></button>
         </div>
-        <nav className="flex-1 py-6 px-2 space-y-2">
+        <div className="flex flex-col items-center py-6">
+          <UserCircle className="w-16 h-16 text-green-400 mb-2" />
+          <span className="font-semibold text-gray-800">{user?.name || 'Admin'}</span>
+          <span className="text-xs text-gray-500">{user?.email}</span>
+          <Badge className="mt-2 bg-green-100 text-green-700">Admin</Badge>
+        </div>
+        <nav className="flex-1 py-2 px-2 space-y-2">
           {SIDEBAR_ITEMS.map(item => (
             <button
               key={item.id}
               onClick={() => { setActiveTab(item.id); setSidebarOpen(false) }}
-              className={`w-full flex items-center px-4 py-3 rounded-lg font-medium transition-colors ${activeTab === item.id ? 'bg-green-100 text-green-700' : 'text-gray-700 hover:bg-green-50'}`}
+              className={`w-full flex items-center px-4 py-3 rounded-lg font-medium transition-all duration-150 ${activeTab === item.id ? 'bg-green-200 text-green-900 shadow' : 'text-gray-700 hover:bg-green-50 hover:scale-[1.03]'}`}
             >
               {item.icon}{item.label}
             </button>
           ))}
         </nav>
-        <div className="p-4 border-t border-gray-100">
+        <div className="p-4 border-t border-gray-100 mt-auto">
           <Button variant="outline" className="w-full flex items-center justify-center" onClick={logout}>
             <LogOut className="w-4 h-4 mr-2" /> Logout
           </Button>
@@ -428,12 +436,53 @@ const AdminDashboard = () => {
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 min-h-screen  flex flex-col items-center justify-start">
+      <div className="flex-1 min-h-screen z-10 flex flex-col items-center justify-start">
         {/* Mobile sidebar toggle */}
         <div className="md:hidden flex items-center p-4">
           <button onClick={() => setSidebarOpen(true)} className="text-green-700"><Menu className="w-7 h-7" /></button>
         </div>
-        <div className="w-full max-w-6xl mx-auto px-4 py-6 space-y-8">
+        <div className="w-full max-w-6xl mx-auto px-4 py-6 space-y-10">
+          {/* Hero Section */}
+          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between bg-gradient-to-r from-green-200 via-green-100 to-blue-100 rounded-2xl shadow-lg p-8 mb-6 border border-green-100 animate-fade-in">
+            <div className="flex items-center space-x-6">
+              <div className="bg-green-500 rounded-full p-2 shadow-lg">
+                <Trophy className="w-14 h-14 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl md:text-4xl font-extrabold text-green-900 mb-1 tracking-tight">Welcome, {user?.name || 'Admin'}!</h1>
+                <p className="text-lg text-green-700 font-medium">Here’s your academy at a glance.</p>
+                <div className="flex items-center mt-2 space-x-2">
+                  <Badge variant="outline" className="px-3 py-1 text-green-700 border-green-400 bg-white/80"><Star className="w-4 h-4 mr-1 inline" /> Admin Panel</Badge>
+                </div>
+              </div>
+            </div>
+            <div className="mt-6 md:mt-0 flex flex-col items-center">
+              <div className="flex space-x-4">
+                <div className="bg-white/90 rounded-xl shadow p-4 flex flex-col items-center">
+                  <Users className="w-6 h-6 text-green-600 mb-1" />
+                  <span className="text-lg font-bold text-green-900">{students.length}</span>
+                  <span className="text-xs text-gray-500">Students</span>
+                </div>
+                <div className="bg-white/90 rounded-xl shadow p-4 flex flex-col items-center">
+                  <CalendarCheck className="w-6 h-6 text-blue-600 mb-1" />
+                  <span className="text-lg font-bold text-blue-900">{payments.length}</span>
+                  <span className="text-xs text-gray-500">Payments</span>
+                </div>
+                <div className="bg-white/90 rounded-xl shadow p-4 flex flex-col items-center">
+                  <CheckCircle className="w-6 h-6 text-green-700 mb-1" />
+                  <span className="text-lg font-bold text-green-900">{feePlans.length}</span>
+                  <span className="text-xs text-gray-500">Fee Plans</span>
+                </div>
+                <div className="bg-white/90 rounded-xl shadow p-4 flex flex-col items-center">
+                  <History className="w-6 h-6 text-purple-600 mb-1" />
+                  <span className="text-lg font-bold text-purple-900">{subscriptions.length}</span>
+                  <span className="text-xs text-gray-500">Subscriptions</span>
+                </div>
+              </div>
+              <div className="mt-4 text-xs text-gray-400 text-center">All your key stats at a glance!</div>
+            </div>
+          </div>
+
           {/* Overview */}
           {activeTab === 'overview' && (
             <div className="space-y-8">

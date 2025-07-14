@@ -6,7 +6,7 @@ import { Badge } from '../../components/ui/badge'
 import { Button } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
 import { Label } from '../../components/ui/label'
-import { Users, CreditCard, Book, Settings, LogOut, DollarSign, Award, Menu, X, Upload, History, Home } from 'lucide-react'
+import { Users, CreditCard, Book, Settings, LogOut, DollarSign, Award, Menu, X, Upload, History, Home, GraduationCap, Star, Trophy, UserCircle, TrendingUp, CalendarCheck, CheckCircle, Users as UsersIcon, Mail, Phone } from 'lucide-react'
 
 const SIDEBAR_ITEMS = [
   { id: 'overview', label: 'Overview', icon: <Home className="w-5 h-5 mr-2" /> },
@@ -223,29 +223,37 @@ const StudentDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen flex  bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
+    <div className="min-h-screen flex bg-gradient-to-br from-green-50 via-blue-50 to-purple-100 relative overflow-x-hidden">
+      {/* Decorative SVG background */}
+      <svg className="absolute top-0 left-0 w-full h-64 opacity-10 z-0" viewBox="0 0 1440 320"><path fill="#22c55e" fillOpacity="1" d="M0,160L60,170.7C120,181,240,203,360,197.3C480,192,600,160,720,133.3C840,107,960,85,1080,101.3C1200,117,1320,171,1380,197.3L1440,224L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"></path></svg>
       {/* Sidebar */}
       <aside className={`fixed z-30 inset-y-0 left-0 w-64 bg-white/90 shadow-xl border-r border-gray-100 flex flex-col transition-transform duration-200 ${sidebarOpen ? 'translate-x-0' : '-translate-x-64'} md:translate-x-0 md:static md:w-64`}>
         <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
           <div className="flex items-center space-x-2">
-            <Award className="h-7 w-7 text-green-600" />
-            <span className="font-bold text-lg text-gray-900">Student Portal</span>
+            <Trophy className="h-7 w-7 text-green-600 animate-bounce" />
+            <span className="font-extrabold text-xl text-green-700 tracking-tight">Tikone Cricket</span>
           </div>
           <button className="md:hidden" onClick={() => setSidebarOpen(false)}><X /></button>
         </div>
-        <nav className="flex-1 py-6 px-2 space-y-2">
+        <div className="flex flex-col items-center py-6">
+          <UserCircle className="w-16 h-16 text-green-400 mb-2" />
+          <span className="font-semibold text-gray-800">{user.name}</span>
+          <span className="text-xs text-gray-500">{user.email}</span>
+          <Badge className="mt-2 bg-green-100 text-green-700">Student</Badge>
+        </div>
+        <nav className="flex-1 py-2 px-2 space-y-2">
           {SIDEBAR_ITEMS.map(item => (
             <button
               key={item.id}
               onClick={() => { setActiveSection(item.id); setSidebarOpen(false) }}
-              className={`w-full flex items-center px-4 py-3 rounded-lg font-medium transition-colors ${activeSection === item.id ? 'bg-green-100 text-green-700' : 'text-gray-700 hover:bg-green-50'}`}
+              className={`w-full flex items-center px-4 py-3 rounded-lg font-medium transition-all duration-150 ${activeSection === item.id ? 'bg-green-200 text-green-900 shadow' : 'text-gray-700 hover:bg-green-50 hover:scale-[1.03]'}`}
             >
               {item.icon}{item.label}
             </button>
           ))}
         </nav>
-        <div className="p-4 border-t border-gray-100">
-          <div className="mb-4 p-3 bg-green-50 rounded-lg">
+        <div className="p-4 border-t border-gray-100 mt-auto">
+          <div className="mb-4 p-3 bg-green-50 rounded-lg text-center">
             <p className="text-sm font-medium text-green-800">Welcome, {user.name}</p>
             <p className="text-xs text-green-600">{user.email}</p>
           </div>
@@ -256,95 +264,129 @@ const StudentDashboard = () => {
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1  min-h-screen ">
+      <div className="flex-1 min-h-screen z-10">
         {/* Mobile sidebar toggle */}
         <div className="md:hidden flex items-center p-4">
           <button onClick={() => setSidebarOpen(true)} className="text-green-700"><Menu className="w-7 h-7" /></button>
         </div>
-        <div className="w-full max-w-6xl mx-auto px-4 py-6 space-y-8">
+        <div className="w-full max-w-6xl mx-auto px-4 py-6 space-y-10">
+          {/* Hero Section */}
+          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between bg-gradient-to-r from-green-200 via-green-100 to-blue-100 rounded-2xl shadow-lg p-8 mb-6 border border-green-100 animate-fade-in">
+            <div className="flex items-center space-x-6">
+              <div className="bg-green-500 rounded-full p-2 shadow-lg">
+                <GraduationCap className="w-14 h-14 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl md:text-4xl font-extrabold text-green-900 mb-1 tracking-tight">Welcome, {user.name}!</h1>
+                <p className="text-lg text-green-700 font-medium">Ready to level up your cricket journey? 🏏</p>
+                <div className="flex items-center mt-2 space-x-2">
+                  <Badge variant="outline" className="px-3 py-1 text-green-700 border-green-400 bg-white/80"><Star className="w-4 h-4 mr-1 inline" /> Pimpri's Premier Cricket Academy</Badge>
+                </div>
+              </div>
+            </div>
+            <div className="mt-6 md:mt-0 flex flex-col items-center">
+              <div className="flex space-x-4">
+                <div className="bg-white/90 rounded-xl shadow p-4 flex flex-col items-center">
+                  <TrendingUp className="w-6 h-6 text-green-600 mb-1" />
+                  <span className="text-lg font-bold text-green-900">{subscriptions.filter(sub => sub.status === 'active').length}</span>
+                  <span className="text-xs text-gray-500">Active Subs</span>
+                </div>
+                <div className="bg-white/90 rounded-xl shadow p-4 flex flex-col items-center">
+                  <CalendarCheck className="w-6 h-6 text-blue-600 mb-1" />
+                  <span className="text-lg font-bold text-blue-900">{payments.length}</span>
+                  <span className="text-xs text-gray-500">Payments</span>
+                </div>
+                <div className="bg-white/90 rounded-xl shadow p-4 flex flex-col items-center">
+                  <CheckCircle className="w-6 h-6 text-green-700 mb-1" />
+                  <span className="text-lg font-bold text-green-900">{paymentRequests.length}</span>
+                  <span className="text-xs text-gray-500">Requests</span>
+                </div>
+              </div>
+              <div className="mt-4 text-xs text-gray-400 text-center">Keep up the great work!</div>
+            </div>
+          </div>
+
           {/* Overview Section */}
           {activeSection === 'overview' && (
-            <div className="space-y-6">
+            <div className="space-y-8 animate-fade-in">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <Card className="bg-white/80 shadow-md rounded-xl">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-gray-600">Name</CardTitle>
+                <Card className="bg-white/90 shadow-md rounded-xl border-t-4 border-green-400 animate-slide-up">
+                  <CardHeader className="pb-2 flex items-center space-x-2">
+                    <UsersIcon className="w-5 h-5 text-green-500" />
+                    <CardTitle className="text-sm font-bold text-gray-700">Name</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-2xl font-bold">{user.name}</p>
+                    <p className="text-2xl font-bold text-green-900">{user.name}</p>
                   </CardContent>
                 </Card>
-
-                <Card className="bg-white/80 shadow-md rounded-xl">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-gray-600">Email</CardTitle>
+                <Card className="bg-white/90 shadow-md rounded-xl border-t-4 border-blue-400 animate-slide-up delay-75">
+                  <CardHeader className="pb-2 flex items-center space-x-2">
+                    <Mail className="w-5 h-5 text-blue-500" />
+                    <CardTitle className="text-sm font-bold text-gray-700">Email</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-lg">{user.email}</p>
+                    <p className="text-lg text-blue-900">{user.email}</p>
                   </CardContent>
                 </Card>
-
-                <Card className="bg-white/80 shadow-md rounded-xl">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-gray-600">Phone</CardTitle>
+                <Card className="bg-white/90 shadow-md rounded-xl border-t-4 border-purple-400 animate-slide-up delay-150">
+                  <CardHeader className="pb-2 flex items-center space-x-2">
+                    <Phone className="w-5 h-5 text-purple-500" />
+                    <CardTitle className="text-sm font-bold text-gray-700">Phone</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-lg">{user.phone}</p>
+                    <p className="text-lg text-purple-900">{user.phone}</p>
                   </CardContent>
                 </Card>
-
-                <Card className="bg-white/80 shadow-md rounded-xl">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-gray-600">Status</CardTitle>
+                <Card className="bg-white/90 shadow-md rounded-xl border-t-4 border-yellow-400 animate-slide-up delay-200">
+                  <CardHeader className="pb-2 flex items-center space-x-2">
+                    <Award className="w-5 h-5 text-yellow-500" />
+                    <CardTitle className="text-sm font-bold text-gray-700">Status</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <Badge className={getStatusColor(userStatus?.subscription?.status)}>
+                    <Badge className={getStatusColor(userStatus?.subscription?.status) + ' px-3 py-1 text-base'}>
                       {userStatus?.subscription?.status || 'No Subscription'}
                     </Badge>
                   </CardContent>
                 </Card>
               </div>
-
               {/* Current Subscription Status */}
-              <Card className="bg-white/80 shadow-lg rounded-xl">
+              <Card className="bg-gradient-to-r from-green-100 via-blue-50 to-purple-50 shadow-lg rounded-xl border-l-4 border-green-400 animate-fade-in">
                 <CardHeader>
-                  <CardTitle>Current Subscription Status</CardTitle>
+                  <CardTitle className="text-xl font-bold text-green-900 flex items-center"><CalendarCheck className="w-5 h-5 mr-2 text-green-600" /> Current Subscription Status</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {subscriptions.length > 0 ? (
                     <div className="space-y-4">
                       {subscriptions.filter(sub => sub.status === 'active').map((subscription) => (
-                        <div key={subscription._id} className="border rounded-lg p-4 bg-green-50">
+                        <div key={subscription._id} className="border rounded-lg p-4 bg-green-50 animate-slide-up">
                           <div className="flex justify-between items-start mb-3">
                             <div>
-                              <h3 className="font-semibold text-green-800">{subscription.plan?.planName || 'Active Plan'}</h3>
+                              <h3 className="font-semibold text-green-800 text-lg">{subscription.plan?.planName || 'Active Plan'}</h3>
                               <p className="text-sm text-green-600">{formatCurrency(subscription.plan?.amount || 0)}</p>
                               <p className="text-xs text-green-500">
                                 Valid until: {formatDate(subscription.endDate)}
                               </p>
                             </div>
-                            <Badge className="bg-green-100 text-green-800">
+                            <Badge className="bg-green-100 text-green-800 px-3 py-1 text-base">
                               Active
                             </Badge>
                           </div>
-                          
                           <div className="text-xs text-green-600">
                             Started: {formatDate(subscription.startDate)}
                           </div>
                         </div>
                       ))}
-                      
                       {subscriptions.filter(sub => sub.status === 'expired').map((subscription) => (
-                        <div key={subscription._id} className="border rounded-lg p-4 bg-red-50">
+                        <div key={subscription._id} className="border rounded-lg p-4 bg-red-50 animate-slide-up">
                           <div className="flex justify-between items-start mb-3">
                             <div>
-                              <h3 className="font-semibold text-red-800">{subscription.plan?.planName || 'Expired Plan'}</h3>
+                              <h3 className="font-semibold text-red-800 text-lg">{subscription.plan?.planName || 'Expired Plan'}</h3>
                               <p className="text-sm text-red-600">{formatCurrency(subscription.plan?.amount || 0)}</p>
                               <p className="text-xs text-red-500">
                                 Expired on: {formatDate(subscription.endDate)}
                               </p>
                             </div>
-                            <Badge className="bg-red-100 text-red-800">
+                            <Badge className="bg-red-100 text-red-800 px-3 py-1 text-base">
                               Expired
                             </Badge>
                           </div>
@@ -365,11 +407,10 @@ const StudentDashboard = () => {
                   )}
                 </CardContent>
               </Card>
-
               {/* Quick Actions */}
-              <Card className="bg-white/80 shadow-lg rounded-xl">
+              <Card className="bg-white/90 shadow-lg rounded-xl animate-fade-in">
                 <CardHeader>
-                  <CardTitle>Quick Actions</CardTitle>
+                  <CardTitle className="text-lg font-bold text-green-900 flex items-center"><Star className="w-5 h-5 mr-2 text-yellow-500" /> Quick Actions</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-4">
@@ -394,6 +435,24 @@ const StudentDashboard = () => {
                   </div>
                 </CardContent>
               </Card>
+              {/* Achievements Section */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8 animate-fade-in">
+                <div className="bg-gradient-to-br from-green-200 via-green-100 to-blue-100 rounded-xl shadow p-6 flex flex-col items-center">
+                  <Trophy className="w-10 h-10 text-yellow-500 mb-2 animate-bounce" />
+                  <span className="text-lg font-bold text-green-900">50+ Champions</span>
+                  <span className="text-xs text-gray-600 mt-1">Produced by the Academy</span>
+                </div>
+                <div className="bg-gradient-to-br from-blue-200 via-blue-100 to-green-100 rounded-xl shadow p-6 flex flex-col items-center">
+                  <UsersIcon className="w-10 h-10 text-green-600 mb-2 animate-pulse" />
+                  <span className="text-lg font-bold text-blue-900">500+ Students</span>
+                  <span className="text-xs text-gray-600 mt-1">Enrolled so far</span>
+                </div>
+                <div className="bg-gradient-to-br from-purple-200 via-purple-100 to-green-100 rounded-xl shadow p-6 flex flex-col items-center">
+                  <Star className="w-10 h-10 text-yellow-400 mb-2 animate-spin-slow" />
+                  <span className="text-lg font-bold text-purple-900">Expert Coaching</span>
+                  <span className="text-xs text-gray-600 mt-1">By National-level Coaches</span>
+                </div>
+              </div>
             </div>
           )}
 
@@ -402,9 +461,9 @@ const StudentDashboard = () => {
             <div className="space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Payment Form */}
-                <Card className="bg-white/80 shadow-lg rounded-xl">
+                <Card className="bg-white/90 shadow-lg rounded-xl border-t-4 border-green-400 animate-slide-up">
                   <CardHeader>
-                    <CardTitle>Payment Details</CardTitle>
+                    <CardTitle className="text-lg font-bold text-green-900 flex items-center"><DollarSign className="w-5 h-5 mr-2 text-green-600" /> Payment Details</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div>
@@ -473,9 +532,9 @@ const StudentDashboard = () => {
                 </Card>
 
                 {/* UPI Payment Details */}
-                <Card className="bg-white/80 shadow-lg rounded-xl">
+                <Card className="bg-white/90 shadow-lg rounded-xl border-t-4 border-blue-400 animate-slide-up delay-75">
                   <CardHeader>
-                    <CardTitle>UPI Payment Details</CardTitle>
+                    <CardTitle className="text-lg font-bold text-blue-900 flex items-center"><CreditCard className="w-5 h-5 mr-2 text-blue-600" /> UPI Payment Details</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="text-center">
@@ -514,9 +573,9 @@ const StudentDashboard = () => {
               </div>
 
               {/* Payment Instructions */}
-              <Card className="bg-white/80 shadow-lg rounded-xl">
+              <Card className="bg-white/90 shadow-lg rounded-xl border-t-4 border-purple-400 animate-slide-up delay-150">
                 <CardHeader>
-                  <CardTitle>Payment Instructions</CardTitle>
+                  <CardTitle className="text-lg font-bold text-purple-900 flex items-center"><Book className="w-5 h-5 mr-2 text-purple-600" /> Payment Instructions</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3 text-sm">
@@ -549,18 +608,18 @@ const StudentDashboard = () => {
           {/* Payment Requests Section */}
           {activeSection === 'requests' && (
             <div className="space-y-6">
-              <Card className="bg-white/80 shadow-lg rounded-xl">
+              <Card className="bg-white/90 shadow-lg rounded-xl border-t-4 border-red-400 animate-slide-up delay-200">
                 <CardHeader>
-                  <CardTitle>My Payment Requests</CardTitle>
+                  <CardTitle className="text-lg font-bold text-red-900 flex items-center"><Upload className="w-5 h-5 mr-2 text-red-600" /> My Payment Requests</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {paymentRequests.length > 0 ? (
                     <div className="space-y-4">
                       {paymentRequests.map((request) => (
-                        <div key={request._id} className="border rounded-lg p-4 bg-gray-50">
+                        <div key={request._id} className="border rounded-lg p-4 bg-gray-50 animate-slide-up">
                           <div className="flex justify-between items-start mb-3">
                             <div>
-                              <h3 className="font-semibold">{formatCurrency(request.amount)}</h3>
+                              <h3 className="font-semibold text-gray-900 text-lg">{formatCurrency(request.amount)}</h3>
                               <p className="text-sm text-gray-600">{request.description}</p>
                               {request.feePlan && (
                                 <p className="text-sm text-blue-600">
@@ -569,7 +628,7 @@ const StudentDashboard = () => {
                               )}
                               <p className="text-xs text-gray-500">{formatDate(request.createdAt)}</p>
                             </div>
-                            <Badge className={getPaymentRequestStatusColor(request.status)}>
+                            <Badge className={getPaymentRequestStatusColor(request.status) + ' px-3 py-1 text-base'}>
                               {request.status}
                             </Badge>
                           </div>
@@ -611,24 +670,24 @@ const StudentDashboard = () => {
           {activeSection === 'history' && (
             <div className="space-y-6">
               {/* Subscriptions */}
-              <Card className="bg-white/80 shadow-lg rounded-xl">
+              <Card className="bg-white/90 shadow-lg rounded-xl border-t-4 border-green-400 animate-slide-up delay-200">
                 <CardHeader>
-                  <CardTitle>Active Subscriptions</CardTitle>
+                  <CardTitle className="text-lg font-bold text-green-900 flex items-center"><CalendarCheck className="w-5 h-5 mr-2 text-green-600" /> Active Subscriptions</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {subscriptions.length > 0 ? (
                     <div className="space-y-4">
                       {subscriptions.map((subscription) => (
-                        <div key={subscription._id} className="border rounded-lg p-4 bg-green-50">
+                        <div key={subscription._id} className="border rounded-lg p-4 bg-green-50 animate-slide-up">
                           <div className="flex justify-between items-start mb-3">
                             <div>
-                              <h3 className="font-semibold">{subscription.plan?.planName || 'Subscription Plan'}</h3>
+                              <h3 className="font-semibold text-green-800 text-lg">{subscription.plan?.planName || 'Subscription Plan'}</h3>
                               <p className="text-sm text-gray-600">{formatCurrency(subscription.plan?.amount || 0)}</p>
                               <p className="text-xs text-gray-500">
                                 {formatDate(subscription.startDate)} - {formatDate(subscription.endDate)}
                               </p>
                             </div>
-                            <Badge className={getStatusColor(subscription.status)}>
+                            <Badge className={getStatusColor(subscription.status) + ' px-3 py-1 text-base'}>
                               {subscription.status}
                             </Badge>
                           </div>
@@ -652,9 +711,9 @@ const StudentDashboard = () => {
               </Card>
 
               {/* Payments */}
-              <Card className="bg-white/80 shadow-lg rounded-xl">
+              <Card className="bg-white/90 shadow-lg rounded-xl border-t-4 border-blue-400 animate-slide-up delay-75">
                 <CardHeader>
-                  <CardTitle>All Payments</CardTitle>
+                  <CardTitle className="text-lg font-bold text-blue-900 flex items-center"><History className="w-5 h-5 mr-2 text-blue-600" /> All Payments</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {paymentsLoading ? (
