@@ -25,21 +25,22 @@ export default function Header() {
         <div className="flex items-center justify-between">
           {/* Logo Section */}
           <Link to="/" className="flex items-center space-x-3 group">
-            <div className="relative">
-              <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
-                <Trophy className="h-6 w-6 text-white" />
-              </div>
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
-                Tikone Cricket
-              </span>
-              <span className="text-xs text-muted-foreground font-medium">
-                Academy
-              </span>
-            </div>
-          </Link>
+  <div className="relative">
+    <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105 bg-white">
+      <img
+        src="/TikoneCricketGurukul1.png" // Replace with your actual filename
+        alt="Logo"
+        className="w-full h-full object-contain"
+      />
+    </div>
+    <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+  </div>
+  <div className="flex flex-col">
+    <span className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
+      Tikone Cricket Gurukul
+    </span>
+  </div>
+</Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-8">

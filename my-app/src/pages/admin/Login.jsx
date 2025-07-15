@@ -39,10 +39,16 @@ const AdminLogin = () => {
         <div className="text-center mb-8 animate-fade-in">
           <div className="flex items-center justify-center mb-6">
             <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mr-4 shadow-lg">
-              <Shield className="h-10 w-10 text-white" />
+            <div className="w-20 h-20 rounded-xl overflow-hidden shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105 bg-white">
+      <img
+        src="/TikoneCricketGurukul1.png" // Replace with your actual filename
+        alt="Logo"
+        className="w-full h-full object-contain"
+      />
+    </div>
             </div>
             <div className="text-left">
-              <h1 className="text-3xl font-bold text-gray-900">Tikone Cricket</h1>
+              <h1 className="text-3xl font-bold text-gray-900">Tikone Cricket Gurukul</h1>
               <p className="text-blue-600 font-semibold text-lg">Admin Portal</p>
             </div>
           </div>

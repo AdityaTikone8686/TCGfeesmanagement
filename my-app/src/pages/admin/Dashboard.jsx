@@ -406,13 +406,25 @@ const AdminDashboard = () => {
       <aside className={`fixed z-30 inset-y-0 left-0 w-64 bg-white/90 shadow-xl border-r border-gray-100 flex flex-col transition-transform duration-200 ${sidebarOpen ? 'translate-x-0' : '-translate-x-64'} md:translate-x-0 md:static md:w-64`}>
         <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
           <div className="flex items-center space-x-2">
-            <Trophy className="h-7 w-7 text-green-600 animate-bounce" />
-            <span className="font-extrabold text-xl text-green-700 tracking-tight">Tikone Cricket</span>
+          <div className="w-20 h-20 rounded-xl overflow-hidden shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105 bg-white">
+      <img
+        src="/TikoneCricketGurukul1.png" // Replace with your actual filename
+        alt="Logo"
+        className="w-full h-full object-contain"
+      />
+    </div>
+            <span className="font-extrabold text-xl text-green-700 tracking-tight">Tikone Cricket Gurukul</span>
           </div>
           <button className="md:hidden" onClick={() => setSidebarOpen(false)}><X /></button>
         </div>
         <div className="flex flex-col items-center py-6">
-          <UserCircle className="w-16 h-16 text-green-400 mb-2" />
+        <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105 bg-white">
+      <img
+        src="/TikoneCricketGurukul1.png" // Replace with your actual filename
+        alt="Logo"
+        className="w-full h-full object-contain"
+      />
+    </div>
           <span className="font-semibold text-gray-800">{user?.name || 'Admin'}</span>
           <span className="text-xs text-gray-500">{user?.email}</span>
           <Badge className="mt-2 bg-green-100 text-green-700">Admin</Badge>
@@ -445,8 +457,14 @@ const AdminDashboard = () => {
           {/* Hero Section */}
           <div className="relative z-10 flex flex-col md:flex-row items-center justify-between bg-gradient-to-r from-green-200 via-green-100 to-blue-100 rounded-2xl shadow-lg p-8 mb-6 border border-green-100 animate-fade-in">
             <div className="flex items-center space-x-6">
-              <div className="bg-green-500 rounded-full p-2 shadow-lg">
-                <Trophy className="w-14 h-14 text-white" />
+              <div className="bg-transparent-500  p-2 shadow-sm">
+              <div className="w-20 h-20 rounded-xl overflow-hidden shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105 bg-white">
+      <img
+        src="/TikoneCricketGurukul1.png" // Replace with your actual filename
+        alt="Logo"
+        className="w-full h-full object-contain"
+      />
+    </div>
               </div>
               <div>
                 <h1 className="text-3xl md:text-4xl font-extrabold text-green-900 mb-1 tracking-tight">Welcome, {user?.name || 'Admin'}!</h1>

@@ -98,7 +98,7 @@ const StudentDashboard = () => {
   const handleFeePlanChange = (e) => {
     const planId = e.target.value
     setSelectedFeePlan(planId)
-    
+
     if (planId) {
       const selectedPlan = feePlans.find(plan => plan._id === planId)
       if (selectedPlan) {
@@ -125,7 +125,7 @@ const StudentDashboard = () => {
     try {
       setUploading(true)
       const token = localStorage.getItem('token')
-      
+
       const formData = new FormData()
       formData.append('amount', paymentAmount)
       formData.append('description', paymentDescription)
@@ -134,7 +134,7 @@ const StudentDashboard = () => {
       formData.append('feePlanId', selectedFeePlan)
 
       await paymentRequestAPI.createPaymentRequest(token, formData)
-      
+
       alert('Payment request submitted successfully! Admin will review and update your status.')
       setPaymentAmount('')
       setPaymentDescription('')
@@ -230,8 +230,14 @@ const StudentDashboard = () => {
       <aside className={`fixed z-30 inset-y-0 left-0 w-64 bg-white/90 shadow-xl border-r border-gray-100 flex flex-col transition-transform duration-200 ${sidebarOpen ? 'translate-x-0' : '-translate-x-64'} md:translate-x-0 md:static md:w-64`}>
         <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
           <div className="flex items-center space-x-2">
-            <Trophy className="h-7 w-7 text-green-600 animate-bounce" />
-            <span className="font-extrabold text-xl text-green-700 tracking-tight">Tikone Cricket</span>
+          <div className="w-20 h-20 rounded-xl overflow-hidden shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105 bg-white">
+      <img
+        src="/TikoneCricketGurukul1.png" // Replace with your actual filename
+        alt="Logo"
+        className="w-full h-full object-contain"
+      />
+    </div>
+            <span className="font-extrabold text-xl text-green-700 tracking-tight">Tikone Cricket Gurukul</span>
           </div>
           <button className="md:hidden" onClick={() => setSidebarOpen(false)}><X /></button>
         </div>
@@ -273,8 +279,14 @@ const StudentDashboard = () => {
           {/* Hero Section */}
           <div className="relative z-10 flex flex-col md:flex-row items-center justify-between bg-gradient-to-r from-green-200 via-green-100 to-blue-100 rounded-2xl shadow-lg p-8 mb-6 border border-green-100 animate-fade-in">
             <div className="flex items-center space-x-6">
-              <div className="bg-green-500 rounded-full p-2 shadow-lg">
-                <GraduationCap className="w-14 h-14 text-white" />
+              <div className="bg-transparent-500 p-2 shadow-sm">
+              <div className="w-20 h-20 rounded-xl overflow-hidden shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105 bg-white">
+      <img
+        src="/TikoneCricketGurukul1.png" // Replace with your actual filename
+        alt="Logo"
+        className="w-full h-full object-contain"
+      />
+    </div>
               </div>
               <div>
                 <h1 className="text-3xl md:text-4xl font-extrabold text-green-900 mb-1 tracking-tight">Welcome, {user.name}!</h1>
@@ -395,8 +407,8 @@ const StudentDashboard = () => {
                     </div>
                   ) : (
                     <div className="text-center py-4 text-gray-500">
-                      No active subscriptions found. 
-                      <Button 
+                      No active subscriptions found.
+                      <Button
                         onClick={() => setActiveSection('payment')}
                         className="ml-2 bg-green-600 hover:bg-green-700"
                         size="sm"
@@ -414,19 +426,19 @@ const StudentDashboard = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-4">
-                    <Button 
+                    <Button
                       onClick={() => setActiveSection('payment')}
                       className="bg-green-600 hover:bg-green-700"
                     >
                       Pay Fees
                     </Button>
-                    <Button 
+                    <Button
                       onClick={() => setActiveSection('history')}
                       variant="outline"
                     >
                       View Payment History
                     </Button>
-                    <Button 
+                    <Button
                       onClick={refreshUserStatus}
                       variant="outline"
                     >
@@ -439,7 +451,7 @@ const StudentDashboard = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8 animate-fade-in">
                 <div className="bg-gradient-to-br from-green-200 via-green-100 to-blue-100 rounded-xl shadow p-6 flex flex-col items-center">
                   <Trophy className="w-10 h-10 text-yellow-500 mb-2 animate-bounce" />
-                  <span className="text-lg font-bold text-green-900">50+ Champions</span>
+                  <span className="text-lg font-bold text-green-900">35+ Champions</span>
                   <span className="text-xs text-gray-600 mt-1">Produced by the Academy</span>
                 </div>
                 <div className="bg-gradient-to-br from-blue-200 via-blue-100 to-green-100 rounded-xl shadow p-6 flex flex-col items-center">
@@ -521,7 +533,7 @@ const StudentDashboard = () => {
                         </div>
                       )}
                     </div>
-                    <Button 
+                    <Button
                       onClick={handlePaymentSubmit}
                       disabled={!selectedFeePlan || !paymentAmount || !paymentDescription || !screenshot || uploading}
                       className="w-full bg-green-600 hover:bg-green-700"
@@ -540,31 +552,32 @@ const StudentDashboard = () => {
                     <div className="text-center">
                       {/* Placeholder for QR Code */}
                       <div className="w-48 h-48 mx-auto bg-gray-200 rounded-lg flex items-center justify-center mb-4">
-                        <div className="text-center">
-                          <div className="text-4xl mb-2">📱</div>
-                          <div className="text-sm text-gray-600">QR Code</div>
-                        </div>
+                        <img
+                          src="/qr-code.jpg"
+                          alt="QR Code"
+                          className="w-full h-full object-contain"
+                        />
                       </div>
-                      
+
                       <div className="space-y-2">
                         <div className="bg-gray-50 p-3 rounded-lg">
                           <div className="text-sm text-gray-600">UPI ID</div>
-                          <div className="font-mono font-semibold">cricketacademy@upi</div>
+                          <div className="font-mono font-semibold">-NOT YET STARTED-</div>
                         </div>
-                        
+
                         <div className="bg-gray-50 p-3 rounded-lg">
                           <div className="text-sm text-gray-600">Account Number</div>
-                          <div className="font-mono font-semibold">1234567890</div>
+                          <div className="font-mono font-semibold">-NOT YET STARTED-</div>
                         </div>
-                        
+
                         <div className="bg-gray-50 p-3 rounded-lg">
                           <div className="text-sm text-gray-600">IFSC Code</div>
-                          <div className="font-mono font-semibold">SBIN0001234</div>
+                          <div className="font-mono font-semibold">-NOT YET STARTED-</div>
                         </div>
-                        
+
                         <div className="bg-gray-50 p-3 rounded-lg">
                           <div className="text-sm text-gray-600">Account Holder</div>
-                          <div className="font-semibold">Tikone Cricket Academy</div>
+                          <div className="font-semibold">Deepmala Avinash Tikone</div>
                         </div>
                       </div>
                     </div>
@@ -632,24 +645,24 @@ const StudentDashboard = () => {
                               {request.status}
                             </Badge>
                           </div>
-                          
+
                           {request.screenshot && (
                             <div className="mb-3">
-                              <img 
-                                src={request.screenshot} 
-                                alt="Payment Screenshot" 
+                              <img
+                                src={request.screenshot}
+                                alt="Payment Screenshot"
                                 className="max-w-xs rounded border"
                               />
                             </div>
                           )}
-                          
+
                           {request.adminNotes && (
                             <div className="bg-blue-50 p-3 rounded">
                               <p className="text-sm font-medium text-gray-700">Admin Notes:</p>
                               <p className="text-sm text-gray-600">{request.adminNotes}</p>
                             </div>
                           )}
-                          
+
                           {request.approvedBy && (
                             <div className="text-xs text-gray-500 mt-2">
                               {request.status === 'approved' ? 'Approved' : 'Rejected'} by {request.approvedBy.name} on {formatDate(request.approvedAt)}
@@ -691,7 +704,7 @@ const StudentDashboard = () => {
                               {subscription.status}
                             </Badge>
                           </div>
-                          
+
                           {subscription.payment && (
                             <div className="bg-gray-50 p-3 rounded">
                               <p className="text-sm font-medium text-gray-700">Payment Details:</p>

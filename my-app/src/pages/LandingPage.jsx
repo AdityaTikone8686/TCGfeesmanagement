@@ -18,14 +18,14 @@ export default function LandingPage() {
               <div className="space-y-6">
                 <Badge variant="success" className="mb-6 inline-flex items-center space-x-2 px-4 py-2 text-sm">
                   <Star className="h-4 w-4" />
-                  <span>Pimpri's Premier Cricket Academy</span>
+                  <span>Thergoan's Premier Cricket Academy</span>
                 </Badge>
                 <h1 className="text-4xl lg:text-6xl xl:text-7xl font-bold text-foreground leading-tight">
                   Welcome to
-                  <span className="text-primary block bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-transparent"> Tikone Cricket Academy</span>
+                  <span className="text-primary block bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-transparent"> Tikone Cricket Gurukul</span>
                 </h1>
                 <p className="text-xl text-muted-foreground max-w-2xl leading-relaxed">
-                  Elevate your cricket journey at Tikone Cricket Academy, Pimpri. World-class coaching, modern facilities, and a legacy of producing champions. Join us and become the next cricket star!
+                  Elevate your cricket journey at Tikone Cricket Gurukul, Thergoan. World-class coaching, modern facilities, and a legacy of producing champions. Join us and become the next cricket star!
                 </p>
               </div>
 
@@ -49,13 +49,13 @@ export default function LandingPage() {
                   <div className="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
                     <Users className="h-4 w-4 text-green-600" />
                   </div>
-                  <span>500+ Students</span>
+                  <span>300+ Students</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
                     <Trophy className="h-4 w-4 text-green-600" />
                   </div>
-                  <span>50+ Champions</span>
+                  <span>35+ Champions</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
@@ -100,10 +100,10 @@ export default function LandingPage() {
               Why Choose Us
             </Badge>
             <h2 className="text-3xl lg:text-4xl xl:text-5xl font-bold text-foreground mb-6">
-              Why Choose Tikone Cricket Academy?
+              Why Choose Tikone Cricket Gurukul?
             </h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              We provide comprehensive cricket training in Pimpri with modern facilities and expert coaching to help you excel in your cricket journey.
+              We provide comprehensive cricket training with modern facilities and expert coaching to help you excel in your cricket journey.
             </p>
           </div>
 
@@ -127,7 +127,7 @@ export default function LandingPage() {
                 </div>
                 <h3 className="text-xl font-semibold text-foreground">Modern Facilities</h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  State-of-the-art equipment, well-maintained grounds, and professional training facilities in Pimpri.
+                  State-of-the-art equipment, well-maintained grounds, and professional training facilities.
                 </p>
               </CardContent>
             </Card>

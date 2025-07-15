@@ -1,34 +1,42 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import Admin from "./models/Admin.js"; // ✅ uses pre-save hook
+import Admin from "./models/Admin.js"; // Update path if needed
 
-dotenv.config();
+dotenv.config(); // Loads .env (with MONGO_URI and others)
 
-const createAdmin = async () => {
+const seedAdmin = async () => {
   try {
+    // Connect to MongoDB
     await mongoose.connect(process.env.MONGO_URI);
-    console.log("📦 Connected to MongoDB");
+    console.log("📡 Connected to MongoDB");
 
-    const existingAdmin = await Admin.findOne({ email: "dtikone@gmail.com" });
+    const email = "tikonecricketgurukul@gmail.com"; // <-- change to your email
+    const password = "admin123@"; // <-- change to your password
+
+    // Check if admin already exists
+    const existingAdmin = await Admin.findOne({ email });
+
     if (existingAdmin) {
-      console.log("⚠️ Admin with this email already exists.");
-      return process.exit();
+      console.log("⚠️ Admin already exists:", existingAdmin.email);
+    } else {
+      // Create admin without hashing manually — Mongoose will do it
+      const newAdmin = await Admin.create({
+        name: "TCG ADMIN",
+        email,
+        password,
+        isAdmin: true,
+      });
+
+      console.log("✅ Admin created:", newAdmin.email);
     }
 
-    const admin = new Admin({
-      name: "Super Admin",
-      email: "dtikone@gmail.com",
-      password: "admin123", // 🔐 raw password (will be hashed by pre-save)
-      isAdmin: true,
-    });
-
-    await admin.save();
-    console.log("✅ Admin created successfully");
-    process.exit();
-  } catch (error) {
-    console.error("❌ Error creating admin:", error.message);
+    // Disconnect
+    await mongoose.disconnect();
+    console.log("🔌 Disconnected from MongoDB");
+  } catch (err) {
+    console.error("❌ Error seeding admin:", err.message);
     process.exit(1);
   }
 };
 
-createAdmin();
+seedAdmin();

@@ -6,9 +6,9 @@ dotenv.config({path:"./Backend/.env"})
 
 // Configure Cloudinary
 cloudinary.config({
-  cloud_name: "dsgtcgkvv",
-  api_key: "151199925116653" ,
-  api_secret: "vVCiv4JxjSzQWK9OhG_ei1GrdGM" 
+  cloud_name: "daz4f3dhq",
+  api_key: "132266738246492" ,
+  api_secret: "wQVFs56iUhmlKhRaIPZkMVFtwjU" 
 });
 
 // Configure multer storage

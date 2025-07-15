@@ -10,29 +10,34 @@ export default function Footer() {
           {/* Brand Section */}
           <div className="space-y-6">
             <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
-                <Trophy className="h-7 w-7 text-white" />
+            <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105 bg-white">
+              <img
+        src="/TikoneCricketGurukul1.png" // Replace with your actual filename
+        alt="Logo"
+        className="w-full h-full object-contain"
+      />
+      
               </div>
               <div className="flex flex-col">
-                <span className="text-xl font-bold text-foreground">Tikone Cricket</span>
-                <span className="text-sm text-muted-foreground font-medium">Academy</span>
+                <span className="text-xl font-bold text-foreground">Tikone Cricket Gurukul</span>
+               
               </div>
             </div>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              Professional cricket coaching with state-of-the-art facilities in Pimpri. 
+              Professional cricket coaching with state-of-the-art facilities. 
               Join hundreds of students who have transformed their game with our expert coaching.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all duration-200">
+              <a href="" className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all duration-200">
                 <Facebook className="h-5 w-5" />
               </a>
-              <a href="#" className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all duration-200">
+              <a href="" className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all duration-200">
                 <Twitter className="h-5 w-5" />
               </a>
-              <a href="#" className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all duration-200">
+              <a href="https://www.instagram.com/officialtikonecricketgurukul/" className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all duration-200">
                 <Instagram className="h-5 w-5" />
               </a>
-              <a href="#" className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all duration-200">
+              <a href="" className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all duration-200">
                 <Youtube className="h-5 w-5" />
               </a>
             </div>
@@ -132,8 +137,8 @@ export default function Footer() {
                 <div>
                   <p className="text-sm font-medium text-foreground">Address</p>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    Cricket Ground, Sports Complex<br />
-                    Pimpri, Maharashtra 411018
+                  Boat Club, near Kazu Devi Temple, Sector No. 33, Thergaon, Pune,<br />
+                  Pimpri-Chinchwad, Maharashtra 411033
                   </p>
                 </div>
               </div>
@@ -145,8 +150,8 @@ export default function Footer() {
                 <div>
                   <p className="text-sm font-medium text-foreground">Phone</p>
                   <p className="text-sm text-muted-foreground">
-                    +91 98765 43210<br />
-                    +91 98765 43211
+                    +91 9881332092<br />
+                    +91 9881998200
                   </p>
                 </div>
               </div>
@@ -158,8 +163,7 @@ export default function Footer() {
                 <div>
                   <p className="text-sm font-medium text-foreground">Email</p>
                   <p className="text-sm text-muted-foreground">
-                    info@tikonecricket.com<br />
-                    support@tikonecricket.com
+                   tikonecricketgurukul@gmail.com<br />
                   </p>
                 </div>
               </div>
@@ -171,8 +175,8 @@ export default function Footer() {
                 <div>
                   <p className="text-sm font-medium text-foreground">Timings</p>
                   <p className="text-sm text-muted-foreground">
-                    Mon - Sat: 6:00 AM - 9:00 PM<br />
-                    Sunday: 7:00 AM - 6:00 PM
+                    Mon - Sat: 4:00 PM - 7:00 PM<br />
+                    Sunday - 7:30 AM - 9:30 AM 
                   </p>
                 </div>
               </div>
@@ -185,7 +189,7 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="flex items-center space-x-4">
               <p className="text-sm text-muted-foreground">
-                © 2024 Tikone Cricket Academy. All rights reserved.
+                © 2025 Tikone Cricket Gurukul | All rights reserved.
               </p>
               <div className="flex space-x-4 text-sm">
                 <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
