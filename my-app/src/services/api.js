@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://tikonecricketgurukulbackend.onrender.com";
+const API_BASE_URL = "https://tikonecricketgurukulbackend.onrender.com/api";
 
 // Helper function to handle API responses
 const handleResponse = async (response) => {
