@@ -1,13 +1,15 @@
 import React, { useState } from 'react'
+import { useNavigate } from "react-router-dom";
 import { useAuth } from '../../context/AuthContext'
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card'
 import { Button } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
 import { Label } from '../../components/ui/label'
-import { Shield, Users, Target, ArrowRight, Eye, EyeOff, Settings, Star, CheckCircle, Mail, Lock, BarChart3 } from 'lucide-react'
+import { Shield, Users, Target, ArrowRight, Eye, EyeOff, Settings, Mail, Lock, BarChart3 } from 'lucide-react'
 import { Badge } from '../../components/ui/badge'
 
 const AdminLogin = () => {
+  const navigate = useNavigate();
   const { loginAdmin, error, clearError, loading } = useAuth()
   const [formData, setFormData] = useState({
     email: '',
@@ -21,7 +23,7 @@ const AdminLogin = () => {
     
     const result = await loginAdmin(formData)
     if (result.success) {
-      window.location.href = '/admin/dashboard'
+      navigate('/admin/dashboard') // ✅ client-side navigation
     }
   }
 
@@ -39,13 +41,13 @@ const AdminLogin = () => {
         <div className="text-center mb-8 animate-fade-in">
           <div className="flex items-center justify-center mb-6">
             <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mr-4 shadow-lg">
-            <div className="w-20 h-20 rounded-xl overflow-hidden shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105 bg-white">
-      <img
-        src="/TikoneCricketGurukul1.png" // Replace with your actual filename
-        alt="Logo"
-        className="w-full h-full object-contain"
-      />
-    </div>
+              <div className="w-20 h-20 rounded-xl overflow-hidden shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105 bg-white">
+                <img
+                  src="/TikoneCricketGurukul1.png"
+                  alt="Logo"
+                  className="w-full h-full object-contain"
+                />
+              </div>
             </div>
             <div className="text-left">
               <h1 className="text-3xl font-bold text-gray-900">Tikone Cricket Gurukul</h1>
@@ -155,7 +157,7 @@ const AdminLogin = () => {
               <p className="text-sm text-gray-600">
                 Are you a student?{' '}
                 <button
-                  onClick={() => window.location.href = '/student/login'}
+                  onClick={() => navigate('/student/login')} // ✅ client-side navigation
                   className="font-semibold text-green-600 hover:text-green-700 transition-colors hover:underline"
                 >
                   Student login
@@ -164,8 +166,6 @@ const AdminLogin = () => {
             </div>
           </CardContent>
         </Card>
-
-
 
         {/* Features */}
         <div className="mt-8 grid grid-cols-3 gap-4 text-center animate-fade-in">
@@ -187,4 +187,4 @@ const AdminLogin = () => {
   )
 }
 
-export default AdminLogin 
+export default AdminLogin
