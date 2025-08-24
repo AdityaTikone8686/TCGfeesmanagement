@@ -51,7 +51,7 @@ app.use(errorHandler);
 // PORT handling
 // On Vercel, process.env.PORT is provided automatically.
 // Locally, you can set PORT in .env.local or via terminal (e.g., PORT=5001 node server.js)
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5001;
 
 if (!PORT) {
   console.error("❌ Error: PORT is not defined. For local testing, set PORT in .env.local or use 'PORT=5001 node server.js'");
