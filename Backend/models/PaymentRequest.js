@@ -37,7 +37,7 @@ const paymentRequestSchema = new mongoose.Schema(
     },
     paymentMethod: {
       type: String,
-      default: "UPI",
+      default: "upi",
     },
     transactionId: {
       type: String,

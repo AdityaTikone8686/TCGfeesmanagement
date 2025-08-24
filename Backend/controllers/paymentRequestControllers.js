@@ -132,14 +132,14 @@ export const approvePaymentRequest = async (req, res, next) => {
     paymentRequest.transactionId = transactionId || paymentRequest.transactionId;
 
     await paymentRequest.save();
-
+    // console.log(paymentRequest);
     // Create payment record
     const payment = await Payment.create({
       user: paymentRequest.user._id,
       amount: paymentRequest.amount,
       email: paymentRequest.user.email,
       description: paymentRequest.description,
-      method: paymentRequest.paymentMethod || "upi",
+      method: paymentRequest.paymentMethod.toLowerCase() || "upi",
       transactionId: paymentRequest.transactionId,
     });
 

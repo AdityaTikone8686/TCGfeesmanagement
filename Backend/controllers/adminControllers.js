@@ -134,7 +134,7 @@ export const updateStudent = async (req, res, next) => {
 			user.password = password;
 		}
 
-		console.log(user);
+		// console.log(user);
 		
 		// Save the user (this will trigger the password hashing middleware)
 		await user.save();
