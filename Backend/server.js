@@ -48,14 +48,10 @@ app.use((req, res) => {
 // Global error handler
 app.use(errorHandler);
 
-// Start server using only the port provided by Vercel
-const PORT = process.env.PORT;
+// Get port from environment (Vercel) or fallback for local testing
+const PORT = process.env.PORT || 5001;
 
-if (!PORT) {
-  console.error("❌ Error: PORT is not defined in environment variables.");
-  process.exit(1);
-}
-
+// Start server
 app.listen(PORT, () => {
   console.log(`✅ Server running on port ${PORT}`);
 });
