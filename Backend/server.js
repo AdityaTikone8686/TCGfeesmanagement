@@ -16,16 +16,20 @@ import paymentRequestRoutes from "./routes/paymentRequestRoutes.js";
 dotenv.config();
 
 const app = express();
+const PORT = process.env.PORT || 5000;
 
-// Connect to MongoDB
 connectDB();
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
-// Routes
+// app.use((req,res,next)=>{
+//   console.log(req.method)
+//   console.log(req.url)
+//   next()
+// })
+
 app.use("/api/feeplans", feePlanRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/reports", reportRoutes);
@@ -35,27 +39,19 @@ app.use("/api/payment-status", userPaymentStatusRoutes);
 app.use("/api/subscriptions", subscriptionRoutes);
 app.use("/api/payment-requests", paymentRequestRoutes);
 
-// Root endpoint
 app.get("/", (req, res) => {
   res.send("Tikone Cricket Backend is running...");
 });
 
-// 404 handler
+// Optional: Fallback for unknown routes
 app.use((req, res) => {
+  console.log(req.method)
   res.status(404).send(`❌ Cannot ${req.method} ${req.originalUrl} here`);
 });
 
-// Global error handler
+// Global error handler (must be after all routes)
 app.use(errorHandler);
 
-// PORT handling
-const PORT = process.env.PORT;
-
-if (!PORT) {
-  console.error("❌ Error: PORT is not defined. For local testing, use PORT=5001 node server.js");
-  process.exit(1);
-}
-
 app.listen(PORT, () => {
-  console.log(`✅ Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
