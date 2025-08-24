@@ -2,7 +2,7 @@ import Subscription from "../models/Subscription.js";
 import FeePlan from "../models/feePlan.js";
 import User from "../models/User.js";
 
-// 📌 Create a new subscription
+// Create a new subscription
 export const createSubscription = async (req, res, next) => {
   try {
     const { userId, planId, paymentId } = req.body;
@@ -60,6 +60,18 @@ export const getUserSubscriptions = async (req, res, next) => {
       .populate("plan", "planName amount durationInDays")
       .populate("payment")
       .sort({ createdAt: -1 });
+
+    // Check and update expired subscriptions
+    const now = new Date();
+    for (let sub of subs) {
+      if (sub.status === 'active' && sub.endDate < now) {
+        sub.status = 'expired';
+        await sub.save();
+        
+        // Remove expired subscription from user's activeSubscription if it's the current one
+        await User.findByIdAndUpdate(req.user.id, { $unset: { activeSubscription: "" } });
+      }
+    }
 
     res.status(200).json(subs);
   } catch (err) {

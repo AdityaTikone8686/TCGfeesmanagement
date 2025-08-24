@@ -4,14 +4,14 @@ import jwt from "jsonwebtoken";
 import Payment from "../models/Payment.js";
 import Subscription from "../models/Subscription.js";
 
-// 🔐 Generate JWT token
+//  Generate JWT token
 const generateToken = (id, email, role) => {
   return jwt.sign({ id, email, role }, process.env.JWT_SECRET, {
     expiresIn: "7d",
   });
 };
 
-// 🟢 User Registration
+//  User Registration
 export const registerUser = async (req, res, next) => {
   const { name, email, password, phone } = req.body;
   if (!name || !email || !password || !phone) {
@@ -45,7 +45,7 @@ export const registerUser = async (req, res, next) => {
   }
 };
 
-// 🔑 User Login
+//  User Login
 export const loginUser = async (req, res, next) => {
   const { email, password } = req.body;
   try {
@@ -133,10 +133,42 @@ export const getUserPaymentStatus = async (req, res, next) => {
 // 🟢 Get User Status
 export const getUserStatus = async (req, res, next) => {
   try {
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(req.user.id).populate({
+      path: "activeSubscription",
+      populate: {
+        path: "plan",
+        select: "planName amount description durationInDays"
+      }
+    });
+    
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+
+    // Get subscription status
+    let subscription = null;
+    if (user.activeSubscription) {
+      // Check if subscription has expired
+      const now = new Date();
+      if (user.activeSubscription.status === 'active' && user.activeSubscription.endDate < now) {
+        // Update subscription status to expired
+        await Subscription.findByIdAndUpdate(user.activeSubscription._id, { status: 'expired' });
+        user.activeSubscription.status = 'expired';
+        
+        // Remove expired subscription from user's activeSubscription
+        await User.findByIdAndUpdate(user._id, { $unset: { activeSubscription: "" } });
+        user.activeSubscription = null;
+      }
+      
+      subscription = {
+        id: user.activeSubscription._id,
+        plan: user.activeSubscription.plan,
+        startDate: user.activeSubscription.startDate,
+        endDate: user.activeSubscription.endDate,
+        status: user.activeSubscription.status,
+      };
+    }
+
     res.json({
       user: {
         id: user._id,
@@ -145,6 +177,7 @@ export const getUserStatus = async (req, res, next) => {
         phone: user.phone,
         role: user.role,
       },
+      subscription: subscription,
     });
   } catch (error) {
     next(error);

@@ -29,6 +29,7 @@ const StudentDashboard = () => {
   const [subscriptions, setSubscriptions] = useState([])
   const [uploading, setUploading] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [statusLoading, setStatusLoading] = useState(false)
 
   useEffect(() => {
     if (user?.email) {
@@ -36,6 +37,19 @@ const StudentDashboard = () => {
       fetchPaymentRequests()
       fetchSubscriptions()
       fetchFeePlans()
+      // Refresh user status to get latest subscription info
+      refreshUserStatus()
+    }
+  }, [user?.email])
+
+  // Periodic refresh of user status to keep subscription info up-to-date
+  useEffect(() => {
+    if (user?.email) {
+      const interval = setInterval(() => {
+        refreshUserStatus()
+      }, 30000) // Refresh every 30 seconds
+      
+      return () => clearInterval(interval)
     }
   }, [user?.email])
 
@@ -65,6 +79,7 @@ const StudentDashboard = () => {
     try {
       const token = localStorage.getItem('token')
       const subs = await subscriptionsAPI.getUserSubscriptions(token)
+      console.log('Fetched subscriptions:', subs)
       setSubscriptions(subs)
     } catch (error) {
       console.error('Error fetching subscriptions:', error)
@@ -355,9 +370,14 @@ const StudentDashboard = () => {
                     <CardTitle className="text-sm font-bold text-gray-700">Status</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <Badge className={getStatusColor(userStatus?.subscription?.status) + ' px-3 py-1 text-base'}>
-                      {userStatus?.subscription?.status || 'No Subscription'}
+                    <Badge className={getStatusColor(userStatus?.subscription?.status || paymentStatus?.subscription?.status) + ' px-3 py-1 text-base'}>
+                      {userStatus?.subscription?.status || paymentStatus?.subscription?.status || 'No Subscription'}
                     </Badge>
+                    {!userStatus?.subscription?.status && !paymentStatus?.subscription?.status && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        Click "Refresh Status" to update
+                      </p>
+                    )}
                   </CardContent>
                 </Card>
               </div>
@@ -407,14 +427,41 @@ const StudentDashboard = () => {
                     </div>
                   ) : (
                     <div className="text-center py-4 text-gray-500">
-                      No active subscriptions found.
-                      <Button
-                        onClick={() => setActiveSection('payment')}
-                        className="ml-2 bg-green-600 hover:bg-green-700"
-                        size="sm"
-                      >
-                        Pay Fees
-                      </Button>
+                      {subscriptions.length === 0 ? (
+                        <>
+                          No subscriptions found.
+                          <Button
+                            onClick={() => setActiveSection('payment')}
+                            className="ml-2 bg-green-600 hover:bg-green-700"
+                            size="sm"
+                          >
+                            Pay Fees
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          No active subscriptions found.
+                          <Button
+                            onClick={() => setActiveSection('payment')}
+                            className="ml-2 bg-green-600 hover:bg-green-700"
+                            size="sm"
+                          >
+                            Pay Fees
+                          </Button>
+                          <Button
+                            onClick={async () => {
+                              setStatusLoading(true)
+                              await refreshUserStatus()
+                              setStatusLoading(false)
+                            }}
+                            className="ml-2 bg-blue-600 hover:bg-blue-700"
+                            size="sm"
+                            disabled={statusLoading}
+                          >
+                            {statusLoading ? 'Refreshing...' : 'Refresh Status'}
+                          </Button>
+                        </>
+                      )}
                     </div>
                   )}
                 </CardContent>
@@ -439,10 +486,15 @@ const StudentDashboard = () => {
                       View Payment History
                     </Button>
                     <Button
-                      onClick={refreshUserStatus}
+                      onClick={async () => {
+                        setStatusLoading(true)
+                        await refreshUserStatus()
+                        setStatusLoading(false)
+                      }}
                       variant="outline"
+                      disabled={statusLoading}
                     >
-                      Refresh Status
+                      {statusLoading ? 'Refreshing...' : 'Refresh Status'}
                     </Button>
                   </div>
                 </CardContent>

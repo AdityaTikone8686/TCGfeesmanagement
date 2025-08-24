@@ -37,14 +37,17 @@ export const AuthProvider = ({ children }) => {
           } else if (userType === 'user') {
             // Only check user status for student
             const status = await authAPI.getUserStatus(token);
+            console.log('User status data:', status);
             setUser(status.user);
             setUserStatus(status);
             // Optionally fetch payment status for user
             if (status.user && status.user.email) {
               try {
                 const paymentStatusData = await paymentStatusAPI.getPaymentStatusByEmail(token, status.user.email);
+                console.log('Payment status data:', paymentStatusData);
                 setPaymentStatus(paymentStatusData);
               } catch (e) {
+                console.error('Error fetching payment status:', e);
                 setPaymentStatus(null);
               }
             }
@@ -176,6 +179,9 @@ export const AuthProvider = ({ children }) => {
           authAPI.getUserStatus(token),
           paymentStatusAPI.getPaymentStatusByEmail(token, user.email)
         ])
+        
+        console.log('Refreshed user status:', status)
+        console.log('Refreshed payment status:', paymentStatusData)
         
         setUserStatus(status)
         setPaymentStatus(paymentStatusData)

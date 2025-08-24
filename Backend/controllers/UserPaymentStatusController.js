@@ -1,6 +1,7 @@
 import Payment from "../models/Payment.js";
 import FeePlan from "../models/feePlan.js";
 import User from "../models/User.js";
+import Subscription from "../models/Subscription.js";
 
 export const getUserPaymentStatus = async (req, res, next) => {
   const email = req.user?.email;
@@ -33,6 +34,26 @@ export const getUserPaymentStatus = async (req, res, next) => {
     }
 
     const subscription = user.activeSubscription;
+    
+    // Check if subscription has expired
+    const now = new Date();
+    if (subscription.status === 'active' && subscription.endDate < now) {
+      // Update subscription status to expired
+      await Subscription.findByIdAndUpdate(subscription._id, { status: 'expired' });
+      subscription.status = 'expired';
+      
+      // Remove expired subscription from user's activeSubscription
+      await User.findByIdAndUpdate(user._id, { $unset: { activeSubscription: "" } });
+      return res.json({
+        subscription: null,
+        amount: 0,
+        paid: 0,
+        due: 0,
+        status: "No active subscription",
+        lastPayment: null,
+        payments: [],
+      });
+    }
     const totalFee = parseFloat(subscription.plan.amount) || 0;
     const payments = await Payment.find({ user: user._id }).sort({ createdAt: -1 });
 
