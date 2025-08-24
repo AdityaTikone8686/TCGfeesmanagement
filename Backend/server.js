@@ -16,7 +16,6 @@ import paymentRequestRoutes from "./routes/paymentRequestRoutes.js";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5001;
 
 // Connect to MongoDB
 connectDB();
@@ -49,16 +48,14 @@ app.use((req, res) => {
 // Global error handler
 app.use(errorHandler);
 
-// Start server with robust port handling
-const server = app.listen(PORT, () => {
-  console.log(`✅ Server running on port ${PORT}`);
-});
+// Start server using only the port provided by Vercel
+const PORT = process.env.PORT;
 
-server.on('error', (err) => {
-  if (err.code === 'EADDRINUSE') {
-    console.error(`❌ Port ${PORT} is already in use. Try using a different port.`);
-    process.exit(1);
-  } else {
-    console.error(err);
-  }
+if (!PORT) {
+  console.error("❌ Error: PORT is not defined in environment variables.");
+  process.exit(1);
+}
+
+app.listen(PORT, () => {
+  console.log(`✅ Server running on port ${PORT}`);
 });
