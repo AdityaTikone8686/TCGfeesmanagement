@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.REACT_APP_API_URL || "/api";
+const API_BASE_URL = "https://tikonecricketgurukul.vercel.app";
 
 // Helper function to handle API responses
 const handleResponse = async (response) => {
