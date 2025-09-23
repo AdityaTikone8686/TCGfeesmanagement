@@ -5,7 +5,7 @@ import { Trophy, Mail, Phone, MapPin, Clock, Facebook, Twitter, Instagram, Youtu
 export default function Footer() {
   return (
     <footer className="bg-card text-card-foreground border-t border-border">
-      <div className="container mx-auto px-4 py-16">
+      <div className="container mx-auto px-3 sm:px-4 py-12 sm:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           {/* Brand Section */}
           <div className="space-y-6">
@@ -27,7 +27,7 @@ export default function Footer() {
               Professional cricket coaching with state-of-the-art facilities. 
               Join hundreds of students who have transformed their game with our expert coaching.
             </p>
-            <div className="flex space-x-4">
+            <div className="flex flex-wrap gap-3 sm:gap-4">
               <a href="" className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all duration-200">
                 <Facebook className="h-5 w-5" />
               </a>
@@ -185,27 +185,33 @@ export default function Footer() {
         </div>
 
         {/* Bottom Section */}
-        <div className="border-t border-border mt-12 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <div className="flex items-center space-x-4">
-              <p className="text-sm text-muted-foreground">
+        <div className="border-t border-border mt-10 sm:mt-12 pt-6 sm:pt-8">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0">
+            <div className="flex flex-col md:flex-row items-center md:items-center gap-3 md:space-x-4">
+              <p className="text-sm text-muted-foreground text-center md:text-left">
                 © 2025 Tikone Cricket Gurukul | All rights reserved.
               </p>
-              <div className="flex space-x-4 text-sm">
-                <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Privacy Policy
-                </a>
-                <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Terms of Service
-                </a>
-                <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Cookie Policy
-                </a>
+              <div className="flex flex-wrap justify-center md:justify-start gap-x-4 gap-y-2 text-sm">
+                <a href="#" className="text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap">Privacy Policy</a>
+                <a href="#" className="text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap">Terms of Service</a>
+                <a href="#" className="text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap">Cookie Policy</a>
               </div>
             </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-sm text-muted-foreground">Live Status: Academy Open</span>
+            <div className="flex flex-col items-center md:items-end space-y-2 text-center md:text-right">
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <p className="text-xs text-muted-foreground">
+                Developed by{' '}
+                <a
+                  href="https://www.linkedin.com/in/hariom0"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-medium hover:text-foreground underline underline-offset-2"
+                >
+                  Hariom Singh
+                </a>
+              </p>
+              </div>
             </div>
           </div>
         </div>
