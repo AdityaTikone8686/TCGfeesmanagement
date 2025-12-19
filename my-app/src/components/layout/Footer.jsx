@@ -28,18 +28,18 @@ export default function Footer() {
               Join hundreds of students who have transformed their game with our expert coaching.
             </p>
             <div className="flex flex-wrap gap-3 sm:gap-4">
-              <a href="" className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all duration-200">
-                <Facebook className="h-5 w-5" />
-              </a>
-              <a href="" className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all duration-200">
-                <Twitter className="h-5 w-5" />
-              </a>
+              {/* <a href="" className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all duration-200">
+                <Facebook className="h-5 w-5" /> 
+              </a> */}
+              {/* <a href="" className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all duration-200">
+                <Twitter className="h-5 w-5" /> 
+              </a> */}
               <a href="https://www.instagram.com/officialtikonecricketgurukul/" className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all duration-200">
                 <Instagram className="h-5 w-5" />
               </a>
-              <a href="" className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all duration-200">
-                <Youtube className="h-5 w-5" />
-              </a>
+              {/* <a href="" className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all duration-200">
+                <Youtube className="h-5 w-5" /> 
+              </a> */}
             </div>
           </div>
 
