@@ -210,7 +210,7 @@ export default function LandingPage() {
                 </ul>
                 <div className="flex items-center justify-between pt-6">
                   <div>
-                    <span className="text-xl sm:text-2xl font-bold text-green-600">₹2,999/month</span>
+                    <span className="text-xl sm:text-2xl font-bold text-green-600">₹2,000/month</span>
                     <p className="text-xs text-muted-foreground">Basic Training</p>
                   </div>
                   <Button size="sm" className="group">
@@ -257,7 +257,7 @@ export default function LandingPage() {
                 </ul>
                 <div className="flex items-center justify-between pt-6">
                   <div>
-                    <span className="text-xl sm:text-2xl font-bold text-green-600">₹4,999/month</span>
+                    <span className="text-xl sm:text-2xl font-bold text-green-600">₹3,500/month</span>
                     <p className="text-xs text-muted-foreground">Advanced Training</p>
                   </div>
                   <Button size="sm" className="group">
@@ -285,7 +285,7 @@ export default function LandingPage() {
                     <div className="w-5 h-5 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center flex-shrink-0">
                       <CheckCircle className="h-3 w-3 text-green-600" />
                     </div>
-                    <span className="text-sm text-muted-foreground">Professional coaching</span>
+                    <span className="text-sm text-muted-foreground">Professional Personal Coaching</span>
                   </li>
                   <li className="flex items-center space-x-3">
                     <div className="w-5 h-5 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center flex-shrink-0">
@@ -302,7 +302,7 @@ export default function LandingPage() {
                 </ul>
                 <div className="flex items-center justify-between pt-6">
                   <div>
-                    <span className="text-xl sm:text-2xl font-bold text-green-600">₹6,999/month</span>
+                    <span className="text-xl sm:text-2xl font-bold text-green-600">₹6,000/month</span>
                     <p className="text-xs text-muted-foreground">Elite Training</p>
                   </div>
                   <Button size="sm" className="group">
