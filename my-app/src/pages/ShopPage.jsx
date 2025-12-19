@@ -1,12 +1,12 @@
 import React from "react";
 
 const products = [
-  { name: "Cricket Bat", desc: "English Willow", price: "₹4,999", img: "/cricket_bat.webp" },
-  { name: "Cricket Ball", desc: "Leather Ball", price: "₹499", img: "/cricket_ball.jpg" },
-  { name: "Kit Bag", desc: "Water Resistant", price: "₹2,999", img: "/kit_bag.jpg" },
-  { name: "Batting Gloves", desc: "Premium Grip", price: "₹1,299", img: "/cricket_gloves.jpg" },
-  { name: "Keeping Gloves", desc: "High Protection", price: "₹1,499", img: "/cricket_keeping.jpg" },
-  { name: "Cricket Dress", desc: "Team Kit", price: "₹999", img: "/cricket_dress.jpg" },
+  { name: "Cricket Bat", img: "/bat.jpg", price: "₹4,999", desc: "English Willow", size: "h-32" },
+  { name: "Cricket Ball", img: "/ball.jpg", price: "₹499", desc: "Leather Ball", size: "h-24" },
+  { name: "Kit Bag", img: "/kitbag.jpg", price: "₹2,999", desc: "Water Resistant", size: "h-32" },
+  { name: "Batting Gloves", img: "/batting-gloves.jpg", price: "₹1,299", desc: "Premium Grip" },
+  { name: "Keeping Gloves", img: "/keeping-gloves.jpg", price: "₹1,499", desc: "High Protection" },
+  { name: "Cricket Dress", img: "/cricket-dress.jpg", price: "₹999", desc: "Team Kit" },
 ];
 
 const ShopPage = () => {
@@ -24,11 +24,13 @@ const ShopPage = () => {
               key={index}
               className="bg-white rounded-2xl shadow-md p-4 hover:shadow-lg transition"
             >
+              
               <img
-                src={product.img}
-                alt={product.name}
-                className="w-full h-48 object-cover rounded-xl mb-4"
+              src={product.img}
+              alt={product.name}
+              className={`w-full object-cover rounded-xl mb-4 ${product.size || "h-48"}`}
               />
+              
               <h3 className="font-semibold text-lg">{product.name}</h3>
               <p className="text-sm text-gray-500">{product.desc}</p>
               <p className="font-bold mt-2">{product.price}</p>
