@@ -5,6 +5,7 @@ const products = [
     name: "Cricket Bat",
     img: "/cricket_bat.webp",
     price: "₹4,999",
+    mrp: "₹6,499",
     desc: "English Willow",
     category: "Bat",
     size: "h-40",
@@ -13,6 +14,7 @@ const products = [
     name: "Cricket Ball",
     img: "/cricket_ball1.jpg",
     price: "₹499",
+    mrp: "₹699",
     desc: "Leather Ball",
     category: "Ball",
     size: "h-28",
@@ -21,6 +23,7 @@ const products = [
     name: "Kit Bag",
     img: "/kitbag_1.webp",
     price: "₹2,999",
+    mrp: "₹3,999",
     desc: "Water Resistant",
     category: "Kit Bag",
     size: "h-32",
@@ -29,6 +32,7 @@ const products = [
     name: "Batting Gloves",
     img: "/cricket_gloves.jpg",
     price: "₹1,299",
+    mrp: "₹1,799",
     desc: "Premium Grip",
     category: "Gloves",
     size: "h-32",
@@ -37,6 +41,7 @@ const products = [
     name: "Keeping Gloves",
     img: "/cricket_keeping.jpg",
     price: "₹1,499",
+    mrp: "₹2,099",
     desc: "High Protection",
     category: "Gloves",
     size: "h-32",
@@ -45,6 +50,7 @@ const products = [
     name: "Cricket Dress",
     img: "/cricket-dress.jpg",
     price: "₹999",
+    mrp: "₹1,499",
     desc: "Team Kit",
     category: "Dress",
     size: "h-32",
@@ -103,13 +109,24 @@ const ShopPage = () => {
                     product.size || "h-32"
                   }`}
                 />
+
                 <h3 className="font-semibold text-lg text-center">
                   {product.name}
                 </h3>
+
                 <p className="text-sm text-gray-500 text-center">
                   {product.desc}
                 </p>
-                <p className="font-bold mt-2">{product.price}</p>
+
+                {/* Price Section */}
+                <div className="mt-2 flex items-center gap-2">
+                  <span className="text-sm text-gray-400 line-through">
+                    {product.mrp}
+                  </span>
+                  <span className="text-lg font-bold text-green-600">
+                    {product.price}
+                  </span>
+                </div>
               </div>
 
               <button className="mt-4 w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition">
@@ -124,6 +141,3 @@ const ShopPage = () => {
 };
 
 export default ShopPage;
-
-
-
