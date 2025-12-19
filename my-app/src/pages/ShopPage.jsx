@@ -1,13 +1,59 @@
 import React from "react";
+import React, { useState } from "react";
 
 const products = [
-  { name: "Cricket Bat", img: "/cricket_bat.webp", price: "₹4,999", desc: "English Willow", size: "h-40" },
-  { name: "Cricket Ball", img: "/cricket_ball1.jpg", price: "₹499", desc: "Leather Ball", size: "h-28" },
-  { name: "Kit Bag", img: "/kitbag_1.webp", price: "₹2,999", desc: "Water Resistant", size: "h-32" },
-  { name: "Batting Gloves", img: "/cricket_gloves.jpg", price: "₹1,299", desc: "Premium Grip", size: "h-32" },
-  { name: "Keeping Gloves", img: "/cricket_keeping.jpg", price: "₹1,499", desc: "High Protection", size: "h-32" },
-  { name: "Cricket Dress", img: "/cricket-dress.jpg", price: "₹999", desc: "Team Kit", size: "h-32" },
+  {
+    name: "Cricket Bat",
+    img: "/cricket_bat.webp",
+    price: "₹4,999",
+    desc: "English Willow",
+    category: "Bat",
+    size: "h-40",
+  },
+  {
+    name: "Cricket Ball",
+    img: "/cricket_ball1.jpg",
+    price: "₹499",
+    desc: "Leather Ball",
+    category: "Ball",
+    size: "h-28",
+  },
+  {
+    name: "Kit Bag",
+    img: "/kitbag_1.webp",
+    price: "₹2,999",
+    desc: "Water Resistant",
+    category: "Kit Bag",
+    size: "h-32",
+  },
+  {
+    name: "Batting Gloves",
+    img: "/cricket_gloves.jpg",
+    price: "₹1,299",
+    desc: "Premium Grip",
+    category: "Gloves",
+    size: "h-32",
+  },
+  {
+    name: "Keeping Gloves",
+    img: "/cricket_keeping.jpg",
+    price: "₹1,499",
+    desc: "High Protection",
+    category: "Gloves",
+    size: "h-32",
+  },
+  {
+    name: "Cricket Dress",
+    img: "/cricket-dress.jpg",
+    price: "₹999",
+    desc: "Team Kit",
+    category: "Dress",
+    size: "h-32",
+  },
 ];
+
+const categories = ["All", "Bat", "Ball", "Kit Bag", "Gloves", "Dress"];
+
 
 const ShopPage = () => {
   return (
@@ -17,6 +63,22 @@ const ShopPage = () => {
         <p className="text-center text-gray-600 mb-12">
           Find the best cricket gear for every player
         </p>
+        <div className="flex flex-wrap justify-center gap-3 mb-10">
+          {categories.map((category) => (
+           <button
+            key={category}
+            onClick={() => setSelectedCategory(category)}
+            className={`px-5 py-2 rounded-full text-sm font-medium transition ${
+            selectedCategory === category
+             ? "bg-green-600 text-white"
+             : "bg-white text-gray-700 border hover:bg-green-50"
+          }`}
+          >
+           {category}
+        </button>
+       ))}
+       </div>
+
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {products.map((product, index) => (
