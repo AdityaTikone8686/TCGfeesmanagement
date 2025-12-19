@@ -69,7 +69,7 @@ export default function LandingPage() {
             <div className="relative animate-slide-up w-full max-w-[720px] mx-auto lg:mx-0">
               <div className="relative z-10">
                 <img
-                  src="https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1205&q=80"
+                  src="/tcg_ground.jpeg"
                   alt="Tikone Cricket Academy, Pimpri"
                   className="rounded-2xl shadow-2xl w-full h-auto object-cover aspect-[4/3] sm:aspect-auto hover:shadow-3xl transition-all duration-300"
                 />
