@@ -3,7 +3,7 @@ import React from "react";
 const products = [
   { name: "Cricket Bat", img: "/cricket_bat.webp", price: "₹4,999", desc: "English Willow", size: "h-42" },
   { name: "Cricket Ball", img: "/cricket_ball1.jpg", price: "₹499", desc: "Leather Ball", size: "h-4" },
-  { name: "Kit Bag", img: "/kitbag_1.jpg", price: "₹2,999", desc: "Water Resistant", size: "h-32" },
+  { name: "Kit Bag", img: "/kitbag_1.webp", price: "₹2,999", desc: "Water Resistant", size: "h-32" },
   { name: "Batting Gloves", img: "/cricket_gloves.jpg", price: "₹1,299", desc: "Premium Grip" },
   { name: "Keeping Gloves", img: "/cricket_keeping.jpg", price: "₹1,499", desc: "High Protection" },
   { name: "Cricket Dress", img: "/cricket-dress.jpg", price: "₹999", desc: "Team Kit" },
