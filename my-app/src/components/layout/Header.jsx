@@ -54,6 +54,15 @@ export default function Header() {
                   <Home className="h-4 w-4" />
                   <span>Home</span>
                 </Link>
+                 <Link
+                  to="/shop"
+                  className={`flex items-center space-x-2 text-sm font-medium transition-all duration-200 hover:text-primary ${
+                    location.pathname === '/shop' ? 'text-primary' : 'text-muted-foreground'
+                  }`}
+                >
+                  <Trophy className="h-4 w-4" />
+                  <span>Shop</span>
+                  </Link>
                 
                 <div className="flex items-center space-x-3">
                   <Link to="/admin/login">
