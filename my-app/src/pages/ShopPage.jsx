@@ -71,7 +71,7 @@ const ShopPage = () => {
           Find the best cricket gear for every player
         </p>
 
-        {/* Category Filter Buttons */}
+        {/* Category Buttons */}
         <div className="flex flex-wrap justify-center gap-3 mb-10">
           {categories.map((category) => (
             <button
@@ -99,9 +99,31 @@ const ShopPage = () => {
                 <img
                   src={product.img}
                   alt={product.name}
-                  className={`w-full object-contain rounded-xl mb-4 ${product.size || "h-32"}`}
+                  className={`w-full object-contain rounded-xl mb-4 ${
+                    product.size || "h-32"
+                  }`}
+                />
+                <h3 className="font-semibold text-lg text-center">
+                  {product.name}
+                </h3>
+                <p className="text-sm text-gray-500 text-center">
+                  {product.desc}
+                </p>
+                <p className="font-bold mt-2">{product.price}</p>
+              </div>
 
+              <button className="mt-4 w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition">
+                Enquire Now
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default ShopPage;
+
 
 
