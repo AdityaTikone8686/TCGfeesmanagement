@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Button } from '../ui/button'
-import { Trophy, Menu, X, LogOut, User, Home, Shield, GraduationCap, ChevronDown } from 'lucide-react'
+import { Trophy, Menu, X, LogOut, User, Home, Shield, GraduationCap, ChevronDown, store, shopping_bag } from 'lucide-react'
 import { useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
 
@@ -60,7 +60,7 @@ export default function Header() {
                     location.pathname === '/shop' ? 'text-primary' : 'text-muted-foreground'
                   }`}
                 >
-                  <Trophy className="h-4 w-4" />
+                  <shopping_bag className="h-4 w-4" />
                   <span>Shop</span>
                   </Link>
                 
@@ -171,7 +171,7 @@ export default function Header() {
                     }`}
                      onClick={() => setIsMenuOpen(false)}
                   >
-                     <Trophy className="h-5 w-5" />
+                     <shopping_bag className="h-5 w-5" />
                      <span>Shop</span>
                   </Link>
 
