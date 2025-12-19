@@ -1,7 +1,7 @@
 import React from "react";
 
 const products = [
-  { name: "Cricket Bat", img: "/cricket_bat.webp", price: "₹4,999", desc: "English Willow", size: "h-32" },
+  { name: "Cricket Bat", img: "/cricket_bat.webp", price: "₹4,999", desc: "English Willow", size: "h-42" },
   { name: "Cricket Ball", img: "/cricket_ball.jpg", price: "₹499", desc: "Leather Ball", size: "h-24" },
   { name: "Kit Bag", img: "/kit_bag.jpg", price: "₹2,999", desc: "Water Resistant", size: "h-32" },
   { name: "Batting Gloves", img: "/cricket_gloves.jpg", price: "₹1,299", desc: "Premium Grip" },
