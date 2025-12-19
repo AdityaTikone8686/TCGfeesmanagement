@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Button } from '../ui/button'
 import { Trophy, Menu, X, LogOut, User, Home, Shield, GraduationCap, ChevronDown } from 'lucide-react'
 import { createIcons, store } from 'lucide'
-import { createIcons, shoppingBag } from 'lucide';
+import { createIcons, shoppingBag } from 'lucide'
 
 import { useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
