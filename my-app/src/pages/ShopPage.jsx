@@ -22,7 +22,7 @@ const ShopPage = () => {
           {products.map((product, index) => (
             <div
               key={index}
-              className="bg-white rounded-2xl shadow-md p-4 hover:shadow-lg transition"
+              className="bg-white rounded-2xl shadow-md p-1 hover:shadow-lg transition"
             >
               
               <img
