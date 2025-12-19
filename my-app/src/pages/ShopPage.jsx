@@ -22,17 +22,21 @@ const ShopPage = () => {
           {products.map((product, index) => (
             <div
               key={index}
-              className="bg-white rounded-2xl shadow-md p-3 hover:shadow-lg transition flex flex-col items-center"
+              className="bg-white rounded-2xl shadow-md p-3 hover:shadow-lg transition flex flex-col"
             >
-              <img
-                src={product.img}
-                alt={product.name}
-                className={`w-full object-contain rounded-xl mb-4 ${product.size || "h-32"}`}
-              />
+              {/* Upper content that grows */}
+              <div className="flex-1 flex flex-col items-center">
+                <img
+                  src={product.img}
+                  alt={product.name}
+                  className={`w-full object-contain rounded-xl mb-4 ${product.size || "h-32"}`}
+                />
+                <h3 className="font-semibold text-lg text-center">{product.name}</h3>
+                <p className="text-sm text-gray-500 text-center">{product.desc}</p>
+                <p className="font-bold mt-2">{product.price}</p>
+              </div>
 
-              <h3 className="font-semibold text-lg text-center">{product.name}</h3>
-              <p className="text-sm text-gray-500 text-center">{product.desc}</p>
-              <p className="font-bold mt-2">{product.price}</p>
+              {/* Button always at the bottom */}
               <button className="mt-4 w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition">
                 Enquire Now
               </button>
@@ -45,4 +49,5 @@ const ShopPage = () => {
 };
 
 export default ShopPage;
+
 
