@@ -199,7 +199,6 @@ export default function Footer() {
             </div>
             <div className="flex flex-col items-center md:items-end space-y-2 text-center md:text-right">
               <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
               </div>
             </div>
           </div>
