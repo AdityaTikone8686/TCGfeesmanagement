@@ -200,17 +200,6 @@ export default function Footer() {
             <div className="flex flex-col items-center md:items-end space-y-2 text-center md:text-right">
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <p className="text-xs text-muted-foreground">
-                Developed by{' '}
-                <a
-                  href="https://www.linkedin.com/in/hariom0"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="font-medium hover:text-foreground underline underline-offset-2"
-                >
-                  Hariom Singh
-                </a>
-              </p>
               </div>
             </div>
           </div>
