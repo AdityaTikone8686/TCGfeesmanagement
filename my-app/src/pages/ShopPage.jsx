@@ -26,9 +26,9 @@ const ShopPage = () => {
             >
               
               <img
-              src={product.img}
-              alt={product.name}
-              className={`w-full object-cover rounded-xl mb-4 ${product.size || "h-48"}`}
+                src={product.img}
+                alt={product.name}
+                className="w-full h-48 object-cover rounded-xl mb-4"
               />
               
               <h3 className="font-semibold text-lg">{product.name}</h3>
