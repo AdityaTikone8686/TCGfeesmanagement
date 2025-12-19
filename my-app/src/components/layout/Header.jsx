@@ -61,7 +61,7 @@ export default function Header() {
                     location.pathname === '/shop' ? 'text-primary' : 'text-muted-foreground'
                   }`}
                 >
-                  <shoppingBag className="h-4 w-4" />
+                  <ShoppingBag className="h-4 w-4" />
                   <span>Shop</span>
                   </Link>
                 
@@ -172,7 +172,7 @@ export default function Header() {
                     }`}
                      onClick={() => setIsMenuOpen(false)}
                   >
-                     <shoppingBag className="h-5 w-5" />
+                     <ShoppingBag className="h-5 w-5" />
                      <span>Shop</span>
                   </Link>
 
