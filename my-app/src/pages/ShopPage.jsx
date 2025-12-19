@@ -43,7 +43,7 @@ const products = [
   },
     {
      name: "KOOKABURA PLAYERS EDITION KASHMIR WILLOW CRICKET BAT",
-    img: "kookabura players edition.webp",
+    img: "kookbura players edition.webp",
     mrp: "₹6,299",
     price: "₹5,039",
     discount: "20% OFF",
@@ -84,7 +84,7 @@ const products = [
   },
     {
      name: "SS PLAYER JUMBO KASHMIR WILLOW CRICKET BAT",
-    img: "/ss player jumbo.webp",
+    img: "/ss player jambo.webp",
     mrp: "₹3,300",
     price: "₹2,784",
     discount: "16% OFF",
@@ -154,7 +154,7 @@ const products = [
   },
    {
      name: "DSC WILDFIRE FLARE KASHMIR WILLOW CRICKET BAT",
-    img: "/dsc wildfireflare.webp",
+    img: "/dsc wildfire flare.webp",
     mrp: "₹2,174",
     price: "₹2,899",
     discount: "25% OFF",
@@ -264,7 +264,7 @@ const products = [
   },
   {
      name: "MRF CHAMP KASHMIR WILLOW CRICKET BAT",
-    img: "/mrf champ best.webp",
+    img: "/mrf chaamp best.webp",
     mrp: "₹2,820",
     price: "₹2,115",
     discount: "25% OFF",
@@ -274,7 +274,7 @@ const products = [
   },
    {
      name: "SS GUTSY KASHMIR WILLOW CRICKET BAT",
-    img: "/ss gutsyy.webp",
+    img: "/ss gutsyy.jpg",
     mrp: "₹3,110",
     price: "₹2,706",
     discount: "13% OFF",
@@ -284,7 +284,7 @@ const products = [
   },
   {
      name: "SS KLASSEN KASHMIR WILLOW CRICKET BAT",
-    img: "/ss klassen.webp",
+    img: "/ss klassen.jpg",
     mrp: "₹3,010",
     price: "₹2,619",
     discount: "13% OFF",
@@ -294,7 +294,7 @@ const products = [
   },
   {
      name: "SS CLUB VELLUM KASHMIR WILLOW CRICKET BAT",
-    img: "/ss club vellum.webp",
+    img: "/ss club vellum.jpg",
     mrp: "₹3,010",
     price: "₹2,619",
     discount: "13% OFF",
@@ -304,7 +304,7 @@ const products = [
   },
   {
      name: "SS SUPER POWER KASHMIR WILLOW CRICKET BAT",
-    img: "/ss super power.webp",
+    img: "/ss super power.jpg",
     mrp: "₹2,970",
     price: "₹2,584",
     discount: "13% OFF",
@@ -314,7 +314,7 @@ const products = [
   },
   {
      name: "SS POWER KASHMIR WILLOW CRICKET BAT",
-    img: "/ss power kashmir.webp",
+    img: "/ss power kashmir.jpg",
     mrp: "₹2,920",
     price: "₹2,540",
     discount: "13% OFF",
@@ -324,7 +324,7 @@ const products = [
   },
   {
      name: "SS TILAK VERMA KASHMIR WILLOW CRICKET BAT",
-    img: "/ss tilak.webp",
+    img: "/ss tilak.jpg",
     mrp: "₹2,453",
     price: "₹2,820",
     discount: "13% OFF",
@@ -334,7 +334,7 @@ const products = [
   },
   {
      name: "SS SKY STUNNER KASHMIR WILLOW CRICKET BAT",
-    img: "/ss sky stunner.webp",
+    img: "/ss sky stunner.jpg",
     mrp: "₹2,453",
     price: "₹2,820",
     discount: "13% OFF",
@@ -344,7 +344,7 @@ const products = [
   },
   {
      name: "SS SHIVAM DUBE KASHMIR WILLOW CRICKET BAT",
-    img: "/ss shivam dube'.webp",
+    img: "/ss shivam dube'.jpg",
     mrp: "₹2,453",
     price: "₹2,820",
     discount: "13% OFF",
@@ -354,7 +354,7 @@ const products = [
   },
   {
      name: "SS JOSH KASHMIR WILLOW CRICKET BAT",
-    img: "/ss josh.webp",
+    img: "/ss josh.jpg",
     mrp: "₹2,590",
     price: "₹2,253",
     discount: "13% OFF",
