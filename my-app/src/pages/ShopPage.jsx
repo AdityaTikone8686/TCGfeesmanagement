@@ -4,8 +4,9 @@ const products = [
   {
     name: "Cricket Bat",
     img: "/cricket_bat.webp",
-    originalPrice: "₹6,499",
-    discountedPrice: "₹4,999",
+    mrp: "₹6,999",
+    price: "₹4,999",
+    discount: "29% OFF",
     desc: "English Willow",
     category: "Bat",
     size: "h-40",
@@ -13,8 +14,9 @@ const products = [
   {
     name: "Cricket Ball",
     img: "/cricket_ball1.jpg",
-    originalPrice: "₹699",
-    discountedPrice: "₹499",
+    mrp: "₹699",
+    price: "₹499",
+    discount: "29% OFF",
     desc: "Leather Ball",
     category: "Ball",
     size: "h-28",
@@ -22,8 +24,9 @@ const products = [
   {
     name: "Kit Bag",
     img: "/kitbag_1.webp",
-    originalPrice: "₹3,499",
-    discountedPrice: "₹2,999",
+    mrp: "₹3,999",
+    price: "₹2,999",
+    discount: "25% OFF",
     desc: "Water Resistant",
     category: "Kit Bag",
     size: "h-32",
@@ -31,8 +34,9 @@ const products = [
   {
     name: "Batting Gloves",
     img: "/cricket_gloves.jpg",
-    originalPrice: "₹1,699",
-    discountedPrice: "₹1,299",
+    mrp: "₹1,799",
+    price: "₹1,299",
+    discount: "28% OFF",
     desc: "Premium Grip",
     category: "Gloves",
     size: "h-32",
@@ -40,8 +44,9 @@ const products = [
   {
     name: "Keeping Gloves",
     img: "/cricket_keeping.jpg",
-    originalPrice: "₹1,899",
-    discountedPrice: "₹1,499",
+    mrp: "₹1,999",
+    price: "₹1,499",
+    discount: "25% OFF",
     desc: "High Protection",
     category: "Gloves",
     size: "h-32",
@@ -49,8 +54,9 @@ const products = [
   {
     name: "Cricket Dress",
     img: "/cricket-dress.jpg",
-    originalPrice: "₹1,299",
-    discountedPrice: "₹999",
+    mrp: "₹1,299",
+    price: "₹999",
+    discount: "23% OFF",
     desc: "Team Kit",
     category: "Dress",
     size: "h-32",
@@ -99,8 +105,13 @@ const ShopPage = () => {
           {filteredProducts.map((product, index) => (
             <div
               key={index}
-              className="bg-white rounded-2xl shadow-md p-3 hover:shadow-lg transition flex flex-col"
+              className="bg-white rounded-2xl shadow-md p-3 hover:shadow-lg transition flex flex-col relative"
             >
+              {/* Discount Badge */}
+              <span className="absolute top-3 right-3 bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                {product.discount}
+              </span>
+
               <div className="flex-1 flex flex-col items-center">
                 <img
                   src={product.img}
@@ -113,23 +124,21 @@ const ShopPage = () => {
                 <h3 className="font-semibold text-lg text-center">
                   {product.name}
                 </h3>
-
                 <p className="text-sm text-gray-500 text-center">
                   {product.desc}
                 </p>
 
-                {/* Prices */}
+                {/* Price Section */}
                 <div className="mt-2 text-center">
-                  <span className="text-sm text-gray-400 line-through mr-2">
-                    {product.originalPrice}
-                  </span>
-                  <span className="text-lg font-bold text-green-600">
-                    {product.discountedPrice}
-                  </span>
+                  <p className="text-sm text-gray-400 line-through">
+                    {product.mrp}
+                  </p>
+                  <p className="text-lg font-bold text-green-600">
+                    {product.price}
+                  </p>
                 </div>
               </div>
 
-              {/* Button */}
               <button className="mt-4 w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition">
                 Enquire Now
               </button>
@@ -142,4 +151,3 @@ const ShopPage = () => {
 };
 
 export default ShopPage;
-
