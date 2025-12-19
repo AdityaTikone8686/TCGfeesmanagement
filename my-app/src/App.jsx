@@ -6,6 +6,7 @@ import AdminLogin from './pages/admin/Login'
 import StudentLogin from './pages/student/Login'
 import AdminDashboard from './pages/admin/Dashboard'
 import StudentDashboard from './pages/student/Dashboard'
+import ShopPage from './pages/ShopPage'
 import './App.css'
 
 // Protected Route Component
@@ -56,6 +57,9 @@ function AppRoutes() {
             ? <Navigate to={isAdmin ? "/admin/dashboard" : "/student/dashboard"} replace />
             : <LandingPage />
         } />
+        
+        {/* Shop Page */}
+        <Route path="/shop" element={<ShopPage />} />
         
         {/* Admin Routes */}
         <Route path="/admin/login" element={
