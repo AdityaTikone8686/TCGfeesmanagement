@@ -4,8 +4,8 @@ const products = [
   {
     name: "Cricket Bat",
     img: "/cricket_bat.webp",
-    price: "₹4,999",
-    mrp: "₹6,499",
+    originalPrice: "₹6,499",
+    discountedPrice: "₹4,999",
     desc: "English Willow",
     category: "Bat",
     size: "h-40",
@@ -13,8 +13,8 @@ const products = [
   {
     name: "Cricket Ball",
     img: "/cricket_ball1.jpg",
-    price: "₹499",
-    mrp: "₹699",
+    originalPrice: "₹699",
+    discountedPrice: "₹499",
     desc: "Leather Ball",
     category: "Ball",
     size: "h-28",
@@ -22,8 +22,8 @@ const products = [
   {
     name: "Kit Bag",
     img: "/kitbag_1.webp",
-    price: "₹2,999",
-    mrp: "₹3,999",
+    originalPrice: "₹3,499",
+    discountedPrice: "₹2,999",
     desc: "Water Resistant",
     category: "Kit Bag",
     size: "h-32",
@@ -31,8 +31,8 @@ const products = [
   {
     name: "Batting Gloves",
     img: "/cricket_gloves.jpg",
-    price: "₹1,299",
-    mrp: "₹1,799",
+    originalPrice: "₹1,699",
+    discountedPrice: "₹1,299",
     desc: "Premium Grip",
     category: "Gloves",
     size: "h-32",
@@ -40,8 +40,8 @@ const products = [
   {
     name: "Keeping Gloves",
     img: "/cricket_keeping.jpg",
-    price: "₹1,499",
-    mrp: "₹2,099",
+    originalPrice: "₹1,899",
+    discountedPrice: "₹1,499",
     desc: "High Protection",
     category: "Gloves",
     size: "h-32",
@@ -49,8 +49,8 @@ const products = [
   {
     name: "Cricket Dress",
     img: "/cricket-dress.jpg",
-    price: "₹999",
-    mrp: "₹1,499",
+    originalPrice: "₹1,299",
+    discountedPrice: "₹999",
     desc: "Team Kit",
     category: "Dress",
     size: "h-32",
@@ -118,17 +118,18 @@ const ShopPage = () => {
                   {product.desc}
                 </p>
 
-                {/* Price Section */}
-                <div className="mt-2 flex items-center gap-2">
-                  <span className="text-sm text-gray-400 line-through">
-                    {product.mrp}
+                {/* Prices */}
+                <div className="mt-2 text-center">
+                  <span className="text-sm text-gray-400 line-through mr-2">
+                    {product.originalPrice}
                   </span>
                   <span className="text-lg font-bold text-green-600">
-                    {product.price}
+                    {product.discountedPrice}
                   </span>
                 </div>
               </div>
 
+              {/* Button */}
               <button className="mt-4 w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition">
                 Enquire Now
               </button>
@@ -141,3 +142,4 @@ const ShopPage = () => {
 };
 
 export default ShopPage;
+
