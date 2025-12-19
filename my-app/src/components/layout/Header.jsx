@@ -163,6 +163,19 @@ export default function Header() {
                     <Home className="h-5 w-5" />
                     <span>Home</span>
                   </Link>
+
+                  <Link
+                    to="/shop"
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-all duration-200 hover:bg-muted/50 ${
+                      location.pathname === '/shop' ? 'text-primary bg-primary/10' : 'text-muted-foreground'
+                    }`}
+                     onClick={() => setIsMenuOpen(false)}
+                  >
+                     <Trophy className="h-5 w-5" />
+                     <span>Shop</span>
+                  </Link>
+
+
                   
                   <div className="px-4 space-y-3">
                     <Link to="/admin/login" onClick={() => setIsMenuOpen(false)}>
