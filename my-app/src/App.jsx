@@ -7,6 +7,9 @@ import StudentLogin from './pages/student/Login'
 import AdminDashboard from './pages/admin/Dashboard'
 import StudentDashboard from './pages/student/Dashboard'
 import ShopPage from './pages/ShopPage'
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
+import CookiePolicy from "./pages/CookiePolicy";
 import './App.css'
 
 // Protected Route Component
@@ -75,6 +78,10 @@ function AppRoutes() {
             </ProtectedRoute>
           } 
         />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+<Route path="/terms-of-service" element={<TermsOfService />} />
+<Route path="/cookie-policy" element={<CookiePolicy />} />
+
         
         {/* Student Routes */}
         <Route path="/student/login" element={
