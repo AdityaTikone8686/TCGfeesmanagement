@@ -356,7 +356,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-      <InstagramFeed />
     </Layout>
   )
 } 
