@@ -71,7 +71,7 @@ export default function Header() {
                   }`}
                 >
                   <Trophy className="h-4 w-4" />
-                  <span>Instagram</span>
+                  <span>Post</span>
                </Link>
 
                 
@@ -194,7 +194,7 @@ export default function Header() {
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <Trophy className="h-5 w-5" />
-                    <span>Instagram</span>
+                    <span>Post</span>
                   </Link>
 
 
