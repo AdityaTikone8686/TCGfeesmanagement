@@ -12,6 +12,7 @@ import adminRoutes from "./routes/adminRoutes.js";
 import userPaymentStatusRoutes from "./routes/userPaymentStatusRoutes.js";
 import subscriptionRoutes from "./routes/subscriptionRoutes.js";
 import paymentRequestRoutes from "./routes/paymentRequestRoutes.js";
+import instagramRoutes from "./routes/instagram.js";
 
 dotenv.config();
 
@@ -34,6 +35,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/payment-status", userPaymentStatusRoutes);
 app.use("/api/subscriptions", subscriptionRoutes);
 app.use("/api/payment-requests", paymentRequestRoutes);
+app.use("/api/instagram", instagramRoutes);
 
 // Root endpoint
 app.get("/", (req, res) => {
