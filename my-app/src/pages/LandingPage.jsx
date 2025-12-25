@@ -5,6 +5,7 @@ import { Card, CardContent } from '../components/ui/card'
 import { Badge } from '../components/ui/badge'
 import { Trophy, Users, Target, Award, ArrowRight, Star, Clock, CheckCircle, Play, Shield, GraduationCap, Zap, Heart, TrendingUp } from 'lucide-react'
 import Layout from '../components/layout/Layout'
+import InstagramFeed from '../components/InstagramFeed'
 
 
 export default function LandingPage() {
@@ -355,6 +356,7 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+      <InstagramFeed />
     </Layout>
   )
 } 
