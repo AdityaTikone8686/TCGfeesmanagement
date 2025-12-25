@@ -1,40 +1,63 @@
-import React from "react";
+import React from 'react'
+import { Badge } from '../components/ui/badge'
+import { Card, CardContent } from '../components/ui/card'
+import { FileText } from 'lucide-react'
+import Layout from '../components/layout/Layout'
 
-const TermsOfService = () => {
+export default function TermsOfService() {
   return (
-    <div className="min-h-screen bg-gray-50 py-16">
-      <div className="max-w-4xl mx-auto px-4 bg-white p-8 rounded-xl shadow">
-        <h1 className="text-3xl font-bold mb-6">Terms of Service</h1>
+    <Layout>
+      <section className="bg-gradient-to-br from-background via-muted/20 to-muted/10 py-12 sm:py-16">
+        <div className="container mx-auto px-4 text-center">
+          <Badge variant="outline" className="mb-4">
+            <FileText className="h-4 w-4 mr-2" />
+            Legal
+          </Badge>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold">
+            Terms of Service
+          </h1>
+          <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
+            These terms govern the use of Tikone Cricket Gurukul services and facilities.
+          </p>
+        </div>
+      </section>
 
-        <p className="text-gray-700 mb-4">
-          By using the Tikone Cricket Gurukul website, you agree to these
-          terms and conditions.
-        </p>
+      <section className="py-12 sm:py-16">
+        <div className="container mx-auto px-4 max-w-4xl">
+          <Card className="shadow-lg">
+            <CardContent className="space-y-8 p-6 sm:p-10">
+              <div>
+                <h2 className="text-xl font-semibold mb-2">Academy Enrollment</h2>
+                <p className="text-muted-foreground">
+                  Enrollment is subject to availability and compliance with academy rules.
+                </p>
+              </div>
 
-        <h2 className="text-xl font-semibold mt-6 mb-2">Use of Website</h2>
-        <p className="text-gray-700 mb-4">
-          This website is for informational and academy-related purposes
-          only. Unauthorized use is prohibited.
-        </p>
+              <div>
+                <h2 className="text-xl font-semibold mb-2">Code of Conduct</h2>
+                <p className="text-muted-foreground">
+                  Students must maintain discipline, respect coaches, and follow academy guidelines.
+                </p>
+              </div>
 
-        <h2 className="text-xl font-semibold mt-6 mb-2">Content</h2>
-        <p className="text-gray-700 mb-4">
-          All content including images, logos, and text belongs to Tikone
-          Cricket Gurukul unless stated otherwise.
-        </p>
+              <div>
+                <h2 className="text-xl font-semibold mb-2">Fees & Payments</h2>
+                <p className="text-muted-foreground">
+                  Fees once paid are non-refundable unless explicitly stated by management.
+                </p>
+              </div>
 
-        <h2 className="text-xl font-semibold mt-6 mb-2">Limitation of Liability</h2>
-        <p className="text-gray-700 mb-4">
-          We are not liable for any damages arising from the use of this
-          website.
-        </p>
+              <div>
+                <h2 className="text-xl font-semibold mb-2">Termination</h2>
+                <p className="text-muted-foreground">
+                  The academy reserves the right to terminate enrollment for misconduct or rule violations.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+    </Layout>
+  )
+}
 
-        <p className="text-gray-500 text-sm mt-8">
-          Last updated: {new Date().toLocaleDateString()}
-        </p>
-      </div>
-    </div>
-  );
-};
-
-export default TermsOfService;
