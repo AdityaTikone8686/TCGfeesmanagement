@@ -10,6 +10,7 @@ import ShopPage from './pages/ShopPage'
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import CookiePolicy from "./pages/CookiePolicy";
+import InstagramPage from "./pages/InstagramPage";
 import './App.css'
 
 // Protected Route Component
@@ -90,6 +91,11 @@ function AppRoutes() {
         <Route 
           path="/cookie-policy" element={
           <CookiePolicy />} 
+          />
+
+        <Route 
+          path="/instagram" element={
+          <InstagramPage />} 
           />
 
         
