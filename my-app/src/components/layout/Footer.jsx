@@ -96,7 +96,7 @@ export default function Footer() {
 
             <div className="space-y-4 text-sm">
               <div className="flex items-start space-x-3">
-                <MapPin className="h-5 w-5 text-green-600 mt-1" />
+                <MapPin className="h-6 w-6 text-green-600 mt-1" />
                 <p className="text-muted-foreground">
                   Boat Club, near Kazu Devi Temple, Sector 33, Thergaon, Pune –
                   411033
