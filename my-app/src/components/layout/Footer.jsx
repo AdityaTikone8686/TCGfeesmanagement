@@ -187,12 +187,28 @@ export default function Footer() {
               <p className="text-sm text-muted-foreground text-center md:text-left">
                 © 2025 Tikone Cricket Gurukul | All rights reserved.
               </p>
-              <div className="flex flex-wrap justify-center md:justify-start gap-x-4 gap-y-2 text-sm">
-                <a href="/privacy-policy" className="text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap">Privacy Policy</a>
-                <a href="/terms-of-service" className="text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap">Terms of Service</a>
-                <a href="/cookie-policy" className="text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap">Cookie Policy</a>
-              </div>
-            </div>
+               
+             <div className="flex flex-wrap justify-center md:justify-start gap-x-4 gap-y-2 text-sm">
+  <Link
+    to="/privacy-policy"
+    className="text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
+  >
+    Privacy Policy
+  </Link>
+  <Link
+    to="/terms-of-service"
+    className="text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
+  >
+    Terms of Service
+  </Link>
+  <Link
+    to="/cookie-policy"
+    className="text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
+  >
+    Cookie Policy
+  </Link>
+</div>
+
             <div className="flex flex-col items-center md:items-end space-y-2 text-center md:text-right">
               <div className="flex items-center space-x-2">
               </div>
