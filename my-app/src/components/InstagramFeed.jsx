@@ -22,7 +22,7 @@ const InstagramFeed = () => {
         {/* Section Header */}
         <div className="text-center mb-10 sm:mb-16 animate-fade-in">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-foreground mb-4 sm:mb-6">
-            Our Instagram Feed
+            Matches & Spotlight
           </h2>
           <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
             Stay connected and see the latest updates, training highlights, and behind-the-scenes at Tikone Cricket Gurukul.
