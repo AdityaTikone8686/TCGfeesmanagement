@@ -6,7 +6,7 @@ const InstagramFeed = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const res = await fetch("/api/instagram");
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/instagram`);
         const data = await res.json();
         setPosts(data);
       } catch (err) {
