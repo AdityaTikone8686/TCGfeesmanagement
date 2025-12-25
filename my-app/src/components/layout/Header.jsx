@@ -2,6 +2,7 @@ import React from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Button } from '../ui/button'
 import { ShoppingBag } from 'lucide-react'
+import { Camera } from 'lucide-react'
 import { Trophy, Menu, X, LogOut, User, Home, Shield, GraduationCap, ChevronDown } from 'lucide-react'
 import { useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
@@ -70,7 +71,7 @@ export default function Header() {
                     location.pathname === '/instagram' ? 'text-primary' : 'text-muted-foreground'
                   }`}
                 >
-                  <Trophy className="h-4 w-4" />
+                  <Camera className="h-4 w-4" />
                   <span>Post</span>
                </Link>
 
@@ -193,7 +194,7 @@ export default function Header() {
                    }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    <Trophy className="h-5 w-5" />
+                    <Camera className="h-5 w-5" />
                     <span>Post</span>
                   </Link>
 
