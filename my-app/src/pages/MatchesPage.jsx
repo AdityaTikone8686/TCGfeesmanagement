@@ -86,7 +86,7 @@ const MatchesPage = () => {
   // Admin login handler
   const handleAdminLogin = async () => {
     try {
-      const res = await fetch("/api/matches-admin/login", {
+      const res = await fetch("https://tikonecricketgurukul.vercel.app/api/matches-admin/login" , {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
