@@ -10,6 +10,8 @@ import ShopPage from './pages/ShopPage'
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import CookiePolicy from "./pages/CookiePolicy";
+import Header from "./components/layout/Header";
+import Footer from "./components/layout/Footer";
 import './App.css'
 
 // Protected Route Component
