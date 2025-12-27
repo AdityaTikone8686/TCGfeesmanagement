@@ -1,338 +1,209 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "../components/ui/button";
+import { Card, CardContent } from "../components/ui/card";
+import { Trash2, Edit, Play, CheckCircle } from "lucide-react";
 import Layout from "../components/layout/Layout";
 
 const initialMatches = [
-  // Sample matches (can be empty initially)
   {
     id: 1,
+    teamA: "Team Alpha",
+    teamB: "Team Beta",
     date: "2025-12-28",
-    startTime: "21:00",
-    overs: 20,
-    teamA: "Tikone CC",
-    teamB: "Pimpri CC",
-    venue: "Thergoan Ground",
-    status: "upcoming",
-    result: null,
+    time: "21:00",
+    overs: 5,
+    status: "scheduled", // scheduled | live | finished
+    runs: { teamA: 0, teamB: 0 },
+    currentOver: 0,
   },
 ];
 
 const MatchesPage = () => {
   const [matches, setMatches] = useState(initialMatches);
-  const [form, setForm] = useState({
-    date: "",
-    startTime: "",
-    overs: 20,
+  const [newMatch, setNewMatch] = useState({
     teamA: "",
     teamB: "",
-    venue: "",
+    date: "",
+    time: "",
+    overs: 5,
   });
 
-  // Auto-update match status every minute
+  // Automated match simulation
   useEffect(() => {
     const interval = setInterval(() => {
-      const now = new Date();
-      const updated = matches.map((match) => {
-        const matchStart = new Date(`${match.date}T${match.startTime}:00`);
-        const matchEnd = new Date(
-          matchStart.getTime() + match.overs * 4 * 60 * 1000
-        ); // Approx 4 min per over
+      setMatches((prev) =>
+        prev.map((match) => {
+          if (match.status === "live") {
+            // Simulate runs
+            const incrementA = Math.floor(Math.random() * 7); // 0-6
+            const incrementB = Math.floor(Math.random() * 7);
+            const nextOver = match.currentOver + 1;
 
-        if (now < matchStart) return { ...match, status: "upcoming" };
-        if (now >= matchStart && now <= matchEnd) return { ...match, status: "live" };
-        if (now > matchEnd && match.status !== "completed") {
-          return {
-            ...match,
-            status: "completed",
-            result: `${match.teamA} vs ${match.teamB} finished`,
-          };
-        }
-        return match;
-      });
-      setMatches(updated);
-    }, 60000); // every minute
+            let newStatus = match.status;
+            if (nextOver >= match.overs) newStatus = "finished";
 
+            return {
+              ...match,
+              runs: {
+                teamA: match.runs.teamA + incrementA,
+                teamB: match.runs.teamB + incrementB,
+              },
+              currentOver: nextOver,
+              status: newStatus,
+            };
+          }
+
+          // Auto-start match if date/time matches
+          const matchDateTime = new Date(`${match.date}T${match.time}:00`);
+          if (
+            match.status === "scheduled" &&
+            new Date() >= matchDateTime
+          ) {
+            return { ...match, status: "live", currentOver: 0 };
+          }
+
+          return match;
+        })
+      );
+    }, 5000); // every 5 seconds simulate
     return () => clearInterval(interval);
-  }, [matches]);
-
-  const handleInputChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  }, []);
 
   const handleAddMatch = () => {
-    const newMatch = {
-      id: matches.length + 1,
-      ...form,
-      status: "upcoming",
-      result: null,
-    };
-    setMatches([...matches, newMatch]);
-    setForm({ date: "", startTime: "", overs: 20, teamA: "", teamB: "", venue: "" });
+    if (!newMatch.teamA || !newMatch.teamB || !newMatch.date || !newMatch.time) return;
+
+    setMatches((prev) => [
+      ...prev,
+      {
+        id: Date.now(),
+        ...newMatch,
+        status: "scheduled",
+        runs: { teamA: 0, teamB: 0 },
+        currentOver: 0,
+      },
+    ]);
+
+    setNewMatch({ teamA: "", teamB: "", date: "", time: "", overs: 5 });
   };
 
-  // Minimum date for scheduling (1 day ahead)
-  const minDate = new Date(Date.now() + 24 * 60 * 60 * 1000)
-    .toISOString()
-    .split("T")[0];
-
-  return (
-import React, { useState, useEffect } from "react";
-import { Button } from "../components/ui/button";
-import Layout from "../components/layout/Layout";
-
-const initialMatches = [
-  // Example match
-  {
-    id: 1,
-    date: "2025-12-28",
-    startTime: "21:00",
-    overs: 20,
-    teamA: "Tikone CC",
-    teamB: "Pimpri CC",
-    venue: "Thergoan Ground",
-    status: "upcoming",
-    runsA: null,
-    runsB: null,
-  },
-];
-
-const MatchesPage = () => {
-  const [matches, setMatches] = useState(initialMatches);
-  const [form, setForm] = useState({
-    date: "",
-    startTime: "",
-    overs: 20,
-    teamA: "",
-    teamB: "",
-    venue: "",
-  });
-  const [editId, setEditId] = useState(null);
-
-  // Auto-update match status
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const now = new Date();
-      const updated = matches.map((match) => {
-        const matchStart = new Date(`${match.date}T${match.startTime}:00`);
-        const matchEnd = new Date(matchStart.getTime() + match.overs * 4 * 60 * 1000); // 4 min per over
-        if (now < matchStart) return { ...match, status: "upcoming" };
-        if (now >= matchStart && now <= matchEnd) return { ...match, status: "live" };
-        if (now > matchEnd && match.status !== "completed") {
-          return {
-            ...match,
-            status: "completed",
-            ...simulateMatchResult(match),
-          };
-        }
-        return match;
-      });
-      setMatches(updated);
-    }, 60000); // every minute
-
-    return () => clearInterval(interval);
-  }, [matches]);
-
-  const simulateMatchResult = (match) => {
-    const runsA = Math.floor(Math.random() * (match.overs * 6 * 6)); // Random runs
-    const runsB = Math.floor(Math.random() * (match.overs * 6 * 6));
-    let winner;
-    if (runsA > runsB) winner = match.teamA;
-    else if (runsB > runsA) winner = match.teamB;
-    else winner = "Draw";
-
-    return { runsA, runsB, winner };
-  };
-
-  const handleInputChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleAddOrEditMatch = () => {
-    if (editId) {
-      // Edit existing match
-      setMatches(
-        matches.map((m) => (m.id === editId ? { ...m, ...form } : m))
-      );
-      setEditId(null);
-    } else {
-      // Add new match
-      const newMatch = { id: matches.length + 1, ...form, status: "upcoming" };
-      setMatches([...matches, newMatch]);
-    }
-    setForm({ date: "", startTime: "", overs: 20, teamA: "", teamB: "", venue: "" });
-  };
-
-  const handleDelete = (id) => {
-    setMatches(matches.filter((m) => m.id !== id));
-  };
-
-  const handleEdit = (match) => {
-    setForm(match);
-    setEditId(match.id);
-  };
-
-  const handleFinishNow = (id) => {
-    setMatches(
-      matches.map((m) =>
-        m.id === id ? { ...m, status: "completed", ...simulateMatchResult(m) } : m
+  const handleFinishMatch = (id) => {
+    setMatches((prev) =>
+      prev.map((m) =>
+        m.id === id ? { ...m, status: "finished" } : m
       )
     );
   };
 
-  const minDate = new Date(Date.now() + 24 * 60 * 60 * 1000)
-    .toISOString()
-    .split("T")[0];
+  const handleDeleteMatch = (id) => {
+    setMatches((prev) => prev.filter((m) => m.id !== id));
+  };
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-12">
-        <h1 className="text-4xl font-bold text-center mb-8">Match Scheduler</h1>
+      <div className="container mx-auto py-10">
+        <h1 className="text-3xl font-bold mb-6 text-center">Matches</h1>
 
-        {/* Admin Form */}
-        <div className="max-w-3xl mx-auto mb-12 bg-white p-6 rounded-2xl shadow-md">
-          <h2 className="text-2xl font-semibold mb-4">
-            {editId ? "Edit Match" : "Schedule a Match"}
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        {/* Add New Match */}
+        <Card className="mb-8 p-4">
+          <CardContent className="flex flex-col sm:flex-row gap-3 flex-wrap">
             <input
               type="text"
-              name="teamA"
               placeholder="Team A"
-              value={form.teamA}
-              onChange={handleInputChange}
-              className="border rounded px-3 py-2 w-full"
+              value={newMatch.teamA}
+              onChange={(e) =>
+                setNewMatch({ ...newMatch, teamA: e.target.value })
+              }
+              className="border p-2 rounded"
             />
             <input
               type="text"
-              name="teamB"
               placeholder="Team B"
-              value={form.teamB}
-              onChange={handleInputChange}
-              className="border rounded px-3 py-2 w-full"
+              value={newMatch.teamB}
+              onChange={(e) =>
+                setNewMatch({ ...newMatch, teamB: e.target.value })
+              }
+              className="border p-2 rounded"
             />
             <input
               type="date"
-              name="date"
-              min={minDate}
-              value={form.date}
-              onChange={handleInputChange}
-              className="border rounded px-3 py-2 w-full"
+              value={newMatch.date}
+              onChange={(e) =>
+                setNewMatch({ ...newMatch, date: e.target.value })
+              }
+              className="border p-2 rounded"
             />
             <input
               type="time"
-              name="startTime"
-              value={form.startTime}
-              onChange={handleInputChange}
-              className="border rounded px-3 py-2 w-full"
+              value={newMatch.time}
+              onChange={(e) =>
+                setNewMatch({ ...newMatch, time: e.target.value })
+              }
+              className="border p-2 rounded"
             />
             <input
               type="number"
-              name="overs"
-              min={1}
-              value={form.overs}
-              onChange={handleInputChange}
-              className="border rounded px-3 py-2 w-full"
               placeholder="Overs"
+              value={newMatch.overs}
+              onChange={(e) =>
+                setNewMatch({ ...newMatch, overs: parseInt(e.target.value) })
+              }
+              className="border p-2 rounded w-24"
             />
-            <input
-              type="text"
-              name="venue"
-              placeholder="Venue"
-              value={form.venue}
-              onChange={handleInputChange}
-              className="border rounded px-3 py-2 w-full"
-            />
-          </div>
-          <Button
-            onClick={handleAddOrEditMatch}
-            className="bg-green-600 text-white"
-          >
-            {editId ? "Update Match" : "Add Match"}
-          </Button>
-        </div>
+            <Button onClick={handleAddMatch} className="bg-green-600 text-white">
+              Add Match
+            </Button>
+          </CardContent>
+        </Card>
 
-        {/* Matches */}
-        <div className="space-y-8">
-          {["upcoming", "live", "completed"].map((status) => (
-            <div key={status}>
-              <h2 className="text-2xl font-semibold mb-4 capitalize">
-                {status} Matches
-              </h2>
-              {matches.filter((m) => m.status === status).length === 0 && (
-                <p>No {status} matches.</p>
-              )}
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                {matches
-                  .filter((m) => m.status === status)
-                  .map((match) => (
-                    <MatchCard
-                      key={match.id}
-                      match={match}
-                      handleEdit={handleEdit}
-                      handleDelete={handleDelete}
-                      handleFinishNow={handleFinishNow}
-                    />
-                  ))}
-              </div>
-            </div>
+        {/* Match List */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {matches.map((match) => (
+            <Card key={match.id} className="relative p-4">
+              <CardContent>
+                <div className="flex justify-between items-center mb-2">
+                  <h2 className="text-xl font-bold">{match.teamA} vs {match.teamB}</h2>
+                  <span
+                    className={`px-2 py-1 rounded-full text-white ${
+                      match.status === "scheduled"
+                        ? "bg-gray-500"
+                        : match.status === "live"
+                        ? "bg-green-600"
+                        : "bg-blue-600"
+                    }`}
+                  >
+                    {match.status}
+                  </span>
+                </div>
+                <p>Date: {match.date} | Time: {match.time}</p>
+                <p>Overs: {match.overs}</p>
+                <p className="mt-2 font-semibold">
+                  Score: {match.runs.teamA} - {match.runs.teamB} | Over {match.currentOver}/{match.overs}
+                </p>
+
+                {/* Actions */}
+                <div className="flex gap-2 mt-4">
+                  {match.status !== "finished" && (
+                    <Button
+                      onClick={() => handleFinishMatch(match.id)}
+                      className="bg-blue-600 text-white flex items-center gap-2"
+                    >
+                      <CheckCircle size={16} /> Finish Now
+                    </Button>
+                  )}
+                  <Button
+                    onClick={() => handleDeleteMatch(match.id)}
+                    className="bg-red-600 text-white flex items-center gap-2"
+                  >
+                    <Trash2 size={16} /> Delete
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           ))}
         </div>
       </div>
     </Layout>
   );
 };
-
-const MatchCard = ({ match, handleEdit, handleDelete, handleFinishNow }) => (
-  <div className="bg-white rounded-2xl shadow-md p-4 flex flex-col items-center relative">
-    <h3 className="text-lg font-semibold text-center">
-      {match.teamA} vs {match.teamB}
-    </h3>
-    <p className="text-gray-500">
-      {match.date} | {match.startTime} | {match.overs} overs
-    </p>
-    <p className="text-gray-500">{match.venue}</p>
-    <p
-      className={`mt-2 font-semibold ${
-        match.status === "live" ? "text-red-600" : "text-gray-700"
-      }`}
-    >
-      {match.status.toUpperCase()}
-    </p>
-    {match.status === "completed" && (
-      <p className="text-green-600 mt-1">
-        {match.teamA} {match.runsA} - {match.teamB} {match.runsB} | Winner:{" "}
-        {match.winner}
-      </p>
-    )}
-
-    {/* Admin Actions */}
-    <div className="flex gap-2 mt-4">
-      {(match.status === "upcoming" || match.status === "live") && (
-        <Button
-          onClick={() => handleFinishNow(match.id)}
-          className="bg-blue-600 text-white text-sm"
-        >
-          Finish Now
-        </Button>
-      )}
-      {match.status !== "completed" && (
-        <>
-          <Button
-            onClick={() => handleEdit(match)}
-            className="bg-yellow-500 text-white text-sm"
-          >
-            Edit
-          </Button>
-          <Button
-            onClick={() => handleDelete(match.id)}
-            className="bg-red-600 text-white text-sm"
-          >
-            Delete
-          </Button>
-        </>
-      )}
-    </div>
-  </div>
-);
 
 export default MatchesPage;
