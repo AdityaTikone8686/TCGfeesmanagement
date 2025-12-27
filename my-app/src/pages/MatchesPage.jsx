@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
 import { Trash2, Edit, CheckCircle } from "lucide-react";
 import Layout from "../components/layout/Layout";
-import { useAuth } from "../context/AuthContext"; 
+import { useAuth } from "../context/AuthContext"; // ✅ Use only the hook
+
 const initialMatches = [
   {
     id: 1,
@@ -30,42 +31,33 @@ const initialMatches = [
 ];
 
 const MatchesPage = () => {
-  const authContext = useContext(AuthContext);
-  const isAdmin = authContext?.isAdmin || false;
-  const setIsAdmin = authContext?.setIsAdmin || (() => {});
-
+  const { isAdmin, setIsAdmin } = useAuth();
   const [matches, setMatches] = useState(initialMatches);
   const [newMatch, setNewMatch] = useState({ teamA: "", teamB: "", date: "", time: "", overs: 5 });
   const [editMatch, setEditMatch] = useState(null);
 
-  // Admin login form state
+  // Admin login state
   const [showLogin, setShowLogin] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
 
-  // Load token from localStorage on page load
+  // Load token from localStorage
   useEffect(() => {
-    try {
-      const token = localStorage.getItem("matchesAdminToken");
-      if (token) setIsAdmin(true);
-    } catch {
-      setIsAdmin(false);
-    }
+    const token = localStorage.getItem("matchesAdminToken");
+    if (token) setIsAdmin(true);
   }, [setIsAdmin]);
 
-  // Automated match simulation
+  // Simulate live matches
   useEffect(() => {
     const interval = setInterval(() => {
-      setMatches((prev) =>
-        prev.map((match) => {
+      setMatches(prev =>
+        prev.map(match => {
           if (match.status === "live") {
             const incrementA = Math.floor(Math.random() * 7);
             const incrementB = Math.floor(Math.random() * 7);
             const nextOver = match.currentOver + 1;
-            let newStatus = match.status;
-            if (nextOver >= match.overs) newStatus = "finished";
-
+            const newStatus = nextOver >= match.overs ? "finished" : "live";
             return {
               ...match,
               runs: { teamA: match.runs.teamA + incrementA, teamB: match.runs.teamB + incrementB },
@@ -95,29 +87,24 @@ const MatchesPage = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-
-      if (!res.ok) {
-        const data = await res.json();
-        setLoginError(data.message || "Invalid credentials");
-        return;
-      }
-
       const data = await res.json();
-      localStorage.setItem("matchesAdminToken", data.token);
-      setIsAdmin(true);
-      setShowLogin(false);
-      setLoginError("");
+      if (res.ok) {
+        localStorage.setItem("matchesAdminToken", data.token);
+        setIsAdmin(true);
+        setShowLogin(false);
+        setLoginError("");
+      } else {
+        setLoginError(data.message || "Invalid credentials");
+      }
     } catch (err) {
-      console.error(err);
-      setLoginError("Server error. Please try again later.");
+      setLoginError("Server error");
     }
   };
 
-  // Admin-only functions
+  // Admin functions
   const handleAddMatch = () => {
-    if (!isAdmin) return;
-    if (!newMatch.teamA || !newMatch.teamB || !newMatch.date || !newMatch.time) return;
-    setMatches((prev) => [
+    if (!isAdmin || !newMatch.teamA || !newMatch.teamB || !newMatch.date || !newMatch.time) return;
+    setMatches(prev => [
       ...prev,
       { id: Date.now(), ...newMatch, status: "scheduled", runs: { teamA: 0, teamB: 0 }, currentOver: 0 },
     ]);
@@ -134,7 +121,7 @@ const MatchesPage = () => {
       <div className="container mx-auto py-10">
         <h1 className="text-3xl font-bold mb-6 text-center">Matches</h1>
 
-        {/* Admin login section */}
+        {/* Admin Login */}
         {!isAdmin && (
           <div className="text-center mb-6">
             {!showLogin ? (
@@ -142,8 +129,8 @@ const MatchesPage = () => {
             ) : (
               <div className="flex flex-col items-center gap-2">
                 {loginError && <p className="text-red-600">{loginError}</p>}
-                <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="border p-2 rounded" />
-                <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="border p-2 rounded" />
+                <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} className="border p-2 rounded" />
+                <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} className="border p-2 rounded" />
                 <div className="flex gap-2 mt-2">
                   <Button onClick={handleAdminLogin} className="bg-green-600 text-white">Login</Button>
                   <Button onClick={() => setShowLogin(false)} className="bg-gray-500 text-white">Cancel</Button>
@@ -153,7 +140,7 @@ const MatchesPage = () => {
           </div>
         )}
 
-        {/* Admin add match */}
+        {/* Add Match (Admin only) */}
         {isAdmin && (
           <Card className="mb-8 p-4">
             <CardContent className="flex flex-col sm:flex-row gap-3 flex-wrap">
@@ -185,7 +172,7 @@ const MatchesPage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {matches.map((match) => (
+                  {matches.map(match => (
                     <tr key={match.id} className="text-center">
                       <td className="border px-4 py-2">{match.teamA} vs {match.teamB}</td>
                       <td className="border px-4 py-2">{match.date}</td>
