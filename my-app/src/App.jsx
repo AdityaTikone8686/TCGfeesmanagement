@@ -14,6 +14,7 @@ import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
 import MediaPage from "./pages/MediaPage";
 import MatchesPage from "./pages/MatchesPage";
+import AdminLoginPage from "./pages/AdminLoginPage";
 import './App.css'
 
 // Protected Route Component
@@ -72,6 +73,9 @@ function AppRoutes() {
         
         {/* Matches Page */}
         <Route path="/matches" element={<MatchesPage />} />
+
+        {/* Match ADMIN PAGE */}
+         <Route path="/admin-login" element={<AdminLoginPage />} />
         
         {/* Admin Routes */}
         <Route path="/admin/login" element={
