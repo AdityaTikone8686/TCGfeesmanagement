@@ -76,11 +76,8 @@ export default function Header() {
                   <Camera className="h-4 w-4" />
                   <span>Media</span>
                   </Link>
-                </Link>
                 
-
-                
-                <div className="flex items-center space-x-3">
+                  <div className="flex items-center space-x-3">
                   <Link to="/admin/login">
                     <Button 
                       variant="outline" 
