@@ -4,6 +4,8 @@ import { Button } from '../ui/button'
 import { ShoppingBag } from 'lucide-react'
 import { Camera } from 'lucide-react'
 import { TvMinimal } from 'lucide-react'
+import { LogIn } from 'lucide-react'
+
 import { Trophy, Menu, X, LogOut, User, Home, Shield, GraduationCap, ChevronDown } from 'lucide-react'
 import { useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
@@ -87,6 +89,19 @@ export default function Header() {
                   <TvMinimal className="h-4 w-4" />
                   <span>Matches</span>>
                  </Link>
+
+                <Link 
+                   to="/admin-login" 
+                 className={`flex items-center space-x-2 text-sm font-medium transition-all duration-200 hover:text-primary ${
+                    location.pathname === '/admin-login' ? 'text-primary' : 'text-muted-foreground'
+                  }`}
+                >
+                  <logIn className="h-4 w-4" />
+                  <span>Match Login</span>>
+                 </Link>
+
+
+                
                 
                   <div className="flex items-center space-x-3">
                   <Link to="/admin/login">
@@ -217,6 +232,16 @@ export default function Header() {
                 >
                   <TvMinimal className="h-5 w-5" />
                   <span>Matches</span>
+                  </Link>
+
+                   <Link 
+                  to="/admin-login" 
+                   className={`flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-all duration-200 hover:bg-muted/50 ${
+                      location.pathname === '/admin-login' ? 'text-primary bg-primary/10' : 'text-muted-foreground'
+                  }`}
+                >
+                  <logIn className="h-5 w-5" />
+                  <span>Match Login</span>
                   </Link>
 
                   
