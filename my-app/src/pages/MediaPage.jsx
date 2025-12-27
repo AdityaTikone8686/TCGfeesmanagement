@@ -5,7 +5,9 @@ const mediaItems = [
   { type: "image", src: "/tcg_ground.jpeg", alt: "Tikone Cricket Academy Ground" },
   { type: "image", src: "/tcg_pr1.jpg", alt: "Training Session" },
   { type: "image", src: "/tcg_pr2.jpg", alt: "Match Day" },
-  { type: "image", src: "/tcg_pr3.jpg", alt: "pr" },
+  { type: "image", src: "/tcg_pr4.jpg", alt: "pr" },
+  { type: "image", src: "/tcg_pr5.jpg", alt: "pr2" },
+  { type: "image", src: "/U-14 TEAM PHOTO.jpg", alt: "pr" },
 ];
 
 const MediaPage = () => {
