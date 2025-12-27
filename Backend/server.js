@@ -14,7 +14,7 @@ import subscriptionRoutes from "./routes/subscriptionRoutes.js";
 import paymentRequestRoutes from "./routes/paymentRequestRoutes.js";
 import matchRoutes from "./routes/matches.js";
 import adminAuthRoutes from "./routes/adminAuth.js";
-import matchesAdminAuthRoutes from "./routes/matchAdminAuth.js";
+import matchAdminAuthRoutes from "./routes/matchAdminAuth.js";
 
 
 dotenv.config();
