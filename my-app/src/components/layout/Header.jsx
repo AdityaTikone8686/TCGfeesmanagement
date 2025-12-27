@@ -190,11 +190,11 @@ export default function Header() {
 
                    <Link 
                   to="/media" 
-                  className={`flex items-center space-x-2 text-sm font-medium transition-all duration-200 hover:text-primary ${
-                    location.pathname === '/shop' ? 'text-primary' : 'text-muted-foreground'
+                   className={`flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-all duration-200 hover:bg-muted/50 ${
+                      location.pathname === '/media' ? 'text-primary bg-primary/10' : 'text-muted-foreground'
                   }`}
                 >
-                  <Camera className="h-4 w-4" />
+                  <Camera className="h-5 w-5" />
                   <span>Media</span>
                   </Link>
                   
