@@ -98,6 +98,11 @@ function AppRoutes() {
           <InstagramPage />} 
           />
 
+        <Route 
+          path="/moments" element={
+          <SocialPage />} 
+          />
+
         
         {/* Student Routes */}
         <Route path="/student/login" element={
