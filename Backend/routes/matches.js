@@ -1,15 +1,20 @@
-const express = require("express");
-const router = express.Router();
-let matches = require("../data/matchesStore");
-const { requireAdmin } = require("../middleware/auth");
+import express from "express";
+import matches from "../data/matchesStore.js";
+import { authenticate, requireAdmin } from "../middleware/auth.js";
 
-// GET all matches (PUBLIC)
+const router = express.Router();
+
+/**
+ * GET all matches (PUBLIC)
+ */
 router.get("/", (req, res) => {
   res.json(matches);
 });
 
-// CREATE match (ADMIN)
-router.post("/", requireAdmin, (req, res) => {
+/**
+ * CREATE match (ADMIN ONLY)
+ */
+router.post("/", authenticate, requireAdmin, (req, res) => {
   const match = {
     id: Date.now(),
     ...req.body,
@@ -22,20 +27,27 @@ router.post("/", requireAdmin, (req, res) => {
   res.status(201).json(match);
 });
 
-// UPDATE match (ADMIN)
-router.put("/:id", requireAdmin, (req, res) => {
+/**
+ * UPDATE match (ADMIN ONLY)
+ */
+router.put("/:id", authenticate, requireAdmin, (req, res) => {
   const id = Number(req.params.id);
+
   matches = matches.map((m) =>
     m.id === id ? { ...m, ...req.body } : m
   );
+
   res.json({ success: true });
 });
 
-// DELETE match (ADMIN)
-router.delete("/:id", requireAdmin, (req, res) => {
+/**
+ * DELETE match (ADMIN ONLY)
+ */
+router.delete("/:id", authenticate, requireAdmin, (req, res) => {
   const id = Number(req.params.id);
+
   matches = matches.filter((m) => m.id !== id);
   res.json({ success: true });
 });
 
-module.exports = router;
+export default router;
