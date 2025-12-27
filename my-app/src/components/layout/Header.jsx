@@ -65,15 +65,7 @@ export default function Header() {
                   <ShoppingBag className="h-4 w-4" />
                   <span>Shop</span>
                   </Link>
-                <Link
-                  to="/instagram"
-                  className={`flex items-center space-x-2 text-sm font-medium transition-all duration-200 hover:text-primary ${
-                    location.pathname === '/instagram' ? 'text-primary' : 'text-muted-foreground'
-                  }`}
-                >
-                  <Camera className="h-4 w-4" />
-                  <span>Post</span>
-               </Link>
+                
 
                 
                 <div className="flex items-center space-x-3">
@@ -186,20 +178,6 @@ export default function Header() {
                      <ShoppingBag className="h-5 w-5" />
                      <span>Shop</span>
                   </Link>
-                  
-                  <Link
-                   to="/instagram"
-                   className={`flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-all duration-200 hover:bg-muted/50 ${
-                     location.pathname === '/instagram' ? 'text-primary bg-primary/10' : 'text-muted-foreground'
-                   }`}
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <Camera className="h-5 w-5" />
-                    <span>Post</span>
-                  </Link>
-
-
-
                   
                   <div className="px-4 space-y-3">
                     <Link to="/admin/login" onClick={() => setIsMenuOpen(false)}>
