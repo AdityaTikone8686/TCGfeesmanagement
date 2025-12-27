@@ -7,6 +7,7 @@ const mediaItems = [
   { type: "image", src: "/tcg_pr2.jpg", alt: "Match Day" },
   { type: "image", src: "/tcg_pr4.jpg", alt: "Match Pr Day" },
   { type: "image", src: "/U-14 TEAM PHOTO.jpg", alt: "pr" },
+  { type: "image", src: "/TCG U-13 MATCH.jpg", alt: "pr" },
 ];
 
 const MediaPage = () => {
