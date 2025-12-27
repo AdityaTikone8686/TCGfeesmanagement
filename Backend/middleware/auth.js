@@ -4,21 +4,30 @@ const authenticate = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return next({ statusCode: 401, message: "No token provided" });
+    return res.status(401).json({ message: "No token provided" });
   }
 
   const token = authHeader.split(" ")[1];
 
   try {
     const decoded = verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // e.g., { id, email, isAdmin }
+    req.user = decoded; // { id, email, isAdmin }
     next();
   } catch (err) {
     if (err.name === "TokenExpiredError") {
-      return next({ statusCode: 401, message: "Token expired" });
+      return res.status(401).json({ message: "Token expired" });
     }
-    next({ statusCode: 403, message: "Invalid or expired token" });
+    return res.status(403).json({ message: "Invalid or expired token" });
   }
 };
 
-export default authenticate;
+// ✅ ADD THIS (ADMIN CHECK)
+const requireAdmin = (req, res, next) => {
+  if (!req.user || !req.user.isAdmin) {
+    return res.status(403).json({ message: "Admin access only" });
+  }
+  next();
+};
+
+// ✅ EXPORT BOTH
+export { authenticate, requireAdmin };
