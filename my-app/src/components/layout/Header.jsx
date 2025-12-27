@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Button } from '../ui/button'
 import { ShoppingBag } from 'lucide-react'
 import { Camera } from 'lucide-react'
+import { Cricket } from 'lucide-react'
 import { Trophy, Menu, X, LogOut, User, Home, Shield, GraduationCap, ChevronDown } from 'lucide-react'
 import { useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
@@ -70,12 +71,22 @@ export default function Header() {
                 <Link 
                   to="/media" 
                   className={`flex items-center space-x-2 text-sm font-medium transition-all duration-200 hover:text-primary ${
-                    location.pathname === '/shop' ? 'text-primary' : 'text-muted-foreground'
+                    location.pathname === '/media' ? 'text-primary' : 'text-muted-foreground'
                   }`}
                 >
                   <Camera className="h-4 w-4" />
                   <span>Media</span>
                   </Link>
+
+                 <Link 
+                   to="/matches" 
+                 className={`flex items-center space-x-2 text-sm font-medium transition-all duration-200 hover:text-primary ${
+                    location.pathname === '/matches' ? 'text-primary' : 'text-muted-foreground'
+                  }`}
+                >
+                  <Cricket className="h-4 w-4" />
+                  <span>Matches</span>>
+                 </Link>
                 
                   <div className="flex items-center space-x-3">
                   <Link to="/admin/login">
@@ -197,6 +208,18 @@ export default function Header() {
                   <Camera className="h-5 w-5" />
                   <span>Media</span>
                   </Link>
+
+                  <Link 
+                  to="/matches" 
+                   className={`flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-all duration-200 hover:bg-muted/50 ${
+                      location.pathname === '/matches' ? 'text-primary bg-primary/10' : 'text-muted-foreground'
+                  }`}
+                >
+                  <Cricket className="h-5 w-5" />
+                  <span>Matches</span>
+                  </Link>
+
+                  
                   
                   <div className="px-4 space-y-3">
                     <Link to="/admin/login" onClick={() => setIsMenuOpen(false)}>
