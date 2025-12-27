@@ -3,7 +3,7 @@ import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
 import { Trash2, Edit, CheckCircle } from "lucide-react";
 import Layout from "../components/layout/Layout";
-import { AuthContext } from "../context/AuthContext"; // Ensure this exists
+import { useAuth } from "../context/AuthContext"; // Ensure this exists
 
 const initialMatches = [
   {
