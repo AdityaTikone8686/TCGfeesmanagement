@@ -10,7 +10,6 @@ import ShopPage from './pages/ShopPage'
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import CookiePolicy from "./pages/CookiePolicy";
-import InstagramPage from "./pages/InstagramPage";
 import './App.css'
 
 // Protected Route Component
@@ -93,17 +92,6 @@ function AppRoutes() {
           <CookiePolicy />} 
           />
 
-        <Route 
-          path="/instagram" element={
-          <InstagramPage />} 
-          />
-
-        <Route 
-          path="/moments" element={
-          <SocialPage />} 
-          />
-
-        
         {/* Student Routes */}
         <Route path="/student/login" element={
           isAuthenticated
