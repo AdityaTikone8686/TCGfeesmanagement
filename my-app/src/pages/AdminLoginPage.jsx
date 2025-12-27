@@ -10,7 +10,7 @@ export default function AdminLoginPage() {
 
   const handleLogin = async () => {
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/matches-admin/login`, {
+      const res = await fetch("https://tikonecricketgurukulbackend.onrender.com/api/matches-admin/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
