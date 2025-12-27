@@ -187,6 +187,16 @@ export default function Header() {
                      <ShoppingBag className="h-5 w-5" />
                      <span>Shop</span>
                   </Link>
+
+                   <Link 
+                  to="/media" 
+                  className={`flex items-center space-x-2 text-sm font-medium transition-all duration-200 hover:text-primary ${
+                    location.pathname === '/shop' ? 'text-primary' : 'text-muted-foreground'
+                  }`}
+                >
+                  <Camera className="h-4 w-4" />
+                  <span>Media</span>
+                  </Link>
                   
                   <div className="px-4 space-y-3">
                     <Link to="/admin/login" onClick={() => setIsMenuOpen(false)}>
