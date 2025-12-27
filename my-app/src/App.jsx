@@ -93,6 +93,11 @@ function AppRoutes() {
           path="/cookie-policy" element={
           <CookiePolicy />} 
           />
+        
+         <Route
+          path="/shop" element={
+              <ShopPage />}
+          />
 
         {/* Student Routes */}
         <Route path="/student/login" element={
