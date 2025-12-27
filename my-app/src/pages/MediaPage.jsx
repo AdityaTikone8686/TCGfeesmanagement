@@ -3,9 +3,9 @@ import Layout from "../components/layout/Layout";
 
 const mediaItems = [
   { type: "image", src: "/tcg_ground.jpeg", alt: "Tikone Cricket Academy Ground" },
-  { type: "image", src: "/training_session.jpg", alt: "Training Session" },
-  { type: "video", src: "/promo_video.mp4", alt: "Promo Video" },
-  { type: "image", src: "/cricket_match.jpg", alt: "Match Day" },
+  { type: "image", src: "/tcg_pr1.jpg", alt: "Training Session" },
+  { type: "image", src: "/tcg_pr2.jpg", alt: "Match Day" },
+  { type: "image", src: "/tcg_pr3.jpg", alt: "pr" },
 ];
 
 const MediaPage = () => {
