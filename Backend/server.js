@@ -14,11 +14,6 @@ import subscriptionRoutes from "./routes/subscriptionRoutes.js";
 import paymentRequestRoutes from "./routes/paymentRequestRoutes.js";
 import matchRoutes from "./routes/matches.js";
 
-app.use("/api/matches", matchRoutes);
-
-
-
-
 dotenv.config();
 
 const app = express();
