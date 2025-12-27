@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Button } from '../ui/button'
 import { ShoppingBag } from 'lucide-react'
 import { Camera } from 'lucide-react'
-import { Cricket } from 'lucide-react'
+import { TvMinimal } from 'lucide-react'
 import { Trophy, Menu, X, LogOut, User, Home, Shield, GraduationCap, ChevronDown } from 'lucide-react'
 import { useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
@@ -84,7 +84,7 @@ export default function Header() {
                     location.pathname === '/matches' ? 'text-primary' : 'text-muted-foreground'
                   }`}
                 >
-                  <Cricket className="h-4 w-4" />
+                  <TvMinimal className="h-4 w-4" />
                   <span>Matches</span>>
                  </Link>
                 
@@ -215,7 +215,7 @@ export default function Header() {
                       location.pathname === '/matches' ? 'text-primary bg-primary/10' : 'text-muted-foreground'
                   }`}
                 >
-                  <Cricket className="h-5 w-5" />
+                  <TvMinimal className="h-5 w-5" />
                   <span>Matches</span>
                   </Link>
 
