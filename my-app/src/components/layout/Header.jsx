@@ -56,6 +56,7 @@ export default function Header() {
                   <Home className="h-4 w-4" />
                   <span>Home</span>
                 </Link>
+                
                  <Link
                   to="/shop"
                   className={`flex items-center space-x-2 text-sm font-medium transition-all duration-200 hover:text-primary ${
@@ -68,8 +69,13 @@ export default function Header() {
 
                 <Link 
                   to="/media" 
-                  className="px-3 py-2 hover:text-green-600">
-                  Media
+                  className={`flex items-center space-x-2 text-sm font-medium transition-all duration-200 hover:text-primary ${
+                    location.pathname === '/shop' ? 'text-primary' : 'text-muted-foreground'
+                  }`}
+                >
+                  <Camera className="h-4 w-4" />
+                  <span>Media</span>
+                  </Link>
                 </Link>
                 
 
