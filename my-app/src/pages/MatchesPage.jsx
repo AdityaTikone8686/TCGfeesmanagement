@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
 import { Trash2, Edit, CheckCircle } from "lucide-react";
 import Layout from "../components/layout/Layout";
-import { useAuth } from "../context/AuthContext"; // Admin state
+import { AuthContext } from "../context/AuthContext"; // Ensure this exists
 
 const initialMatches = [
   {
@@ -31,7 +31,10 @@ const initialMatches = [
 ];
 
 const MatchesPage = () => {
-  const { isAdmin, setIsAdmin } = useAuth(); // Admin state
+  const authContext = useContext(AuthContext);
+  const isAdmin = authContext?.isAdmin || false;
+  const setIsAdmin = authContext?.setIsAdmin || (() => {});
+
   const [matches, setMatches] = useState(initialMatches);
   const [newMatch, setNewMatch] = useState({ teamA: "", teamB: "", date: "", time: "", overs: 5 });
   const [editMatch, setEditMatch] = useState(null);
@@ -44,9 +47,13 @@ const MatchesPage = () => {
 
   // Load token from localStorage on page load
   useEffect(() => {
-    const token = localStorage.getItem("matchesAdminToken");
-    if (token) setIsAdmin(true);
-  }, []);
+    try {
+      const token = localStorage.getItem("matchesAdminToken");
+      if (token) setIsAdmin(true);
+    } catch {
+      setIsAdmin(false);
+    }
+  }, [setIsAdmin]);
 
   // Automated match simulation
   useEffect(() => {
@@ -62,10 +69,7 @@ const MatchesPage = () => {
 
             return {
               ...match,
-              runs: {
-                teamA: match.runs.teamA + incrementA,
-                teamB: match.runs.teamB + incrementB,
-              },
+              runs: { teamA: match.runs.teamA + incrementA, teamB: match.runs.teamB + incrementB },
               currentOver: nextOver,
               status: newStatus,
             };
@@ -80,28 +84,33 @@ const MatchesPage = () => {
         })
       );
     }, 5000);
+
     return () => clearInterval(interval);
   }, []);
 
   // Admin login handler
   const handleAdminLogin = async () => {
     try {
-      const res = await fetch("https://tikonecricketgurukulbackend.onrender.com/api/matches-admin/login" , {
+      const res = await fetch("https://tikonecricketgurukulbackend.onrender.com/api/matches-admin/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-      const data = await res.json();
-      if (res.ok) {
-        localStorage.setItem("matchesAdminToken", data.token);
-        setIsAdmin(true);
-        setShowLogin(false);
-        setLoginError("");
-      } else {
-        setLoginError(data.message);
+
+      if (!res.ok) {
+        const data = await res.json();
+        setLoginError(data.message || "Invalid credentials");
+        return;
       }
+
+      const data = await res.json();
+      localStorage.setItem("matchesAdminToken", data.token);
+      setIsAdmin(true);
+      setShowLogin(false);
+      setLoginError("");
     } catch (err) {
-      setLoginError("Server error");
+      console.error(err);
+      setLoginError("Server error. Please try again later.");
     }
   };
 
@@ -115,6 +124,7 @@ const MatchesPage = () => {
     ]);
     setNewMatch({ teamA: "", teamB: "", date: "", time: "", overs: 5 });
   };
+
   const handleFinishMatch = (id) => { if (!isAdmin) return; setMatches(prev => prev.map(m => m.id === id ? { ...m, status: "finished" } : m)); };
   const handleDeleteMatch = (id) => { if (!isAdmin) return; setMatches(prev => prev.filter(m => m.id !== id)); };
   const handleEditMatch = (match) => { if (!isAdmin) return; setEditMatch(match); };
@@ -125,13 +135,11 @@ const MatchesPage = () => {
       <div className="container mx-auto py-10">
         <h1 className="text-3xl font-bold mb-6 text-center">Matches</h1>
 
-        {/* Inline Admin Login */}
+        {/* Admin login section */}
         {!isAdmin && (
           <div className="text-center mb-6">
             {!showLogin ? (
-              <Button onClick={() => setShowLogin(true)} className="bg-blue-600 text-white">
-                Admin Login
-              </Button>
+              <Button onClick={() => setShowLogin(true)} className="bg-blue-600 text-white">Admin Login</Button>
             ) : (
               <div className="flex flex-col items-center gap-2">
                 {loginError && <p className="text-red-600">{loginError}</p>}
@@ -146,7 +154,7 @@ const MatchesPage = () => {
           </div>
         )}
 
-        {/* Add New Match (Admin only) */}
+        {/* Admin add match */}
         {isAdmin && (
           <Card className="mb-8 p-4">
             <CardContent className="flex flex-col sm:flex-row gap-3 flex-wrap">
@@ -228,6 +236,7 @@ const MatchesPage = () => {
 };
 
 export default MatchesPage;
+
 
 
 
