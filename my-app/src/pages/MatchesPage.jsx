@@ -3,7 +3,7 @@ import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
 import { Trash2, Edit, CheckCircle } from "lucide-react";
 import Layout from "../components/layout/Layout";
-import { useAuth } from "../context/AuthContext"; // For admin state
+import { useAuth } from "../context/AuthContext"; // Admin state
 
 const initialMatches = [
   {
@@ -31,7 +31,7 @@ const initialMatches = [
 ];
 
 const MatchesPage = () => {
-  const { isAdmin, setIsAdmin } = useAuth(); // Admin state from context
+  const { isAdmin, setIsAdmin } = useAuth(); // Admin state
   const [matches, setMatches] = useState(initialMatches);
   const [newMatch, setNewMatch] = useState({ teamA: "", teamB: "", date: "", time: "", overs: 5 });
   const [editMatch, setEditMatch] = useState(null);
@@ -41,6 +41,12 @@ const MatchesPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
+
+  // Load token from localStorage on page load
+  useEffect(() => {
+    const token = localStorage.getItem("matchesAdminToken");
+    if (token) setIsAdmin(true);
+  }, []);
 
   // Automated match simulation
   useEffect(() => {
@@ -80,16 +86,17 @@ const MatchesPage = () => {
   // Admin login handler
   const handleAdminLogin = async () => {
     try {
-      const res = await fetch("/api/admin/auth/login", {
+      const res = await fetch("/api/matches-admin/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
       const data = await res.json();
       if (res.ok) {
-        localStorage.setItem("adminToken", data.token);
+        localStorage.setItem("matchesAdminToken", data.token);
         setIsAdmin(true);
         setShowLogin(false);
+        setLoginError("");
       } else {
         setLoginError(data.message);
       }
@@ -221,7 +228,6 @@ const MatchesPage = () => {
 };
 
 export default MatchesPage;
-
 
 
 
