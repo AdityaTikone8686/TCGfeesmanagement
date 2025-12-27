@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import Header from "../components/layout/Header";
+import Footer from "../components/layout/Footer";
 
 const products = [
     {
@@ -547,6 +549,8 @@ const ShopPage = () => {
         );
 
   return (
+   <>
+    <Header />
     <div className="min-h-screen bg-gray-50 py-16">
       <div className="max-w-7xl mx-auto px-4">
         <h1 className="text-4xl font-bold text-center mb-4">Shop</h1>
@@ -618,7 +622,9 @@ const ShopPage = () => {
         </div>
       </div>
     </div>
-  );
+    <Footer />
+  </>
+  );  
 };
 
 export default ShopPage;
