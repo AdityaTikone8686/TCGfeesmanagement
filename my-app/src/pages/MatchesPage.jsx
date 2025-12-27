@@ -16,6 +16,17 @@ const initialMatches = [
     runs: { teamA: 0, teamB: 0 },
     currentOver: 0,
   },
+  {
+    id: 2,
+    teamA: "Team Gamma",
+    teamB: "Team Delta",
+    date: "2025-12-29",
+    time: "19:00",
+    overs: 5,
+    status: "scheduled",
+    runs: { teamA: 0, teamB: 0 },
+    currentOver: 0,
+  },
 ];
 
 const MatchesPage = () => {
@@ -91,10 +102,7 @@ const MatchesPage = () => {
     setMatches((prev) => prev.filter((m) => m.id !== id));
   };
 
-  const handleEditMatch = (match) => {
-    setEditMatch(match);
-  };
-
+  const handleEditMatch = (match) => setEditMatch(match);
   const handleUpdateMatch = () => {
     setMatches((prev) =>
       prev.map((m) => (m.id === editMatch.id ? editMatch : m))
@@ -162,60 +170,66 @@ const MatchesPage = () => {
           </CardContent>
         </Card>
 
-        {/* Match List */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {matches.map((match) => (
-            <Card key={match.id} className="relative p-4">
-              <CardContent>
-                <div className="flex justify-between items-center mb-2">
-                  <h2 className="text-xl font-bold">
-                    {match.teamA} vs {match.teamB}
-                  </h2>
-                  <span
-                    className={`px-2 py-1 rounded-full text-white ${
-                      match.status === "scheduled"
-                        ? "bg-gray-500"
-                        : match.status === "live"
-                        ? "bg-green-600"
-                        : "bg-blue-600"
-                    }`}
-                  >
-                    {match.status}
-                  </span>
-                </div>
-                <p>Date: {match.date} | Time: {match.time}</p>
-                <p>Overs: {match.overs}</p>
-                <p className="mt-2 font-semibold">
-                  Score: {match.runs.teamA} - {match.runs.teamB} | Over{" "}
-                  {match.currentOver}/{match.overs}
-                </p>
-
-                <div className="flex gap-2 mt-4">
-                  {match.status !== "finished" && (
-                    <Button
-                      onClick={() => handleFinishMatch(match.id)}
-                      className="bg-blue-600 text-white flex items-center gap-2"
-                    >
-                      <CheckCircle size={16} /> Finish Now
-                    </Button>
-                  )}
-                  <Button
-                    onClick={() => handleEditMatch(match)}
-                    className="bg-yellow-500 text-white flex items-center gap-2"
-                  >
-                    <Edit size={16} /> Edit
-                  </Button>
-                  <Button
-                    onClick={() => handleDeleteMatch(match.id)}
-                    className="bg-red-600 text-white flex items-center gap-2"
-                  >
-                    <Trash2 size={16} /> Delete
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        {/* Matches Table / Calendar View */}
+        <Card className="p-4 mb-8">
+          <CardContent>
+            <h2 className="text-xl font-bold mb-4">Match Calendar</h2>
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse border border-gray-300">
+                <thead>
+                  <tr className="bg-gray-200">
+                    <th className="border px-4 py-2">Teams</th>
+                    <th className="border px-4 py-2">Date</th>
+                    <th className="border px-4 py-2">Time</th>
+                    <th className="border px-4 py-2">Overs</th>
+                    <th className="border px-4 py-2">Status</th>
+                    <th className="border px-4 py-2">Score</th>
+                    <th className="border px-4 py-2">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {matches.map((match) => (
+                    <tr key={match.id} className="text-center">
+                      <td className="border px-4 py-2">
+                        {match.teamA} vs {match.teamB}
+                      </td>
+                      <td className="border px-4 py-2">{match.date}</td>
+                      <td className="border px-4 py-2">{match.time}</td>
+                      <td className="border px-4 py-2">{match.overs}</td>
+                      <td className="border px-4 py-2">{match.status}</td>
+                      <td className="border px-4 py-2">
+                        {match.runs.teamA} - {match.runs.teamB} | Over{" "}
+                        {match.currentOver}/{match.overs}
+                      </td>
+                      <td className="border px-4 py-2 flex justify-center gap-1 flex-wrap">
+                        {match.status !== "finished" && (
+                          <Button
+                            onClick={() => handleFinishMatch(match.id)}
+                            className="bg-blue-600 text-white flex items-center gap-1"
+                          >
+                            <CheckCircle size={16} /> Finish
+                          </Button>
+                        )}
+                        <Button
+                          onClick={() => handleEditMatch(match)}
+                          className="bg-yellow-500 text-white flex items-center gap-1"
+                        >
+                          <Edit size={16} /> Edit
+                        </Button>
+                        <Button
+                          onClick={() => handleDeleteMatch(match.id)}
+                          className="bg-red-600 text-white flex items-center gap-1"
+                        >
+                          <Trash2 size={16} /> Delete
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Edit Modal */}
         {editMatch && (
@@ -293,4 +307,3 @@ const MatchesPage = () => {
 };
 
 export default MatchesPage;
-
