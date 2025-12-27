@@ -65,6 +65,12 @@ export default function Header() {
                   <ShoppingBag className="h-4 w-4" />
                   <span>Shop</span>
                   </Link>
+
+                <Link 
+                  to="/media" 
+                  className="px-3 py-2 hover:text-green-600">
+                  Media
+                </Link>
                 
 
                 
