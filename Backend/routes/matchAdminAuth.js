@@ -5,24 +5,23 @@ import dotenv from "dotenv";
 dotenv.config();
 const router = express.Router();
 
-// Hardcoded admin credentials
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+const ADMIN_EMAIL = process.env.MATCHES_ADMIN_EMAIL;
+const ADMIN_PASSWORD = process.env.MATCHES_ADMIN_PASSWORD;
 
-// POST /api/admin/login
+// POST /api/matches-admin/login
 router.post("/login", (req, res) => {
   const { email, password } = req.body;
 
   if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
     const token = jwt.sign(
       { email, isAdmin: true },
-      process.env.JWT_SECRET,
+      process.env.MATCHES_JWT_SECRET,
       { expiresIn: "1d" }
     );
     return res.json({ token });
   }
 
-  res.status(401).json({ message: "Invalid admin credentials" });
+  res.status(401).json({ message: "Invalid matches admin credentials" });
 });
 
 export default router;
