@@ -14,7 +14,7 @@ import subscriptionRoutes from "./routes/subscriptionRoutes.js";
 import paymentRequestRoutes from "./routes/paymentRequestRoutes.js";
 import matchRoutes from "./routes/matches.js";
 import adminAuthRoutes from "./routes/adminAuth.js";
-import matchesAdminAuthRoutes from "./routes/matchesAdminAuth.js";
+import matchesAdminAuthRoutes from "./routes/matchAdminAuth.js";
 
 
 dotenv.config();
@@ -40,7 +40,7 @@ app.use("/api/subscriptions", subscriptionRoutes);
 app.use("/api/payment-requests", paymentRequestRoutes);
 app.use("/api/matches", matchRoutes);
 app.use("/api/admin", adminAuthRoutes);
-app.use("/api/matches-admin", matchesAdminAuthRoutes);
+app.use("/api/matches-admin", matchAdminAuthRoutes);
 
 
 
