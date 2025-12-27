@@ -96,7 +96,7 @@ export default function Header() {
                     location.pathname === '/admin-login' ? 'text-primary' : 'text-muted-foreground'
                   }`}
                 >
-                  <logIn className="h-4 w-4" />
+                  <LogIn className="h-4 w-4" />
                   <span>Match Login</span>>
                  </Link>
 
@@ -240,7 +240,7 @@ export default function Header() {
                       location.pathname === '/admin-login' ? 'text-primary bg-primary/10' : 'text-muted-foreground'
                   }`}
                 >
-                  <logIn className="h-5 w-5" />
+                  <LogIn className="h-5 w-5" />
                   <span>Match Login</span>
                   </Link>
 
