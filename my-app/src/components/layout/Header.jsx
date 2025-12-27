@@ -90,19 +90,6 @@ export default function Header() {
                   <span>Matches</span>>
                  </Link>
 
-                <Link 
-                   to="/admin-login" 
-                 className={`flex items-center space-x-2 text-sm font-medium transition-all duration-200 hover:text-primary ${
-                    location.pathname === '/admin-login' ? 'text-primary' : 'text-muted-foreground'
-                  }`}
-                >
-                  <LogIn className="h-4 w-4" />
-                  <span>Match Login</span>>
-                 </Link>
-
-
-                
-                
                   <div className="flex items-center space-x-3">
                   <Link to="/admin/login">
                     <Button 
@@ -234,18 +221,6 @@ export default function Header() {
                   <span>Matches</span>
                   </Link>
 
-                   <Link 
-                  to="/admin-login" 
-                   className={`flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-all duration-200 hover:bg-muted/50 ${
-                      location.pathname === '/admin-login' ? 'text-primary bg-primary/10' : 'text-muted-foreground'
-                  }`}
-                >
-                  <LogIn className="h-5 w-5" />
-                  <span>Match Login</span>
-                  </Link>
-
-                  
-                  
                   <div className="px-4 space-y-3">
                     <Link to="/admin/login" onClick={() => setIsMenuOpen(false)}>
                       <Button 
