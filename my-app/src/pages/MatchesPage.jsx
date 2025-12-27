@@ -3,6 +3,7 @@ import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
 import { Trash2, Edit, CheckCircle } from "lucide-react";
 import Layout from "../components/layout/Layout";
+import { useAuth } from "../context/AuthContext"; // ✅ ADD THIS
 
 const initialMatches = [
   {
@@ -30,6 +31,8 @@ const initialMatches = [
 ];
 
 const MatchesPage = () => {
+  const { isAdmin } = useAuth(); // ✅ ADMIN CHECK
+
   const [matches, setMatches] = useState(initialMatches);
   const [newMatch, setNewMatch] = useState({
     teamA: "",
@@ -50,6 +53,7 @@ const MatchesPage = () => {
             const incrementB = Math.floor(Math.random() * 7);
             const nextOver = match.currentOver + 1;
             let newStatus = match.status;
+
             if (nextOver >= match.overs) newStatus = "finished";
 
             return {
@@ -72,10 +76,14 @@ const MatchesPage = () => {
         })
       );
     }, 5000);
+
     return () => clearInterval(interval);
   }, []);
 
+  // ✅ ADMIN-ONLY FUNCTIONS
   const handleAddMatch = () => {
+    if (!isAdmin) return;
+
     if (!newMatch.teamA || !newMatch.teamB || !newMatch.date || !newMatch.time)
       return;
 
@@ -89,21 +97,32 @@ const MatchesPage = () => {
         currentOver: 0,
       },
     ]);
+
     setNewMatch({ teamA: "", teamB: "", date: "", time: "", overs: 5 });
   };
 
   const handleFinishMatch = (id) => {
+    if (!isAdmin) return;
+
     setMatches((prev) =>
       prev.map((m) => (m.id === id ? { ...m, status: "finished" } : m))
     );
   };
 
   const handleDeleteMatch = (id) => {
+    if (!isAdmin) return;
+
     setMatches((prev) => prev.filter((m) => m.id !== id));
   };
 
-  const handleEditMatch = (match) => setEditMatch(match);
+  const handleEditMatch = (match) => {
+    if (!isAdmin) return;
+    setEditMatch(match);
+  };
+
   const handleUpdateMatch = () => {
+    if (!isAdmin) return;
+
     setMatches((prev) =>
       prev.map((m) => (m.id === editMatch.id ? editMatch : m))
     );
@@ -115,62 +134,64 @@ const MatchesPage = () => {
       <div className="container mx-auto py-10">
         <h1 className="text-3xl font-bold mb-6 text-center">Matches</h1>
 
-        {/* Add New Match */}
-        <Card className="mb-8 p-4">
-          <CardContent className="flex flex-col sm:flex-row gap-3 flex-wrap">
-            <input
-              type="text"
-              placeholder="Team A"
-              value={newMatch.teamA}
-              onChange={(e) =>
-                setNewMatch({ ...newMatch, teamA: e.target.value })
-              }
-              className="border p-2 rounded"
-            />
-            <input
-              type="text"
-              placeholder="Team B"
-              value={newMatch.teamB}
-              onChange={(e) =>
-                setNewMatch({ ...newMatch, teamB: e.target.value })
-              }
-              className="border p-2 rounded"
-            />
-            <input
-              type="date"
-              value={newMatch.date}
-              onChange={(e) =>
-                setNewMatch({ ...newMatch, date: e.target.value })
-              }
-              className="border p-2 rounded"
-            />
-            <input
-              type="time"
-              value={newMatch.time}
-              onChange={(e) =>
-                setNewMatch({ ...newMatch, time: e.target.value })
-              }
-              className="border p-2 rounded"
-            />
-            <input
-              type="number"
-              placeholder="Overs"
-              value={newMatch.overs}
-              onChange={(e) =>
-                setNewMatch({ ...newMatch, overs: parseInt(e.target.value) })
-              }
-              className="border p-2 rounded w-24"
-            />
-            <Button
-              onClick={handleAddMatch}
-              className="bg-green-600 text-white"
-            >
-              Add Match
-            </Button>
-          </CardContent>
-        </Card>
+        {/* ✅ ADD MATCH (ADMIN ONLY) */}
+        {isAdmin && (
+          <Card className="mb-8 p-4">
+            <CardContent className="flex flex-col sm:flex-row gap-3 flex-wrap">
+              <input
+                type="text"
+                placeholder="Team A"
+                value={newMatch.teamA}
+                onChange={(e) =>
+                  setNewMatch({ ...newMatch, teamA: e.target.value })
+                }
+                className="border p-2 rounded"
+              />
+              <input
+                type="text"
+                placeholder="Team B"
+                value={newMatch.teamB}
+                onChange={(e) =>
+                  setNewMatch({ ...newMatch, teamB: e.target.value })
+                }
+                className="border p-2 rounded"
+              />
+              <input
+                type="date"
+                value={newMatch.date}
+                onChange={(e) =>
+                  setNewMatch({ ...newMatch, date: e.target.value })
+                }
+                className="border p-2 rounded"
+              />
+              <input
+                type="time"
+                value={newMatch.time}
+                onChange={(e) =>
+                  setNewMatch({ ...newMatch, time: e.target.value })
+                }
+                className="border p-2 rounded"
+              />
+              <input
+                type="number"
+                placeholder="Overs"
+                value={newMatch.overs}
+                onChange={(e) =>
+                  setNewMatch({ ...newMatch, overs: parseInt(e.target.value) })
+                }
+                className="border p-2 rounded w-24"
+              />
+              <Button
+                onClick={handleAddMatch}
+                className="bg-green-600 text-white"
+              >
+                Add Match
+              </Button>
+            </CardContent>
+          </Card>
+        )}
 
-        {/* Matches Table / Calendar View */}
+        {/* MATCH TABLE */}
         <Card className="p-4 mb-8">
           <CardContent>
             <h2 className="text-xl font-bold mb-4">Match Calendar</h2>
@@ -184,7 +205,9 @@ const MatchesPage = () => {
                     <th className="border px-4 py-2">Overs</th>
                     <th className="border px-4 py-2">Status</th>
                     <th className="border px-4 py-2">Score</th>
-                    <th className="border px-4 py-2">Actions</th>
+                    {isAdmin && (
+                      <th className="border px-4 py-2">Actions</th>
+                    )}
                   </tr>
                 </thead>
                 <tbody>
@@ -201,28 +224,32 @@ const MatchesPage = () => {
                         {match.runs.teamA} - {match.runs.teamB} | Over{" "}
                         {match.currentOver}/{match.overs}
                       </td>
-                      <td className="border px-4 py-2 flex justify-center gap-1 flex-wrap">
-                        {match.status !== "finished" && (
+
+                      {/* ✅ ADMIN ACTIONS ONLY */}
+                      {isAdmin && (
+                        <td className="border px-4 py-2 flex justify-center gap-1 flex-wrap">
+                          {match.status !== "finished" && (
+                            <Button
+                              onClick={() => handleFinishMatch(match.id)}
+                              className="bg-blue-600 text-white flex items-center gap-1"
+                            >
+                              <CheckCircle size={16} /> Finish
+                            </Button>
+                          )}
                           <Button
-                            onClick={() => handleFinishMatch(match.id)}
-                            className="bg-blue-600 text-white flex items-center gap-1"
+                            onClick={() => handleEditMatch(match)}
+                            className="bg-yellow-500 text-white flex items-center gap-1"
                           >
-                            <CheckCircle size={16} /> Finish
+                            <Edit size={16} /> Edit
                           </Button>
-                        )}
-                        <Button
-                          onClick={() => handleEditMatch(match)}
-                          className="bg-yellow-500 text-white flex items-center gap-1"
-                        >
-                          <Edit size={16} /> Edit
-                        </Button>
-                        <Button
-                          onClick={() => handleDeleteMatch(match.id)}
-                          className="bg-red-600 text-white flex items-center gap-1"
-                        >
-                          <Trash2 size={16} /> Delete
-                        </Button>
-                      </td>
+                          <Button
+                            onClick={() => handleDeleteMatch(match.id)}
+                            className="bg-red-600 text-white flex items-center gap-1"
+                          >
+                            <Trash2 size={16} /> Delete
+                          </Button>
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>
@@ -231,15 +258,15 @@ const MatchesPage = () => {
           </CardContent>
         </Card>
 
-        {/* Edit Modal */}
-        {editMatch && (
+        {/* EDIT MODAL (ADMIN ONLY) */}
+        {isAdmin && editMatch && (
           <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-xl w-full max-w-md">
               <h2 className="text-xl font-bold mb-4">Edit Match</h2>
+
               <div className="flex flex-col gap-3">
                 <input
                   type="text"
-                  placeholder="Team A"
                   value={editMatch.teamA}
                   onChange={(e) =>
                     setEditMatch({ ...editMatch, teamA: e.target.value })
@@ -248,7 +275,6 @@ const MatchesPage = () => {
                 />
                 <input
                   type="text"
-                  placeholder="Team B"
                   value={editMatch.teamB}
                   onChange={(e) =>
                     setEditMatch({ ...editMatch, teamB: e.target.value })
@@ -307,3 +333,4 @@ const MatchesPage = () => {
 };
 
 export default MatchesPage;
+
