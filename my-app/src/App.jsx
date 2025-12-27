@@ -12,6 +12,7 @@ import TermsOfService from "./pages/TermsOfService";
 import CookiePolicy from "./pages/CookiePolicy";
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
+import MediaPage from "./pages/MediaPage";
 import './App.css'
 
 // Protected Route Component
@@ -65,6 +66,8 @@ function AppRoutes() {
         
         {/* Shop Page */}
         <Route path="/shop" element={<ShopPage />} />
+        {/* Media Page */}
+        <Route path="/media" element={<MediaPage />} />
         
         {/* Admin Routes */}
         <Route path="/admin/login" element={
