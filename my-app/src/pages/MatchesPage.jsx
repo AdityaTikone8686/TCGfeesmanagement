@@ -381,6 +381,8 @@ const MatchesPage = () => {
               <input type="date" className="border p-2 w-full mb-2" value={editMatch.date} onChange={e => setEditMatch({ ...editMatch, date: e.target.value })} />
               <input type="time" className="border p-2 w-full mb-2" value={editMatch.time} onChange={e => setEditMatch({ ...editMatch, time: e.target.value })} />
               <input type="number" className="border p-2 w-full mb-2" value={editMatch.overs} onChange={e => setEditMatch({ ...editMatch, overs: e.target.value })} />
+              <input className="border p-2 w-full mb-2" placeholder="Live Match Link (CricHeroes)" value={editMatch.liveLink || ""} onChange={e => setEditMatch({ ...editMatch, liveLink: e.target.value })} />
+
               <div className="flex justify-end gap-2">
                 <Button onClick={() => setEditMatch(null)}>Cancel</Button>
                 <Button onClick={handleUpdateMatch}>Update</Button>
