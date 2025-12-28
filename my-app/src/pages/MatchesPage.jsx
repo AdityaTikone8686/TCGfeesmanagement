@@ -29,6 +29,7 @@ const MatchesPage = () => {
     date: "",
     time: "",
     overs: 5,
+    liveLink: "",
   });
 
   const [editMatch, setEditMatch] = useState(null);
@@ -113,7 +114,7 @@ const MatchesPage = () => {
       body: JSON.stringify(newMatch),
     });
 
-    setNewMatch({ teamA: "", teamB: "", date: "", time: "", overs: 5 });
+    setNewMatch({ teamA: "", teamB: "", date: "", time: "", overs: 5, liveLink: "" });
     await loadMatches();
     setActionLoading(false);
   };
@@ -299,6 +300,19 @@ const MatchesPage = () => {
                   value={newMatch.time}
                   onChange={(e) =>
                     setNewMatch({ ...newMatch, time: e.target.value })
+                  }
+                />
+              </div>
+
+              <div>
+                <label className="text-sm">Live Link</label>
+                <input
+                  type="text"
+                  className="border p-2 rounded w-full"
+                  placeholder="https://cricheroes.com/xxxx"
+                  value={newMatch.liveLink || ""}
+                  onChange={(e) =>
+                    setNewMatch({ ...newMatch, liveLink: e.target.value })
                   }
                 />
               </div>
