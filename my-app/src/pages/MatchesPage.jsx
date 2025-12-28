@@ -228,6 +228,82 @@ const MatchesPage = () => {
           </div>
         )}
 
+        {/* ---------------- ADD / SCHEDULE MATCH ---------------- */}
+{canEditMatches && (
+  <Card className="mb-6">
+    <CardContent className="grid grid-cols-1 md:grid-cols-6 gap-3 items-end">
+      <div>
+        <label className="text-sm">Team A</label>
+        <input
+          className="border p-2 rounded w-full"
+          placeholder="Team A"
+          value={newMatch.teamA}
+          onChange={(e) =>
+            setNewMatch({ ...newMatch, teamA: e.target.value })
+          }
+        />
+      </div>
+
+      <div>
+        <label className="text-sm">Team B</label>
+        <input
+          className="border p-2 rounded w-full"
+          placeholder="Team B"
+          value={newMatch.teamB}
+          onChange={(e) =>
+            setNewMatch({ ...newMatch, teamB: e.target.value })
+          }
+        />
+      </div>
+
+      <div>
+        <label className="text-sm">Overs</label>
+        <input
+          type="number"
+          className="border p-2 rounded w-full"
+          value={newMatch.overs}
+          onChange={(e) =>
+            setNewMatch({ ...newMatch, overs: e.target.value })
+          }
+        />
+      </div>
+
+      <div>
+        <label className="text-sm">Date</label>
+        <input
+          type="date"
+          className="border p-2 rounded w-full"
+          value={newMatch.date}
+          onChange={(e) =>
+            setNewMatch({ ...newMatch, date: e.target.value })
+          }
+        />
+      </div>
+
+      <div>
+        <label className="text-sm">Time</label>
+        <input
+          type="time"
+          className="border p-2 rounded w-full"
+          value={newMatch.time}
+          onChange={(e) =>
+            setNewMatch({ ...newMatch, time: e.target.value })
+          }
+        />
+      </div>
+
+      <Button
+        onClick={handleAddMatch}
+        disabled={actionLoading}
+        className="bg-green-600 text-white w-full"
+      >
+        {actionLoading ? "Saving..." : "Schedule"}
+      </Button>
+    </CardContent>
+  </Card>
+)}
+
+
         {/* SCHEDULED */}
         <h2 className="text-xl font-bold mt-6 mb-2">Scheduled Matches</h2>
         {scheduledMatches.map(m => (
