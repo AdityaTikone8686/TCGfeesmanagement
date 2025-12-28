@@ -1,7 +1,7 @@
 import express from "express";
 import Match from "../models/Match.js";
+import { getMatches, updateLiveScore,} from "../controllers/matchController.js";
 import { matchesAdminAuth } from "../middleware/matchesAuth.js";
-
 const router = express.Router();
 
 /**
@@ -30,6 +30,13 @@ router.post("/", matchesAdminAuth, async (req, res) => {
     res.status(400).json({ message: "Failed to create match" });
   }
 });
+
+// 🔴 ADMIN – update live score
+router.put(
+  "/:id/score",
+  matchesAdminAuth,
+  updateLiveScore
+);
 
 /**
  * 🔐 ADMIN ONLY
