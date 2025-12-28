@@ -22,9 +22,13 @@ const matchSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    liveLink: {
+      type: String,
+      default: "",
+    },
     status: {
       type: String,
-      enum: ["scheduled", "ongoing", "finished"], // updated
+      enum: ["scheduled", "ongoing", "finished"],
       default: "scheduled",
     },
     score: {
@@ -37,8 +41,8 @@ const matchSchema = new mongoose.Schema(
         wickets: { type: Number, default: 0 },
       },
     },
-    winner: { type: String }, // added
-    loser: { type: String },   // added
+    winner: { type: String },
+    loser: { type: String },
     currentOver: {
       type: Number,
       default: 0,
@@ -49,4 +53,5 @@ const matchSchema = new mongoose.Schema(
 
 const Match = mongoose.model("Match", matchSchema);
 export default Match;
+
 
