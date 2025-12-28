@@ -1,44 +1,32 @@
 import express from "express";
-import matchesStore from "../data/matchesStore.js";
-import { requireMatchesAdmin } from "../middleware/matchesAuth.js";
+import Match from "../models/Match.js";
+import { adminAuth } from "../middleware/adminAuth.js";
 
 const router = express.Router();
 
-// GET all matches (public)
-router.get("/", (req, res) => {
-  res.json(matchesStore);
+/* GET all matches */
+router.get("/", async (req, res) => {
+  const matches = await Match.find().sort({ date: 1 });
+  res.json(matches);
 });
 
-// CREATE match (admin only)
-router.post("/", requireMatchesAdmin, (req, res) => {
-  const match = {
-    id: Date.now(),
-    ...req.body,
-    status: "scheduled",
-    runs: { teamA: 0, teamB: 0 },
-    currentOver: 0,
-  };
-
-  matchesStore.push(match);
+/* ADD match (admin) */
+router.post("/", adminAuth, async (req, res) => {
+  const match = await Match.create(req.body);
   res.status(201).json(match);
 });
 
-// UPDATE match (admin only)
-router.put("/:id", requireMatchesAdmin, (req, res) => {
-  const id = Number(req.params.id);
-  const index = matchesStore.findIndex((m) => m.id === id);
-  if (index !== -1) {
-    matchesStore[index] = { ...matchesStore[index], ...req.body };
-    res.json({ success: true });
-  } else {
-    res.status(404).json({ message: "Match not found" });
-  }
+/* UPDATE match (admin) */
+router.put("/:id", adminAuth, async (req, res) => {
+  const match = await Match.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+  });
+  res.json(match);
 });
 
-// DELETE match (admin only)
-router.delete("/:id", requireMatchesAdmin, (req, res) => {
-  const id = Number(req.params.id);
-  matchesStore = matchesStore.filter((m) => m.id !== id);
+/* DELETE match (admin) */
+router.delete("/:id", adminAuth, async (req, res) => {
+  await Match.findByIdAndDelete(req.params.id);
   res.json({ success: true });
 });
 
