@@ -17,23 +17,15 @@ const initialMatches = [
     runs: { teamA: 0, teamB: 0 },
     currentOver: 0,
   },
-  {
-    id: 2,
-    teamA: "Team Gamma",
-    teamB: "Team Delta",
-    date: "2025-12-29",
-    time: "19:00",
-    overs: 5,
-    status: "scheduled",
-    runs: { teamA: 0, teamB: 0 },
-    currentOver: 0,
-  },
 ];
 
 const MatchesPage = () => {
-  const { isAdmin, logout } = useAuth();
+  const { isAdmin, logout, authLoading } = useAuth();
 
   const [isMatchesAdmin, setIsMatchesAdmin] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
+
   const canEditMatches = isAdmin || isMatchesAdmin;
 
   const [matches, setMatches] = useState(initialMatches);
@@ -46,59 +38,33 @@ const MatchesPage = () => {
   });
   const [editMatch, setEditMatch] = useState(null);
 
-  // Matches admin login state
+  // Login form
   const [showLogin, setShowLogin] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
 
-  // Detect matches admin token
+  // 🔐 Persist Matches Admin on refresh
   useEffect(() => {
-    if (localStorage.getItem("matchesAdminToken")) {
-      setIsMatchesAdmin(true);
-    }
+    const token = localStorage.getItem("matchesAdminToken");
+    if (token) setIsMatchesAdmin(true);
+    setPageLoading(false);
   }, []);
 
-  // Match simulation
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setMatches((prev) =>
-        prev.map((match) => {
-          if (match.status === "live") {
-            const incA = Math.floor(Math.random() * 7);
-            const incB = Math.floor(Math.random() * 7);
-            const nextOver = match.currentOver + 1;
-            const newStatus =
-              nextOver >= match.overs ? "finished" : "live";
-
-            return {
-              ...match,
-              runs: {
-                teamA: match.runs.teamA + incA,
-                teamB: match.runs.teamB + incB,
-              },
-              currentOver: nextOver,
-              status: newStatus,
-            };
-          }
-
-          const matchTime = new Date(
-            `${match.date}T${match.time}:00`
-          );
-          if (match.status === "scheduled" && new Date() >= matchTime) {
-            return { ...match, status: "live", currentOver: 0 };
-          }
-
-          return match;
-        })
-      );
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
+  // ⛔ Prevent 404 / flicker
+  if (authLoading || pageLoading) {
+    return (
+      <Layout>
+        <div className="flex justify-center items-center h-[60vh] text-xl">
+          Loading...
+        </div>
+      </Layout>
+    );
+  }
 
   // Matches admin login
   const handleAdminLogin = async () => {
+    setActionLoading(true);
     try {
       const res = await fetch(
         "https://tikonecricketgurukulbackend.onrender.com/api/matches-admin/login",
@@ -120,71 +86,28 @@ const MatchesPage = () => {
       }
     } catch {
       setLoginError("Server error");
+    } finally {
+      setActionLoading(false);
     }
   };
 
-  // Logout (handles both admins)
+  // Logout with loading
   const handleLogout = () => {
-    if (isAdmin) {
-      logout(); // main admin
-    }
-    localStorage.removeItem("matchesAdminToken");
-    setIsMatchesAdmin(false);
-  };
-
-  // Admin-only actions
-  const handleAddMatch = () => {
-    if (!canEditMatches) return;
-    if (!newMatch.teamA || !newMatch.teamB) return;
-
-    setMatches((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        ...newMatch,
-        status: "scheduled",
-        runs: { teamA: 0, teamB: 0 },
-        currentOver: 0,
-      },
-    ]);
-
-    setNewMatch({
-      teamA: "",
-      teamB: "",
-      date: "",
-      time: "",
-      overs: 5,
-    });
-  };
-
-  const handleFinishMatch = (id) => {
-    if (!canEditMatches) return;
-    setMatches((prev) =>
-      prev.map((m) =>
-        m.id === id ? { ...m, status: "finished" } : m
-      )
-    );
-  };
-
-  const handleDeleteMatch = (id) => {
-    if (!canEditMatches) return;
-    setMatches((prev) => prev.filter((m) => m.id !== id));
-  };
-
-  const handleUpdateMatch = () => {
-    if (!canEditMatches) return;
-    setMatches((prev) =>
-      prev.map((m) => (m.id === editMatch.id ? editMatch : m))
-    );
-    setEditMatch(null);
+    setActionLoading(true);
+    setTimeout(() => {
+      localStorage.removeItem("matchesAdminToken");
+      setIsMatchesAdmin(false);
+      if (isAdmin) logout();
+      setActionLoading(false);
+    }, 500);
   };
 
   return (
     <Layout>
       <div className="container mx-auto py-10">
-        <h1 className="text-3xl font-bold text-center mb-4">Matches</h1>
+        <h1 className="text-3xl font-bold text-center mb-6">Matches</h1>
 
-        {/* Role + Logout */}
+        {/* Logged in header */}
         {canEditMatches && (
           <div className="flex justify-between items-center mb-4">
             <p className="text-sm text-gray-600">
@@ -192,14 +115,15 @@ const MatchesPage = () => {
             </p>
             <Button
               onClick={handleLogout}
+              disabled={actionLoading}
               className="bg-red-600 text-white"
             >
-              Logout
+              {actionLoading ? "Loading..." : "Logout"}
             </Button>
           </div>
         )}
 
-        {/* Matches Admin Login */}
+        {/* Admin Login */}
         {!canEditMatches && (
           <div className="text-center mb-6">
             {!showLogin ? (
@@ -215,86 +139,32 @@ const MatchesPage = () => {
                   <p className="text-red-600">{loginError}</p>
                 )}
                 <input
-                  type="email"
+                  className="border p-2 rounded"
                   placeholder="Email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="border p-2 rounded"
                 />
                 <input
-                  type="password"
+                  className="border p-2 rounded"
                   placeholder="Password"
+                  type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="border p-2 rounded"
                 />
-                <div className="flex gap-2">
-                  <Button
-                    onClick={handleAdminLogin}
-                    className="bg-green-600 text-white"
-                  >
-                    Login
-                  </Button>
-                  <Button
-                    onClick={() => setShowLogin(false)}
-                    className="bg-gray-500 text-white"
-                  >
-                    Cancel
-                  </Button>
-                </div>
+                <Button
+                  onClick={handleAdminLogin}
+                  disabled={actionLoading}
+                  className="bg-green-600 text-white"
+                >
+                  {actionLoading ? "Loading..." : "Login"}
+                </Button>
               </div>
             )}
           </div>
         )}
 
-        {/* Add Match */}
-        {canEditMatches && (
-          <Card className="mb-8 p-4">
-            <CardContent className="flex gap-3 flex-wrap">
-              <input
-                placeholder="Team A"
-                value={newMatch.teamA}
-                onChange={(e) =>
-                  setNewMatch({ ...newMatch, teamA: e.target.value })
-                }
-                className="border p-2 rounded"
-              />
-              <input
-                placeholder="Team B"
-                value={newMatch.teamB}
-                onChange={(e) =>
-                  setNewMatch({ ...newMatch, teamB: e.target.value })
-                }
-                className="border p-2 rounded"
-              />
-              <input
-                type="date"
-                value={newMatch.date}
-                onChange={(e) =>
-                  setNewMatch({ ...newMatch, date: e.target.value })
-                }
-                className="border p-2 rounded"
-              />
-              <input
-                type="time"
-                value={newMatch.time}
-                onChange={(e) =>
-                  setNewMatch({ ...newMatch, time: e.target.value })
-                }
-                className="border p-2 rounded"
-              />
-              <Button
-                onClick={handleAddMatch}
-                className="bg-green-600 text-white"
-              >
-                Add Match
-              </Button>
-            </CardContent>
-          </Card>
-        )}
-
         {/* Matches Table */}
-        <Card className="p-4">
+        <Card>
           <CardContent>
             <table className="w-full border">
               <thead>
@@ -302,7 +172,6 @@ const MatchesPage = () => {
                   <th>Teams</th>
                   <th>Date</th>
                   <th>Status</th>
-                  <th>Score</th>
                   {canEditMatches && <th>Actions</th>}
                 </tr>
               </thead>
@@ -312,27 +181,15 @@ const MatchesPage = () => {
                     <td>{m.teamA} vs {m.teamB}</td>
                     <td>{m.date}</td>
                     <td>{m.status}</td>
-                    <td>
-                      {m.runs.teamA}-{m.runs.teamB}
-                    </td>
                     {canEditMatches && (
-                      <td className="flex gap-2 justify-center">
-                        <Button
-                          onClick={() => handleFinishMatch(m.id)}
-                          className="bg-blue-600 text-white"
-                        >
+                      <td className="flex justify-center gap-2">
+                        <Button className="bg-blue-600 text-white">
                           <CheckCircle size={16} />
                         </Button>
-                        <Button
-                          onClick={() => setEditMatch(m)}
-                          className="bg-yellow-500 text-white"
-                        >
+                        <Button className="bg-yellow-500 text-white">
                           <Edit size={16} />
                         </Button>
-                        <Button
-                          onClick={() => handleDeleteMatch(m.id)}
-                          className="bg-red-600 text-white"
-                        >
+                        <Button className="bg-red-600 text-white">
                           <Trash2 size={16} />
                         </Button>
                       </td>
@@ -343,34 +200,6 @@ const MatchesPage = () => {
             </table>
           </CardContent>
         </Card>
-
-        {/* Edit Modal */}
-        {canEditMatches && editMatch && (
-          <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
-            <div className="bg-white p-6 rounded w-full max-w-md">
-              <input
-                value={editMatch.teamA}
-                onChange={(e) =>
-                  setEditMatch({ ...editMatch, teamA: e.target.value })
-                }
-                className="border p-2 w-full mb-2"
-              />
-              <input
-                value={editMatch.teamB}
-                onChange={(e) =>
-                  setEditMatch({ ...editMatch, teamB: e.target.value })
-                }
-                className="border p-2 w-full mb-2"
-              />
-              <Button
-                onClick={handleUpdateMatch}
-                className="bg-green-600 text-white"
-              >
-                Update
-              </Button>
-            </div>
-          </div>
-        )}
       </div>
     </Layout>
   );
