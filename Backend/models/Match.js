@@ -2,11 +2,11 @@ import mongoose from "mongoose";
 
 const matchSchema = new mongoose.Schema(
   {
-    teamA: String,
-    teamB: String,
-    date: String,
-    time: String,
-    overs: Number,
+    teamA: { type: String, required: true },
+    teamB: { type: String, required: true },
+    date: { type: String, required: true },
+    time: { type: String, required: true },
+    overs: { type: Number, default: 5 },
     status: {
       type: String,
       enum: ["scheduled", "live", "finished"],
