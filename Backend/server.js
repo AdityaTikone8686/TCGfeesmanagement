@@ -15,6 +15,7 @@ import paymentRequestRoutes from "./routes/paymentRequestRoutes.js";
 import matchRoutes from "./routes/matches.js";
 import adminAuthRoutes from "./routes/adminAuth.js";
 import matchAdminAuthRoutes from "./routes/matchAdminAuth.js";
+import { initIO } from "./socket.js";
 
 
 dotenv.config();
@@ -66,6 +67,8 @@ if (!PORT) {
   console.error("❌ Error: PORT is not defined. For local testing, set PORT in .env.local or use 'PORT=5001 node server.js'");
   process.exit(1);
 }
+
+initIO(server);
 
 // Start the server
 app.listen(PORT, () => {
