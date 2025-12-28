@@ -28,7 +28,7 @@ const MatchesPage = () => {
     teamB: "",
     date: "",
     time: "",
-    overs: "",
+    overs: 5,
   });
 
   const [editMatch, setEditMatch] = useState(null);
