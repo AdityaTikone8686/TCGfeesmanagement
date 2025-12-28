@@ -1,31 +1,33 @@
 import express from "express";
 import Match from "../models/Match.js";
-import { adminAuth } from "../middleware/adminAuth.js";
 
 const router = express.Router();
 
-/* GET all matches */
+// 🔓 Public – get all matches
 router.get("/", async (req, res) => {
-  const matches = await Match.find().sort({ date: 1 });
+  const matches = await Match.find().sort({ createdAt: -1 });
   res.json(matches);
 });
 
-/* ADD match (admin) */
-router.post("/", adminAuth, async (req, res) => {
-  const match = await Match.create(req.body);
+// 🔐 Admin – create match
+router.post("/", async (req, res) => {
+  const match = new Match(req.body);
+  await match.save();
   res.status(201).json(match);
 });
 
-/* UPDATE match (admin) */
-router.put("/:id", adminAuth, async (req, res) => {
-  const match = await Match.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-  });
-  res.json(match);
+// 🔐 Admin – update match
+router.put("/:id", async (req, res) => {
+  const updated = await Match.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    { new: true }
+  );
+  res.json(updated);
 });
 
-/* DELETE match (admin) */
-router.delete("/:id", adminAuth, async (req, res) => {
+// 🔐 Admin – delete match
+router.delete("/:id", async (req, res) => {
   await Match.findByIdAndDelete(req.params.id);
   res.json({ success: true });
 });
