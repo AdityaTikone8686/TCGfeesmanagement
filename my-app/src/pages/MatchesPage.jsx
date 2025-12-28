@@ -1,30 +1,42 @@
-import React, { useEffect, useState } from "react";
-import Layout from "../components/layout/Layout";
+import React, { useState, useEffect } from "react";
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
-import { Trash2, Edit, CheckCircle, LogOut, Plus } from "lucide-react";
+import { Trash2, Edit, CheckCircle } from "lucide-react";
+import Layout from "../components/layout/Layout";
 import { useAuth } from "../context/AuthContext";
 
-const API = "https://tikonecricketgurukulbackend.onrender.com/api/matches";
+/* 🔹 Load matches from localStorage (OPTION 3) */
+const loadMatches = () => {
+  const saved = localStorage.getItem("matches");
+  return saved
+    ? JSON.parse(saved)
+    : [
+        {
+          id: Date.now(),
+          teamA: "Team Alpha",
+          teamB: "Team Beta",
+          date: "2025-12-28",
+          time: "21:00",
+          overs: 5,
+          status: "scheduled",
+          runs: { teamA: 0, teamB: 0 },
+          currentOver: 0,
+        },
+      ];
+};
 
 const MatchesPage = () => {
-  const { token, isAdmin, logout, loading: authLoading } = useAuth();
+  const { isAdmin, logout, loading: authLoading } = useAuth();
 
-  const [matches, setMatches] = useState([]);
+  /* Matches admin (separate from fees admin) */
+  const [isMatchesAdmin, setIsMatchesAdmin] = useState(false);
+
+  const canEdit = isAdmin || isMatchesAdmin;
+
+  const [matches, setMatches] = useState(loadMatches);
   const [pageLoading, setPageLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
 
-  /* Matches admin */
-  const [isMatchesAdmin, setIsMatchesAdmin] = useState(false);
-  const canEdit = isAdmin || isMatchesAdmin;
-
-  /* Admin login */
-  const [showLogin, setShowLogin] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loginError, setLoginError] = useState("");
-
-  /* Match form */
   const [newMatch, setNewMatch] = useState({
     teamA: "",
     teamB: "",
@@ -35,26 +47,37 @@ const MatchesPage = () => {
 
   const [editMatch, setEditMatch] = useState(null);
 
-  /* Persist matches admin */
+  /* Login form */
+  const [showLogin, setShowLogin] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
+
+  /* 🔐 Persist matches admin on refresh */
   useEffect(() => {
     const token = localStorage.getItem("matchesAdminToken");
     if (token) setIsMatchesAdmin(true);
-  }, []);
-
-  /* Fetch matches */
-  const fetchMatches = async () => {
-    const res = await fetch(API);
-    const data = await res.json();
-    setMatches(data);
     setPageLoading(false);
-  };
-
-  useEffect(() => {
-    fetchMatches();
   }, []);
 
-  /* Matches admin login */
-  const handleMatchesAdminLogin = async () => {
+  /* 💾 Persist matches for ALL devices */
+  useEffect(() => {
+    localStorage.setItem("matches", JSON.stringify(matches));
+  }, [matches]);
+
+  /* ⛔ Prevent flicker / 404 */
+  if (authLoading || pageLoading) {
+    return (
+      <Layout>
+        <div className="flex justify-center items-center h-[60vh] text-xl">
+          Loading...
+        </div>
+      </Layout>
+    );
+  }
+
+  /* 🔐 Matches admin login */
+  const handleAdminLogin = async () => {
     setActionLoading(true);
     try {
       const res = await fetch(
@@ -82,7 +105,7 @@ const MatchesPage = () => {
     }
   };
 
-  /* Logout */
+  /* 🔓 Logout */
   const handleLogout = () => {
     setActionLoading(true);
     setTimeout(() => {
@@ -90,126 +113,95 @@ const MatchesPage = () => {
       setIsMatchesAdmin(false);
       if (isAdmin) logout();
       setActionLoading(false);
-    }, 400);
+    }, 500);
   };
 
-  /* Add match */
-  const addMatch = async () => {
+  /* ➕ Add match */
+  const addMatch = () => {
     if (!canEdit) return;
-    setActionLoading(true);
 
-    await fetch(API, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+    setMatches([
+      ...matches,
+      {
+        id: Date.now(),
+        ...newMatch,
+        status: "scheduled",
+        runs: { teamA: 0, teamB: 0 },
+        currentOver: 0,
       },
-      body: JSON.stringify(newMatch),
-    });
+    ]);
 
     setNewMatch({ teamA: "", teamB: "", date: "", time: "", overs: 5 });
-    fetchMatches();
-    setActionLoading(false);
   };
 
-  /* Update match */
-  const updateMatch = async () => {
-    setActionLoading(true);
-
-    await fetch(`${API}/${editMatch._id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(editMatch),
-    });
-
-    setEditMatch(null);
-    fetchMatches();
-    setActionLoading(false);
-  };
-
-  /* Delete match */
-  const deleteMatch = async (id) => {
-    setActionLoading(true);
-    await fetch(`${API}/${id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    fetchMatches();
-    setActionLoading(false);
-  };
-
-  /* Change status */
-  const setStatus = async (id, status) => {
-    await fetch(`${API}/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ status }),
-    });
-    fetchMatches();
-  };
-
-  /* Live score update */
-  const updateScore = async (match, team, value) => {
-    await fetch(`${API}/${match._id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        runs: {
-          ...match.runs,
-          [team]: value,
-        },
-      }),
-    });
-    fetchMatches();
-  };
-
-  if (authLoading || pageLoading) {
-    return (
-      <Layout>
-        <div className="h-[60vh] flex justify-center items-center text-xl">
-          Loading...
-        </div>
-      </Layout>
+  /* 🔄 Update status */
+  const setStatus = (id, status) => {
+    setMatches(
+      matches.map((m) =>
+        m.id === id ? { ...m, status } : m
+      )
     );
-  }
+  };
+
+  /* ❌ Delete */
+  const deleteMatch = (id) => {
+    setMatches(matches.filter((m) => m.id !== id));
+  };
 
   return (
     <Layout>
       <div className="container mx-auto py-10">
         <h1 className="text-3xl font-bold text-center mb-6">Matches</h1>
 
-        {/* Header */}
+        {/* Logged-in header */}
         {canEdit && (
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex justify-between items-center mb-4">
             <p className="text-sm text-gray-600">
               Logged in as {isAdmin ? "Main Admin" : "Matches Admin"}
             </p>
-            <Button onClick={handleLogout} disabled={actionLoading}>
-              <LogOut size={16} /> Logout
+            <Button
+              onClick={handleLogout}
+              disabled={actionLoading}
+              className="bg-red-600 text-white"
+            >
+              {actionLoading ? "Loading..." : "Logout"}
             </Button>
           </div>
         )}
 
-        {/* Login */}
+        {/* Admin Login */}
         {!canEdit && (
           <div className="text-center mb-6">
             {!showLogin ? (
-              <Button onClick={() => setShowLogin(true)}>Admin Login</Button>
+              <Button
+                onClick={() => setShowLogin(true)}
+                className="bg-blue-600 text-white"
+              >
+                Admin Login
+              </Button>
             ) : (
               <div className="flex flex-col items-center gap-2">
-                {loginError && <p className="text-red-600">{loginError}</p>}
-                <input className="border p-2" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} />
-                <input className="border p-2" type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} />
-                <Button onClick={handleMatchesAdminLogin} disabled={actionLoading}>
+                {loginError && (
+                  <p className="text-red-600">{loginError}</p>
+                )}
+                <input
+                  className="border p-2 rounded"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <input
+                  className="border p-2 rounded"
+                  placeholder="Password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <Button
+                  onClick={handleAdminLogin}
+                  disabled={actionLoading}
+                  className="bg-green-600 text-white"
+                >
                   {actionLoading ? "Loading..." : "Login"}
                 </Button>
               </div>
@@ -217,69 +209,108 @@ const MatchesPage = () => {
           </div>
         )}
 
-        {/* Add Match */}
+        {/* ➕ Add Match */}
         {canEdit && (
           <Card className="mb-6">
             <CardContent className="flex gap-2 flex-wrap">
-              <input className="border p-2" placeholder="Team A" value={newMatch.teamA} onChange={e => setNewMatch({ ...newMatch, teamA: e.target.value })} />
-              <input className="border p-2" placeholder="Team B" value={newMatch.teamB} onChange={e => setNewMatch({ ...newMatch, teamB: e.target.value })} />
-              <input type="date" className="border p-2" value={newMatch.date} onChange={e => setNewMatch({ ...newMatch, date: e.target.value })} />
-              <input type="time" className="border p-2" value={newMatch.time} onChange={e => setNewMatch({ ...newMatch, time: e.target.value })} />
-              <Button onClick={addMatch}>
-                <Plus size={16} /> Add Match
+              <input
+                className="border p-2 rounded"
+                placeholder="Team A"
+                value={newMatch.teamA}
+                onChange={(e) =>
+                  setNewMatch({ ...newMatch, teamA: e.target.value })
+                }
+              />
+              <input
+                className="border p-2 rounded"
+                placeholder="Team B"
+                value={newMatch.teamB}
+                onChange={(e) =>
+                  setNewMatch({ ...newMatch, teamB: e.target.value })
+                }
+              />
+              <input
+                type="date"
+                className="border p-2 rounded"
+                value={newMatch.date}
+                onChange={(e) =>
+                  setNewMatch({ ...newMatch, date: e.target.value })
+                }
+              />
+              <input
+                type="time"
+                className="border p-2 rounded"
+                value={newMatch.time}
+                onChange={(e) =>
+                  setNewMatch({ ...newMatch, time: e.target.value })
+                }
+              />
+              <Button onClick={addMatch} className="bg-green-600 text-white">
+                Add Match
               </Button>
             </CardContent>
           </Card>
         )}
 
-        {/* Matches */}
-        {matches.map(match => (
-          <Card key={match._id} className="mb-4">
+        {/* 🌍 PUBLIC MATCH LIST (VISIBLE TO ALL) */}
+        {matches.map((match) => (
+          <Card key={match.id} className="mb-4">
             <CardContent>
-              <div className="flex justify-between items-center">
-                <h2 className="font-bold">
-                  {match.teamA} vs {match.teamB}
-                  {match.status === "live" && (
-                    <span className="ml-2 animate-pulse text-red-600">LIVE</span>
-                  )}
-                </h2>
-                <p>{match.date}</p>
-              </div>
+              <h2 className="font-bold text-lg">
+                {match.teamA} vs {match.teamB}
+                {match.status === "live" && (
+                  <span className="ml-2 px-2 py-1 text-xs rounded bg-red-600 text-white animate-pulse">
+                    LIVE
+                  </span>
+                )}
+              </h2>
 
-              <p className="mt-2">
-                {match.runs.teamA} - {match.runs.teamB} | Over {match.currentOver}/{match.overs}
+              <p className="text-sm text-gray-500">
+                {match.date} {match.time}
               </p>
 
+              <p className="mt-2 font-semibold">
+                {match.runs.teamA} - {match.runs.teamB}
+              </p>
+
+              <p className="text-sm">
+                Over {match.currentOver}/{match.overs}
+              </p>
+
+              <p className="capitalize text-sm">Status: {match.status}</p>
+
+              {/* 🔐 ADMIN ACTIONS */}
               {canEdit && (
                 <div className="flex gap-2 mt-3 flex-wrap">
-                  <Button onClick={() => setStatus(match._id, "live")}>Live</Button>
-                  <Button onClick={() => setStatus(match._id, "finished")}>Finish</Button>
-                  <Button onClick={() => setEditMatch(match)}><Edit size={16} /></Button>
-                  <Button onClick={() => deleteMatch(match._id)}><Trash2 size={16} /></Button>
+                  <Button
+                    className="bg-blue-600 text-white"
+                    onClick={() => setStatus(match.id, "live")}
+                  >
+                    Live
+                  </Button>
+                  <Button
+                    className="bg-green-600 text-white"
+                    onClick={() => setStatus(match.id, "finished")}
+                  >
+                    Finish
+                  </Button>
+                  <Button
+                    className="bg-red-600 text-white"
+                    onClick={() => deleteMatch(match.id)}
+                  >
+                    <Trash2 size={16} />
+                  </Button>
                 </div>
               )}
             </CardContent>
           </Card>
         ))}
-
-        {/* Edit Modal */}
-        {editMatch && (
-          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded w-full max-w-md">
-              <h2 className="font-bold mb-4">Edit Match</h2>
-              <input className="border p-2 w-full mb-2" value={editMatch.teamA} onChange={e => setEditMatch({ ...editMatch, teamA: e.target.value })} />
-              <input className="border p-2 w-full mb-2" value={editMatch.teamB} onChange={e => setEditMatch({ ...editMatch, teamB: e.target.value })} />
-              <Button onClick={updateMatch}>Save</Button>
-            </div>
-          </div>
-        )}
       </div>
     </Layout>
   );
 };
 
 export default MatchesPage;
-
 
 
 
