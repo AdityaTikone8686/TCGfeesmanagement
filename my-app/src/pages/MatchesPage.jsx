@@ -33,13 +33,14 @@ const MatchesPage = () => {
 
   const [editMatch, setEditMatch] = useState(null);
 
+  /* ---------------- AUTH HEADERS ---------------- */
   const getAuthHeaders = () => {
-  const token = localStorage.getItem("matchesAdminToken");
-  return {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
+    const token = localStorage.getItem("matchesAdminToken");
+    return {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    };
   };
-};
 
   /* ---------------- LOAD MATCHES ---------------- */
   const loadMatches = async () => {
@@ -73,13 +74,16 @@ const MatchesPage = () => {
           body: JSON.stringify({ email, password }),
         }
       );
+
       const data = await res.json();
       if (res.ok) {
         localStorage.setItem("matchesAdminToken", data.token);
         setIsMatchesAdmin(true);
         setShowLogin(false);
         setLoginError("");
-      } else setLoginError(data.message || "Invalid credentials");
+      } else {
+        setLoginError(data.message || "Invalid credentials");
+      }
     } catch {
       setLoginError("Server error");
     } finally {
@@ -87,6 +91,7 @@ const MatchesPage = () => {
     }
   };
 
+  /* ---------------- LOGOUT ---------------- */
   const handleLogout = () => {
     setActionLoading(true);
     setTimeout(() => {
@@ -98,98 +103,96 @@ const MatchesPage = () => {
   };
 
   /* ---------------- ADD MATCH ---------------- */
-const handleAddMatch = async () => {
-  if (!canEditMatches) return;
+  const handleAddMatch = async () => {
+    if (!canEditMatches) return;
 
-  setActionLoading(true);
-  await fetch(MATCHES_API, {
-    method: "POST",
-    headers: getAuthHeaders(), // ✅ IMPORTANT
-    body: JSON.stringify(newMatch),
-  });
+    setActionLoading(true);
+    await fetch(MATCHES_API, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(newMatch),
+    });
 
-  setNewMatch({ teamA: "", teamB: "", date: "", time: "", overs: 5 });
-  await loadMatches();
-  setActionLoading(false);
-};
-
+    setNewMatch({ teamA: "", teamB: "", date: "", time: "", overs: 5 });
+    await loadMatches();
+    setActionLoading(false);
+  };
 
   /* ---------------- UPDATE MATCH ---------------- */
   const handleUpdateMatch = async () => {
-  setActionLoading(true);
-  await fetch(`${MATCHES_API}/${editMatch._id}`, {
-    method: "PUT",
-    headers: getAuthHeaders(),
-    body: JSON.stringify(editMatch),
-  });
-  setEditMatch(null);
-  await loadMatches();
-  setActionLoading(false);
-};
-
+    setActionLoading(true);
+    await fetch(`${MATCHES_API}/${editMatch._id}`, {
+      method: "PUT",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(editMatch),
+    });
+    setEditMatch(null);
+    await loadMatches();
+    setActionLoading(false);
+  };
 
   /* ---------------- DELETE MATCH ---------------- */
   const handleDeleteMatch = async (id) => {
-  setActionLoading(true);
-  await fetch(`${MATCHES_API}/${id}`, {
-    method: "DELETE",
-    headers: getAuthHeaders(),
-  });
-  await loadMatches();
-  setActionLoading(false);
-};
-
+    setActionLoading(true);
+    await fetch(`${MATCHES_API}/${id}`, {
+      method: "DELETE",
+      headers: getAuthHeaders(),
+    });
+    await loadMatches();
+    setActionLoading(false);
+  };
 
   /* ---------------- START MATCH ---------------- */
   const handleStartMatch = async (id) => {
-  setActionLoading(true);
-  await fetch(`${MATCHES_API}/${id}`, {
-  method: "PUT",
-  headers: getAuthHeaders(),
-  body: JSON.stringify({ status: "live" }),
-});
-  await loadMatches();
-  setActionLoading(false);
-};
-
+    setActionLoading(true);
+    await fetch(`${MATCHES_API}/${id}`, {
+      method: "PUT",
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ status: "live" }),
+    });
+    await loadMatches();
+    setActionLoading(false);
+  };
 
   /* ---------------- END MATCH ---------------- */
   const handleEndMatch = async (id) => {
-  const winner = prompt("Winner (teamA or teamB):");
-  const teamA_runs = Number(prompt("Team A runs:"));
-  const teamA_wickets = Number(prompt("Team A wickets:"));
-  const teamB_runs = Number(prompt("Team B runs:"));
-  const teamB_wickets = Number(prompt("Team B wickets:"));
+    const winner = prompt("Winner (teamA or teamB):");
+    const teamA_runs = Number(prompt("Team A runs:"));
+    const teamA_wickets = Number(prompt("Team A wickets:"));
+    const teamB_runs = Number(prompt("Team B runs:"));
+    const teamB_wickets = Number(prompt("Team B wickets:"));
 
-  setActionLoading(true);
-  await fetch(`${MATCHES_API}/${id}`, {
-    method: "PUT",
-    headers: getAuthHeaders(),
-    body: JSON.stringify({
-      status: "finished",
-      winner,
-      score: {
-        teamA: { runs: teamA_runs, wickets: teamA_wickets },
-        teamB: { runs: teamB_runs, wickets: teamB_wickets },
-      },
-    }),
-  });
-  await loadMatches();
-  setActionLoading(false);
-};
+    setActionLoading(true);
+    await fetch(`${MATCHES_API}/${id}`, {
+      method: "PUT",
+      headers: getAuthHeaders(),
+      body: JSON.stringify({
+        status: "finished",
+        winner,
+        score: {
+          teamA: { runs: teamA_runs, wickets: teamA_wickets },
+          teamB: { runs: teamB_runs, wickets: teamB_wickets },
+        },
+      }),
+    });
+    await loadMatches();
+    setActionLoading(false);
+  };
 
+  /* ---------------- LOADING ---------------- */
+  if (authLoading || pageLoading) {
+    return (
+      <Layout>
+        <div className="flex justify-center items-center h-[60vh] text-xl">
+          Loading...
+        </div>
+      </Layout>
+    );
+  }
 
-  if (authLoading || pageLoading) return (
-    <Layout>
-      <div className="flex justify-center items-center h-[60vh] text-xl">
-        Loading...
-      </div>
-    </Layout>
-  );
-
-  // ---------------- FILTER MATCHES ----------------
+  /* ---------------- FILTERS ---------------- */
   const scheduledMatches = matches.filter(m => m.status === "scheduled");
-  const ongoingMatches = matches.filter(m => m.status === "ongoing");
+  const ongoingMatches = matches.filter(m => m.status === "live");
   const pastMatches = matches.filter(m => m.status === "finished");
 
   return (
@@ -203,12 +206,8 @@ const handleAddMatch = async () => {
             <p className="text-sm text-gray-600">
               Logged in as {isAdmin ? "Main Admin" : "Matches Admin"}
             </p>
-            <Button
-              onClick={handleLogout}
-              disabled={actionLoading}
-              className="bg-red-600 text-white"
-            >
-              {actionLoading ? "Loading..." : "Logout"}
+            <Button onClick={handleLogout} className="bg-red-600 text-white">
+              Logout
             </Button>
           </div>
         )}
@@ -219,18 +218,17 @@ const handleAddMatch = async () => {
             <Button onClick={() => setShowLogin(true)}>Admin Login</Button>
           </div>
         )}
+
         {showLogin && !canEditMatches && (
           <div className="flex flex-col gap-2 items-center mb-6">
             {loginError && <p className="text-red-600">{loginError}</p>}
             <input className="border p-2 rounded" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} />
             <input className="border p-2 rounded" placeholder="Password" type="password" value={password} onChange={e => setPassword(e.target.value)} />
-            <Button onClick={handleMatchesAdminLogin} disabled={actionLoading}>
-              {actionLoading ? "Loading..." : "Login"}
-            </Button>
+            <Button onClick={handleMatchesAdminLogin}>Login</Button>
           </div>
         )}
 
-        {/* ---------------- SCHEDULED MATCHES ---------------- */}
+        {/* SCHEDULED */}
         <h2 className="text-xl font-bold mt-6 mb-2">Scheduled Matches</h2>
         {scheduledMatches.map(m => (
           <Card key={m._id} className="mb-2">
@@ -247,41 +245,42 @@ const handleAddMatch = async () => {
           </Card>
         ))}
 
-        {/* ---------------- ONGOING MATCHES ---------------- */}
+        {/* ONGOING */}
         <h2 className="text-xl font-bold mt-6 mb-2">Ongoing Matches</h2>
         {ongoingMatches.map(m => (
           <Card key={m._id} className="mb-2 border-l-4 border-red-600 animate-pulse">
             <CardContent className="flex justify-between items-center">
-              <div>{m.teamA} vs {m.teamB} | Overs: {m.overs} | Started at: {m.time}</div>
+              <div>{m.teamA} vs {m.teamB} | Overs: {m.overs} | Started at {m.time}</div>
               {canEditMatches && (
-                <Button onClick={() => handleEndMatch(m._id)} className="bg-blue-600 text-white"><CheckCircle size={16} /></Button>
+                <Button onClick={() => handleEndMatch(m._id)} className="bg-blue-600 text-white">
+                  <CheckCircle size={16} />
+                </Button>
               )}
             </CardContent>
           </Card>
         ))}
 
-        {/* ---------------- PAST MATCHES ---------------- */}
+        {/* PAST */}
         <h2 className="text-xl font-bold mt-6 mb-2">Past Matches</h2>
         {pastMatches.map(m => (
           <Card key={m._id} className="mb-2">
-            <CardContent className="flex justify-between items-center">
-              <div>
-                {m.teamA} ({m.score?.teamA?.runs}/{m.score?.teamA?.wickets}) vs {m.teamB} ({m.score?.teamB?.runs}/{m.score?.teamB?.wickets}) | Overs: {m.overs} | Winner: {m.winner}
-              </div>
+            <CardContent>
+              {m.teamA} ({m.score?.teamA?.runs}/{m.score?.teamA?.wickets}) vs{" "}
+              {m.teamB} ({m.score?.teamB?.runs}/{m.score?.teamB?.wickets}) | Winner: {m.winner}
             </CardContent>
           </Card>
         ))}
 
-        {/* ---------------- EDIT MODAL ---------------- */}
+        {/* EDIT MODAL */}
         {editMatch && (
           <div className="fixed inset-0 bg-black/40 flex justify-center items-center">
             <div className="bg-white p-6 rounded w-full max-w-md">
               <h2 className="font-bold mb-4">Edit Match</h2>
-              <input className="border p-2 w-full mb-2" value={editMatch.teamA} onChange={e => setEditMatch({...editMatch, teamA: e.target.value})} />
-              <input className="border p-2 w-full mb-2" value={editMatch.teamB} onChange={e => setEditMatch({...editMatch, teamB: e.target.value})} />
-              <input type="date" className="border p-2 w-full mb-2" value={editMatch.date} onChange={e => setEditMatch({...editMatch, date: e.target.value})} />
-              <input type="time" className="border p-2 w-full mb-2" value={editMatch.time} onChange={e => setEditMatch({...editMatch, time: e.target.value})} />
-              <input type="number" className="border p-2 w-full mb-2" value={editMatch.overs} onChange={e => setEditMatch({...editMatch, overs: e.target.value})} />
+              <input className="border p-2 w-full mb-2" value={editMatch.teamA} onChange={e => setEditMatch({ ...editMatch, teamA: e.target.value })} />
+              <input className="border p-2 w-full mb-2" value={editMatch.teamB} onChange={e => setEditMatch({ ...editMatch, teamB: e.target.value })} />
+              <input type="date" className="border p-2 w-full mb-2" value={editMatch.date} onChange={e => setEditMatch({ ...editMatch, date: e.target.value })} />
+              <input type="time" className="border p-2 w-full mb-2" value={editMatch.time} onChange={e => setEditMatch({ ...editMatch, time: e.target.value })} />
+              <input type="number" className="border p-2 w-full mb-2" value={editMatch.overs} onChange={e => setEditMatch({ ...editMatch, overs: e.target.value })} />
               <div className="flex justify-end gap-2">
                 <Button onClick={() => setEditMatch(null)}>Cancel</Button>
                 <Button onClick={handleUpdateMatch}>Update</Button>
