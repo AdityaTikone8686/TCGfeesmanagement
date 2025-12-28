@@ -87,7 +87,7 @@ export default function Header() {
                   }`}
                 >
                   <TvMinimal className="h-4 w-4" />
-                  <span>Matches</span>>
+                  <span>Matches</span>
                  </Link>
 
                   <div className="flex items-center space-x-3">
