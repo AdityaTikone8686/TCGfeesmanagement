@@ -1,6 +1,6 @@
 import express from "express";
 import Match from "../models/Match.js";
-import { getMatches, updateLiveScore,} from "../controllers/matchController.js";
+import { getMatches } from "../controllers/matchController.js";
 import { matchesAdminAuth } from "../middleware/matchesAuth.js";
 const router = express.Router();
 
@@ -34,8 +34,7 @@ router.post("/", matchesAdminAuth, async (req, res) => {
 // 🔴 ADMIN – update live score
 router.put(
   "/:id/score",
-  matchesAdminAuth,
-  updateLiveScore
+  matchesAdminAuth
 );
 
 /**
