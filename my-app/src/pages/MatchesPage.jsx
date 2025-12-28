@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Layout from "../components/layout/Layout";
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
@@ -14,6 +14,7 @@ const MatchesPage = () => {
   const [matches, setMatches] = useState([]);
   const [pageLoading, setPageLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
+  const [highlighted, setHighlighted] = useState({}); // For live animation
 
   const [isMatchesAdmin, setIsMatchesAdmin] = useState(false);
   const canEditMatches = isAdmin || isMatchesAdmin;
@@ -38,6 +39,24 @@ const MatchesPage = () => {
     try {
       const res = await fetch(MATCHES_API);
       const data = await res.json();
+
+      // Check for changes in live matches for animation
+      data.forEach((m) => {
+        const prev = matches.find((x) => x._id === m._id);
+        if (
+          prev &&
+          m.status === "live" &&
+          (m.score?.teamA?.runs !== prev.score?.teamA?.runs ||
+            m.score?.teamB?.runs !== prev.score?.teamB?.runs ||
+            m.currentOver !== prev.currentOver)
+        ) {
+          setHighlighted((prevH) => ({ ...prevH, [m._id]: true }));
+          setTimeout(() => {
+            setHighlighted((prevH) => ({ ...prevH, [m._id]: false }));
+          }, 800); // animation duration
+        }
+      });
+
       setMatches(data || []);
     } catch (err) {
       console.error("Failed to load matches", err);
@@ -50,6 +69,10 @@ const MatchesPage = () => {
     const token = localStorage.getItem("matchesAdminToken");
     if (token) setIsMatchesAdmin(true);
     loadMatches();
+
+    // Optional: Polling every 5 seconds for live score updates
+    const interval = setInterval(loadMatches, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   /* ---------------- MATCHES ADMIN LOGIN ---------------- */
@@ -90,10 +113,9 @@ const MatchesPage = () => {
     }, 500);
   };
 
-  /* ---------------- ADD MATCH ---------------- */
+  /* ---------------- ADD / UPDATE / DELETE / SCORE ---------------- */
   const handleAddMatch = async () => {
     if (!canEditMatches) return;
-
     setActionLoading(true);
     await fetch(MATCHES_API, {
       method: "POST",
@@ -105,7 +127,6 @@ const MatchesPage = () => {
     setActionLoading(false);
   };
 
-  /* ---------------- UPDATE MATCH ---------------- */
   const handleUpdateMatch = async () => {
     setActionLoading(true);
     await fetch(`${MATCHES_API}/${editMatch._id}`, {
@@ -118,7 +139,6 @@ const MatchesPage = () => {
     setActionLoading(false);
   };
 
-  /* ---------------- FINISH MATCH ---------------- */
   const handleFinishMatch = async (id) => {
     setActionLoading(true);
     await fetch(`${MATCHES_API}/${id}`, {
@@ -130,7 +150,6 @@ const MatchesPage = () => {
     setActionLoading(false);
   };
 
-  /* ---------------- DELETE MATCH ---------------- */
   const handleDeleteMatch = async (id) => {
     setActionLoading(true);
     await fetch(`${MATCHES_API}/${id}`, { method: "DELETE" });
@@ -138,7 +157,6 @@ const MatchesPage = () => {
     setActionLoading(false);
   };
 
-  /* ---------------- UPDATE SCORE ---------------- */
   const updateScore = async (matchId, team, runs = 0, wickets = 0, over = 0) => {
     setActionLoading(true);
     try {
@@ -170,7 +188,6 @@ const MatchesPage = () => {
       <div className="container mx-auto py-10">
         <h1 className="text-3xl font-bold text-center mb-6">Matches</h1>
 
-        {/* HEADER */}
         {canEditMatches && (
           <div className="flex justify-between mb-4">
             <p className="text-sm text-gray-600">
@@ -186,7 +203,6 @@ const MatchesPage = () => {
           </div>
         )}
 
-        {/* LOGIN */}
         {!canEditMatches && (
           <div className="text-center mb-6">
             {!showLogin ? (
@@ -224,7 +240,6 @@ const MatchesPage = () => {
           </div>
         )}
 
-        {/* ADD MATCH */}
         {canEditMatches && (
           <Card className="mb-6 animate-fade-in">
             <CardContent className="flex flex-wrap gap-2">
@@ -271,7 +286,6 @@ const MatchesPage = () => {
           </Card>
         )}
 
-        {/* MATCHES TABLE */}
         <Card className="animate-fade-in">
           <CardContent>
             <table className="w-full border">
@@ -286,7 +300,12 @@ const MatchesPage = () => {
               </thead>
               <tbody>
                 {matches.map((m) => (
-                  <tr key={m._id} className="text-center border-t">
+                  <tr
+                    key={m._id}
+                    className={`text-center border-t transition-colors duration-500 ${
+                      highlighted[m._id] ? "bg-green-100" : ""
+                    }`}
+                  >
                     <td>
                       {m.teamA} vs {m.teamB}
                     </td>
@@ -381,69 +400,12 @@ const MatchesPage = () => {
             </table>
           </CardContent>
         </Card>
-
-        {/* EDIT MODAL */}
-        {editMatch && (
-          <div className="fixed inset-0 bg-black/40 flex justify-center items-center animate-fade-in">
-            <div className="bg-white p-6 rounded w-full max-w-md">
-              <h2 className="font-bold mb-4">Edit / Schedule Match</h2>
-              <input
-                className="border p-2 w-full mb-2"
-                value={editMatch.teamA}
-                onChange={(e) =>
-                  setEditMatch({ ...editMatch, teamA: e.target.value })
-                }
-              />
-              <input
-                className="border p-2 w-full mb-2"
-                value={editMatch.teamB}
-                onChange={(e) =>
-                  setEditMatch({ ...editMatch, teamB: e.target.value })
-                }
-              />
-              <input
-                type="date"
-                className="border p-2 w-full mb-2"
-                value={editMatch.date}
-                onChange={(e) =>
-                  setEditMatch({ ...editMatch, date: e.target.value })
-                }
-              />
-              <input
-                type="time"
-                className="border p-2 w-full mb-2"
-                value={editMatch.time}
-                onChange={(e) =>
-                  setEditMatch({ ...editMatch, time: e.target.value })
-                }
-              />
-              <input
-                type="number"
-                className="border p-2 w-full mb-2"
-                value={editMatch.overs}
-                min={1}
-                onChange={(e) =>
-                  setEditMatch({ ...editMatch, overs: parseInt(e.target.value) })
-                }
-              />
-              <div className="flex justify-end gap-2">
-                <Button onClick={() => setEditMatch(null)}>Cancel</Button>
-                <Button onClick={handleUpdateMatch}>Update</Button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </Layout>
   );
 };
 
 export default MatchesPage;
-
-
-
-
-
 
 
 
