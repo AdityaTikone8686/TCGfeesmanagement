@@ -4,7 +4,7 @@ import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
 import { Trash2, Edit, CheckCircle } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-import { io } from "socket.io-client";
+
 
 const MATCHES_API =
   "https://tikonecricketgurukulbackend.onrender.com/api/matches";
@@ -56,19 +56,6 @@ const MatchesPage = () => {
     loadMatches();
   }, []);
 
-   // ------------------ SOCKET.IO REAL-TIME ------------------
-  useEffect(() => {
-    const socket = io("https://tikonecricketgurukulbackend.onrender.com");
-
-    socket.on("matchesUpdated", () => {
-      loadMatches();
-    });
-
-    return () => {
-      socket.off("matchesUpdated");
-      socket.disconnect();
-    };
-  }, []);
 
   /* ---------------- MATCHES ADMIN LOGIN ---------------- */
   const handleMatchesAdminLogin = async () => {
