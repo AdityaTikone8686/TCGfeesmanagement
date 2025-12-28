@@ -14,13 +14,11 @@ const initialMatches = [
     time: "21:00",
     overs: 5,
     status: "scheduled",
-    runs: { teamA: 0, teamB: 0 },
-    currentOver: 0,
   },
 ];
 
 const MatchesPage = () => {
-  const { isAdmin, logout, authLoading } = useAuth();
+  const { isAdmin, logout, loading } = useAuth();
 
   const [isMatchesAdmin, setIsMatchesAdmin] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
@@ -44,15 +42,15 @@ const MatchesPage = () => {
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
 
-  // 🔐 Persist Matches Admin on refresh
+  // Persist matches admin
   useEffect(() => {
-    const token = localStorage.getItem("matchesAdminToken");
-    if (token) setIsMatchesAdmin(true);
+    if (localStorage.getItem("matchesAdminToken")) {
+      setIsMatchesAdmin(true);
+    }
     setPageLoading(false);
   }, []);
 
-  // ⛔ Prevent 404 / flicker
-  if (authLoading || pageLoading) {
+  if (loading || pageLoading) {
     return (
       <Layout>
         <div className="flex justify-center items-center h-[60vh] text-xl">
@@ -62,7 +60,6 @@ const MatchesPage = () => {
     );
   }
 
-  // Matches admin login
   const handleAdminLogin = async () => {
     setActionLoading(true);
     try {
@@ -91,106 +88,101 @@ const MatchesPage = () => {
     }
   };
 
-  // Logout with loading
   const handleLogout = () => {
-    setActionLoading(true);
-    setTimeout(() => {
-      localStorage.removeItem("matchesAdminToken");
-      setIsMatchesAdmin(false);
-      if (isAdmin) logout();
-      setActionLoading(false);
-    }, 500);
+    localStorage.removeItem("matchesAdminToken");
+    setIsMatchesAdmin(false);
+    if (isAdmin) logout();
   };
+
+  // CRUD
+  const addMatch = () => {
+    if (!canEditMatches) return;
+    setMatches((prev) => [
+      ...prev,
+      { id: Date.now(), ...newMatch, status: "scheduled" },
+    ]);
+    setNewMatch({ teamA: "", teamB: "", date: "", time: "", overs: 5 });
+  };
+
+  const deleteMatch = (id) =>
+    setMatches((prev) => prev.filter((m) => m.id !== id));
+
+  const finishMatch = (id) =>
+    setMatches((prev) =>
+      prev.map((m) =>
+        m.id === id ? { ...m, status: "finished" } : m
+      )
+    );
 
   return (
     <Layout>
       <div className="container mx-auto py-10">
         <h1 className="text-3xl font-bold text-center mb-6">Matches</h1>
 
-        {/* Logged in header */}
         {canEditMatches && (
-          <div className="flex justify-between items-center mb-4">
-            <p className="text-sm text-gray-600">
-              Logged in as {isAdmin ? "Main Admin" : "Matches Admin"}
-            </p>
-            <Button
-              onClick={handleLogout}
-              disabled={actionLoading}
-              className="bg-red-600 text-white"
-            >
-              {actionLoading ? "Loading..." : "Logout"}
+          <div className="flex justify-between mb-4">
+            <p>Logged in as Admin</p>
+            <Button onClick={handleLogout} className="bg-red-600 text-white">
+              Logout
             </Button>
           </div>
         )}
 
-        {/* Admin Login */}
         {!canEditMatches && (
           <div className="text-center mb-6">
             {!showLogin ? (
-              <Button
-                onClick={() => setShowLogin(true)}
-                className="bg-blue-600 text-white"
-              >
+              <Button onClick={() => setShowLogin(true)}>
                 Admin Login
               </Button>
             ) : (
-              <div className="flex flex-col items-center gap-2">
-                {loginError && (
-                  <p className="text-red-600">{loginError}</p>
-                )}
+              <>
+                {loginError && <p className="text-red-600">{loginError}</p>}
                 <input
                   className="border p-2 rounded"
                   placeholder="Email"
-                  value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
                 <input
                   className="border p-2 rounded"
-                  placeholder="Password"
                   type="password"
-                  value={password}
+                  placeholder="Password"
                   onChange={(e) => setPassword(e.target.value)}
                 />
-                <Button
-                  onClick={handleAdminLogin}
-                  disabled={actionLoading}
-                  className="bg-green-600 text-white"
-                >
-                  {actionLoading ? "Loading..." : "Login"}
+                <Button onClick={handleAdminLogin}>
+                  Login
                 </Button>
-              </div>
+              </>
             )}
           </div>
         )}
 
-        {/* Matches Table */}
+        {canEditMatches && (
+          <Card className="mb-6">
+            <CardContent className="flex gap-2 flex-wrap">
+              <input placeholder="Team A" onChange={(e)=>setNewMatch({...newMatch,teamA:e.target.value})}/>
+              <input placeholder="Team B" onChange={(e)=>setNewMatch({...newMatch,teamB:e.target.value})}/>
+              <input type="date" onChange={(e)=>setNewMatch({...newMatch,date:e.target.value})}/>
+              <input type="time" onChange={(e)=>setNewMatch({...newMatch,time:e.target.value})}/>
+              <Button onClick={addMatch}>Add Match</Button>
+            </CardContent>
+          </Card>
+        )}
+
         <Card>
           <CardContent>
             <table className="w-full border">
-              <thead>
-                <tr className="bg-gray-200">
-                  <th>Teams</th>
-                  <th>Date</th>
-                  <th>Status</th>
-                  {canEditMatches && <th>Actions</th>}
-                </tr>
-              </thead>
               <tbody>
                 {matches.map((m) => (
-                  <tr key={m.id} className="text-center border-t">
+                  <tr key={m.id}>
                     <td>{m.teamA} vs {m.teamB}</td>
-                    <td>{m.date}</td>
                     <td>{m.status}</td>
                     {canEditMatches && (
-                      <td className="flex justify-center gap-2">
-                        <Button className="bg-blue-600 text-white">
-                          <CheckCircle size={16} />
+                      <td className="flex gap-2">
+                        <Button onClick={()=>finishMatch(m.id)}>
+                          <CheckCircle size={16}/>
                         </Button>
-                        <Button className="bg-yellow-500 text-white">
-                          <Edit size={16} />
-                        </Button>
-                        <Button className="bg-red-600 text-white">
-                          <Trash2 size={16} />
+                        <Button onClick={()=>deleteMatch(m.id)}>
+                          <Trash2 size={16}/>
                         </Button>
                       </td>
                     )}
