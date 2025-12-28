@@ -148,6 +148,23 @@ const MatchesPage = () => {
     setActionLoading(false);
   };
 
+  /* ---------------- UPDATE SCORE (ADDED) ---------------- */
+  const updateScore = async (matchId, team, runs = 0, wickets = 0, over = 0) => {
+    setActionLoading(true);
+    try {
+      const res = await fetch(`${MATCHES_API}/${matchId}/score`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ team, runs, wickets, over }),
+      });
+      if (res.ok) await loadMatches();
+    } catch (err) {
+      console.error("Failed to update score", err);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   /* ---------------- LOADING GUARD ---------------- */
   if (authLoading || pageLoading) {
     return (
@@ -264,6 +281,7 @@ const MatchesPage = () => {
                   <th>Teams</th>
                   <th>Date</th>
                   <th>Status</th>
+                  <th>Score / Edit</th> {/* ADDED COLUMN */}
                   {canEditMatches && <th>Actions</th>}
                 </tr>
               </thead>
@@ -282,6 +300,59 @@ const MatchesPage = () => {
                       )}
                       {m.status !== "live" && m.status}
                     </td>
+                    {/* ---------------- SCORE / LIVE EDIT BUTTONS ---------------- */}
+                    <td className="flex justify-center gap-2 flex-wrap">
+                      <span>
+                        {m.score?.teamA?.runs || 0} - {m.score?.teamB?.runs || 0} | Over {m.currentOver || 0}/{m.overs}
+                      </span>
+                      {canEditMatches && m.status === "live" && (
+                        <>
+                          <Button
+                            onClick={() =>
+                              updateScore(
+                                m._id,
+                                "teamA",
+                                (m.score?.teamA?.runs || 0) + 1,
+                                m.score?.teamA?.wickets || 0,
+                                m.currentOver
+                              )
+                            }
+                            className="bg-green-600 text-white"
+                          >
+                            +1 Run Team A
+                          </Button>
+                          <Button
+                            onClick={() =>
+                              updateScore(
+                                m._id,
+                                "teamB",
+                                (m.score?.teamB?.runs || 0) + 1,
+                                m.score?.teamB?.wickets || 0,
+                                m.currentOver
+                              )
+                            }
+                            className="bg-green-600 text-white"
+                          >
+                            +1 Run Team B
+                          </Button>
+                          <Button
+                            onClick={() =>
+                              updateScore(
+                                m._id,
+                                "teamA",
+                                m.score?.teamA?.runs || 0,
+                                m.score?.teamA?.wickets || 0,
+                                (m.currentOver || 0) + 1
+                              )
+                            }
+                            className="bg-blue-600 text-white"
+                          >
+                            +1 Over
+                          </Button>
+                        </>
+                      )}
+                    </td>
+                    {/* ---------------- ACTIONS ---------------- */}
                     {canEditMatches && (
                       <td className="flex justify-center gap-2">
                         <Button
