@@ -1,35 +1,65 @@
 import express from "express";
 import Match from "../models/Match.js";
+import { matchesAdminAuth } from "../middleware/matchesAuth.js";
 
 const router = express.Router();
 
-// 🔓 Public – get all matches
+/**
+ * 🔓 PUBLIC
+ * Anyone can view matches (mobile + laptop)
+ */
 router.get("/", async (req, res) => {
-  const matches = await Match.find().sort({ createdAt: -1 });
-  res.json(matches);
+  try {
+    const matches = await Match.find().sort({ createdAt: -1 });
+    res.json(matches);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch matches" });
+  }
 });
 
-// 🔐 Admin – create match
-router.post("/", async (req, res) => {
-  const match = new Match(req.body);
-  await match.save();
-  res.status(201).json(match);
+/**
+ * 🔐 ADMIN ONLY
+ * Create match
+ */
+router.post("/", matchesAdminAuth, async (req, res) => {
+  try {
+    const match = new Match(req.body);
+    await match.save();
+    res.status(201).json(match);
+  } catch (err) {
+    res.status(400).json({ message: "Failed to create match" });
+  }
 });
 
-// 🔐 Admin – update match
-router.put("/:id", async (req, res) => {
-  const updated = await Match.findByIdAndUpdate(
-    req.params.id,
-    req.body,
-    { new: true }
-  );
-  res.json(updated);
+/**
+ * 🔐 ADMIN ONLY
+ * Update match (score, overs, status, teams, etc.)
+ */
+router.put("/:id", matchesAdminAuth, async (req, res) => {
+  try {
+    const updated = await Match.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+
+    res.json(updated);
+  } catch (err) {
+    res.status(400).json({ message: "Failed to update match" });
+  }
 });
 
-// 🔐 Admin – delete match
-router.delete("/:id", async (req, res) => {
-  await Match.findByIdAndDelete(req.params.id);
-  res.json({ success: true });
+/**
+ * 🔐 ADMIN ONLY
+ * Delete match
+ */
+router.delete("/:id", matchesAdminAuth, async (req, res) => {
+  try {
+    await Match.findByIdAndDelete(req.params.id);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(400).json({ message: "Failed to delete match" });
+  }
 });
 
 export default router;
