@@ -105,49 +105,65 @@ const MatchesPage = () => {
 
   /* ---------------- UPDATE MATCH ---------------- */
   const handleUpdateMatch = async () => {
-    setActionLoading(true);
-    await fetch(`${MATCHES_API}/${editMatch._id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(editMatch),
-    });
-    setEditMatch(null);
-    await loadMatches();
-    setActionLoading(false);
-  };
+  setActionLoading(true);
+  await fetch(`${MATCHES_API}/${editMatch._id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(editMatch),
+  });
+  setEditMatch(null);
+  await loadMatches();
+  setActionLoading(false);
+};
+
 
   /* ---------------- DELETE MATCH ---------------- */
   const handleDeleteMatch = async (id) => {
-    setActionLoading(true);
-    await fetch(`${MATCHES_API}/${id}`, { method: "DELETE" });
-    await loadMatches();
-    setActionLoading(false);
-  };
+  setActionLoading(true);
+  await fetch(`${MATCHES_API}/${id}`, { method: "DELETE" });
+  await loadMatches();
+  setActionLoading(false);
+};
+
 
   /* ---------------- START MATCH ---------------- */
   const handleStartMatch = async (id) => {
-    setActionLoading(true);
-    await fetch(`${MATCHES_API}/start/${id}`, { method: "PUT" });
-    await loadMatches();
-    setActionLoading(false);
-  };
+  setActionLoading(true);
+  await fetch(`${MATCHES_API}/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status: "live" }),
+  });
+  await loadMatches();
+  setActionLoading(false);
+};
+
 
   /* ---------------- END MATCH ---------------- */
   const handleEndMatch = async (id) => {
-    const winner = prompt("Enter winner team:");
-    const loser = winner === "teamA" ? "teamB" : "teamA";
-    const scoreA = { runs: Number(prompt("Team A runs:")), wickets: Number(prompt("Team A wickets:")) };
-    const scoreB = { runs: Number(prompt("Team B runs:")), wickets: Number(prompt("Team B wickets:")) };
+  const winner = prompt("Winner (teamA or teamB):");
+  const teamA_runs = Number(prompt("Team A runs:"));
+  const teamA_wickets = Number(prompt("Team A wickets:"));
+  const teamB_runs = Number(prompt("Team B runs:"));
+  const teamB_wickets = Number(prompt("Team B wickets:"));
 
-    setActionLoading(true);
-    await fetch(`${MATCHES_API}/end/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ winner, loser, scoreA, scoreB }),
-    });
-    await loadMatches();
-    setActionLoading(false);
-  };
+  setActionLoading(true);
+  await fetch(`${MATCHES_API}/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      status: "finished",
+      winner,
+      score: {
+        teamA: { runs: teamA_runs, wickets: teamA_wickets },
+        teamB: { runs: teamB_runs, wickets: teamB_wickets },
+      },
+    }),
+  });
+  await loadMatches();
+  setActionLoading(false);
+};
+
 
   if (authLoading || pageLoading) return (
     <Layout>
