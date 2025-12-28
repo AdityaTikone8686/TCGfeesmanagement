@@ -354,6 +354,17 @@ const MatchesPage = () => {
         >
           <CheckCircle size={16} />
         </Button>
+    {m.liveLink && (
+  <a
+    href={m.liveLink}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="bg-red-600 text-white px-3 py-1 rounded text-sm font-semibold hover:bg-red-700 transition"
+  >
+    ▶ Watch Live
+  </a>
+)}
+
       )}
     </CardContent>
   </Card>
