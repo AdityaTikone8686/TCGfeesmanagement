@@ -1,4 +1,5 @@
 import Match from "../models/Match.js";
+import { getIO } from "../socket.js"; // import socket instance
 
 export const getMatches = async (req, res) => {
   try {
@@ -13,10 +14,20 @@ export const getMatches = async (req, res) => {
       if (match.status === "scheduled" && now >= matchTime) {
         match.status = "live";
         await match.save();
+
+        // 🔴 Emit socket event after auto-live change
+        const io = getIO();
+        io.emit("matchesUpdated");
       }
     }
 
-    // 🔴 Update live score (ADMIN ONLY)
+    res.json(matches);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch matches" });
+  }
+};
+
+// 🔴 Update live score (ADMIN ONLY)
 export const updateLiveScore = async (req, res) => {
   try {
     const { team, runs, wickets, over } = req.body;
@@ -41,8 +52,13 @@ export const updateLiveScore = async (req, res) => {
 
     await match.save();
 
-    res.json(matches);
+    // 🔴 Emit socket event after live score update
+    const io = getIO();
+    io.emit("matchesUpdated");
+
+    res.json(match);
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch matches" });
+    res.status(500).json({ message: "Failed to update live score" });
   }
 };
+
