@@ -33,6 +33,14 @@ const MatchesPage = () => {
 
   const [editMatch, setEditMatch] = useState(null);
 
+  const getAuthHeaders = () => {
+  const token = localStorage.getItem("matchesAdminToken");
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  };
+};
+
   /* ---------------- LOAD MATCHES ---------------- */
   const loadMatches = async () => {
     try {
