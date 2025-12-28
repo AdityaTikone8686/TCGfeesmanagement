@@ -16,6 +16,31 @@ export const getMatches = async (req, res) => {
       }
     }
 
+    // 🔴 Update live score (ADMIN ONLY)
+export const updateLiveScore = async (req, res) => {
+  try {
+    const { team, runs, wickets, over } = req.body;
+
+    const match = await Match.findById(req.params.id);
+    if (!match) {
+      return res.status(404).json({ message: "Match not found" });
+    }
+
+    if (!match.score) {
+      match.score = {
+        teamA: { runs: 0, wickets: 0 },
+        teamB: { runs: 0, wickets: 0 },
+      };
+    }
+
+    // Update score
+    match.score[team].runs = runs;
+    match.score[team].wickets = wickets;
+    match.currentOver = over;
+    match.status = "live"; // force live when score updates
+
+    await match.save();
+
     res.json(matches);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch matches" });
