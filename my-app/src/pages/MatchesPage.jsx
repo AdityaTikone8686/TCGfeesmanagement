@@ -411,16 +411,32 @@ const MatchesPage = () => {
         ))}
 
         {/* PAST */}
-        <h2 className="text-xl font-bold mt-6 mb-2">Past Matches</h2>
-        {pastMatches.map((m) => (
-          <Card key={m._id} className="mb-2">
-            <CardContent>
-              {m.teamA} ({m.score?.teamA?.runs}/{m.score?.teamA?.wickets}) vs{" "}
-              {m.teamB} ({m.score?.teamB?.runs}/{m.score?.teamB?.wickets}) |{" "}
-              Winner: {m.winner}
-            </CardContent>
-          </Card>
-        ))}
+      
+<h2 className="text-xl font-bold mt-6 mb-2">Past Matches</h2>
+{pastMatches.map((m) => (
+  <Card key={m._id} className="mb-2">
+    <CardContent className="flex justify-between items-center">
+      <div>
+        <div>
+          {m.teamA} ({m.score?.teamA?.runs}/{m.score?.teamA?.wickets}) vs{" "}
+          {m.teamB} ({m.score?.teamB?.runs}/{m.score?.teamB?.wickets})
+        </div>
+        <div className="text-sm text-gray-500">
+          Date: {m.date} | Time: {m.time} | Winner: {m.winner}
+        </div>
+      </div>
+      {canEditMatches && (
+        <Button
+          onClick={() => handleDeleteMatch(m._id)}
+          className="bg-red-600 text-white"
+        >
+          <Trash2 size={16} />
+        </Button>
+      )}
+    </CardContent>
+  </Card>
+))}
+
 
         {/* EDIT MODAL */}
         {editMatch && (
