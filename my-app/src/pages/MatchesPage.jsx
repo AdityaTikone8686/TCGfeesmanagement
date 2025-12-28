@@ -322,19 +322,43 @@ const MatchesPage = () => {
         ))}
 
         {/* ONGOING */}
-        <h2 className="text-xl font-bold mt-6 mb-2">Ongoing Matches</h2>
-        {ongoingMatches.map(m => (
-          <Card key={m._id} className="mb-2 border-l-4 border-red-600 animate-pulse">
-            <CardContent className="flex justify-between items-center">
-              <div>{m.teamA} vs {m.teamB} | Overs: {m.overs} | Started at {m.time}</div>
-              {canEditMatches && (
-                <Button onClick={() => handleEndMatch(m._id)} className="bg-blue-600 text-white">
-                  <CheckCircle size={16} />
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-        ))}
+<h2 className="text-xl font-bold mt-6 mb-2">Ongoing Matches</h2>
+
+{ongoingMatches.map(m => (
+  <Card
+    key={m._id}
+    className="mb-2 border-l-4 border-red-600 animate-pulse"
+  >
+    <CardContent className="flex justify-between items-center">
+      
+      <div className="flex items-center gap-3">
+        {/* LIVE BADGE */}
+        <span className="relative flex h-3 w-3">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-600 opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600"></span>
+        </span>
+
+        <span className="font-bold text-red-600 uppercase text-sm">
+          LIVE
+        </span>
+
+        <span>
+          {m.teamA} vs {m.teamB} | Overs: {m.overs} | Started at {m.time}
+        </span>
+      </div>
+
+      {canEditMatches && (
+        <Button
+          onClick={() => handleEndMatch(m._id)}
+          className="bg-blue-600 text-white"
+        >
+          <CheckCircle size={16} />
+        </Button>
+      )}
+    </CardContent>
+  </Card>
+))}
+
 
         {/* PAST */}
         <h2 className="text-xl font-bold mt-6 mb-2">Past Matches</h2>
