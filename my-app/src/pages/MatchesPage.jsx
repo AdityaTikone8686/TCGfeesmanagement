@@ -98,25 +98,28 @@ const MatchesPage = () => {
   };
 
   /* ---------------- ADD MATCH ---------------- */
-  const handleAddMatch = async () => {
-    if (!canEditMatches) return;
-    setActionLoading(true);
-    await fetch(MATCHES_API, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newMatch),
-    });
-    setNewMatch({ teamA: "", teamB: "", date: "", time: "", overs: 5 });
-    await loadMatches();
-    setActionLoading(false);
-  };
+const handleAddMatch = async () => {
+  if (!canEditMatches) return;
+
+  setActionLoading(true);
+  await fetch(MATCHES_API, {
+    method: "POST",
+    headers: getAuthHeaders(), // ✅ IMPORTANT
+    body: JSON.stringify(newMatch),
+  });
+
+  setNewMatch({ teamA: "", teamB: "", date: "", time: "", overs: 5 });
+  await loadMatches();
+  setActionLoading(false);
+};
+
 
   /* ---------------- UPDATE MATCH ---------------- */
   const handleUpdateMatch = async () => {
   setActionLoading(true);
   await fetch(`${MATCHES_API}/${editMatch._id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: getAuthHeaders(),
     body: JSON.stringify(editMatch),
   });
   setEditMatch(null);
@@ -128,7 +131,10 @@ const MatchesPage = () => {
   /* ---------------- DELETE MATCH ---------------- */
   const handleDeleteMatch = async (id) => {
   setActionLoading(true);
-  await fetch(`${MATCHES_API}/${id}`, { method: "DELETE" });
+  await fetch(`${MATCHES_API}/${id}`, {
+    method: "DELETE",
+    headers: getAuthHeaders(),
+  });
   await loadMatches();
   setActionLoading(false);
 };
@@ -138,10 +144,10 @@ const MatchesPage = () => {
   const handleStartMatch = async (id) => {
   setActionLoading(true);
   await fetch(`${MATCHES_API}/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ status: "live" }),
-  });
+  method: "PUT",
+  headers: getAuthHeaders(),
+  body: JSON.stringify({ status: "live" }),
+});
   await loadMatches();
   setActionLoading(false);
 };
@@ -158,7 +164,7 @@ const MatchesPage = () => {
   setActionLoading(true);
   await fetch(`${MATCHES_API}/${id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: getAuthHeaders(),
     body: JSON.stringify({
       status: "finished",
       winner,
