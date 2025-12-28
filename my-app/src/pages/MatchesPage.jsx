@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Layout from "../components/layout/Layout";
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
-import { Trash2, Edit } from "lucide-react";
+import { Trash2, Edit, PlayCircle, CheckCircle } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 const MATCHES_API =
@@ -14,16 +14,15 @@ const MatchesPage = () => {
   const [matches, setMatches] = useState([]);
   const [pageLoading, setPageLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
+
   const [isMatchesAdmin, setIsMatchesAdmin] = useState(false);
   const canEditMatches = isAdmin || isMatchesAdmin;
 
-  // Login
   const [showLogin, setShowLogin] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
 
-  // Match form
   const [newMatch, setNewMatch] = useState({
     teamA: "",
     teamB: "",
@@ -31,6 +30,7 @@ const MatchesPage = () => {
     time: "",
     overs: 5,
   });
+
   const [editMatch, setEditMatch] = useState(null);
 
   /* ---------------- LOAD MATCHES ---------------- */
@@ -46,13 +46,14 @@ const MatchesPage = () => {
     }
   };
 
+  /* ---------------- INIT ---------------- */
   useEffect(() => {
     const token = localStorage.getItem("matchesAdminToken");
     if (token) setIsMatchesAdmin(true);
     loadMatches();
   }, []);
 
-  /* ---------------- ADMIN LOGIN ---------------- */
+  /* ---------------- LOGIN ---------------- */
   const handleMatchesAdminLogin = async () => {
     setActionLoading(true);
     try {
@@ -70,9 +71,7 @@ const MatchesPage = () => {
         setIsMatchesAdmin(true);
         setShowLogin(false);
         setLoginError("");
-      } else {
-        setLoginError(data.message || "Invalid credentials");
-      }
+      } else setLoginError(data.message || "Invalid credentials");
     } catch {
       setLoginError("Server error");
     } finally {
@@ -80,7 +79,6 @@ const MatchesPage = () => {
     }
   };
 
-  /* ---------------- LOGOUT ---------------- */
   const handleLogout = () => {
     setActionLoading(true);
     setTimeout(() => {
@@ -126,60 +124,50 @@ const MatchesPage = () => {
     setActionLoading(false);
   };
 
-  /* ---------------- END MATCH ---------------- */
-  const handleEndMatch = async (match) => {
-    const winner = prompt("Enter winning team:");
-    const loser = winner === match.teamA ? match.teamB : match.teamA;
-    const teamARuns = parseInt(prompt(`Enter ${match.teamA} runs:`), 10);
-    const teamAWickets = parseInt(prompt(`Enter ${match.teamA} wickets:`), 10);
-    const teamBRuns = parseInt(prompt(`Enter ${match.teamB} runs:`), 10);
-    const teamBWickets = parseInt(prompt(`Enter ${match.teamB} wickets:`), 10);
+  /* ---------------- START MATCH ---------------- */
+  const handleStartMatch = async (id) => {
+    setActionLoading(true);
+    await fetch(`${MATCHES_API}/start/${id}`, { method: "PUT" });
+    await loadMatches();
+    setActionLoading(false);
+  };
 
-    if (!winner || isNaN(teamARuns) || isNaN(teamAWickets) || isNaN(teamBRuns) || isNaN(teamBWickets)) {
-      alert("Invalid input");
-      return;
-    }
+  /* ---------------- END MATCH ---------------- */
+  const handleEndMatch = async (id) => {
+    const winner = prompt("Enter winner team:");
+    const loser = winner === "teamA" ? "teamB" : "teamA";
+    const scoreA = { runs: Number(prompt("Team A runs:")), wickets: Number(prompt("Team A wickets:")) };
+    const scoreB = { runs: Number(prompt("Team B runs:")), wickets: Number(prompt("Team B wickets:")) };
 
     setActionLoading(true);
-    await fetch(`${MATCHES_API}/${match._id}`, {
+    await fetch(`${MATCHES_API}/end/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        status: "finished",
-        winner,
-        loser,
-        score: {
-          teamA: { runs: teamARuns, wickets: teamAWickets },
-          teamB: { runs: teamBRuns, wickets: teamBWickets },
-        },
-      }),
+      body: JSON.stringify({ winner, loser, scoreA, scoreB }),
     });
     await loadMatches();
     setActionLoading(false);
   };
 
-  /* ---------------- FILTER MATCHES ---------------- */
-  const scheduledMatches = matches.filter((m) => m.status === "scheduled");
-  const ongoingMatches = matches.filter((m) => m.status === "ongoing");
-  const pastMatches = matches.filter((m) => m.status === "finished");
+  if (authLoading || pageLoading) return (
+    <Layout>
+      <div className="flex justify-center items-center h-[60vh] text-xl">
+        Loading...
+      </div>
+    </Layout>
+  );
 
-  /* ---------------- LOADING ---------------- */
-  if (authLoading || pageLoading) {
-    return (
-      <Layout>
-        <div className="flex justify-center items-center h-[60vh] text-xl">
-          Loading...
-        </div>
-      </Layout>
-    );
-  }
+  // ---------------- FILTER MATCHES ----------------
+  const scheduledMatches = matches.filter(m => m.status === "scheduled");
+  const ongoingMatches = matches.filter(m => m.status === "ongoing");
+  const pastMatches = matches.filter(m => m.status === "finished");
 
   return (
     <Layout>
       <div className="container mx-auto py-10">
         <h1 className="text-3xl font-bold text-center mb-6">Matches</h1>
 
-        {/* HEADER */}
+        {/* ADMIN HEADER */}
         {canEditMatches && (
           <div className="flex justify-between mb-4">
             <p className="text-sm text-gray-600">
@@ -196,199 +184,74 @@ const MatchesPage = () => {
         )}
 
         {/* LOGIN */}
-        {!canEditMatches && (
+        {!canEditMatches && !showLogin && (
           <div className="text-center mb-6">
-            {!showLogin ? (
-              <Button onClick={() => setShowLogin(true)}>Admin Login</Button>
-            ) : (
-              <div className="flex flex-col gap-2 items-center">
-                {loginError && <p className="text-red-600">{loginError}</p>}
-                <input
-                  className="border p-2 rounded"
-                  placeholder="Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-                <input
-                  className="border p-2 rounded"
-                  placeholder="Password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                <Button
-                  onClick={handleMatchesAdminLogin}
-                  disabled={actionLoading}
-                >
-                  {actionLoading ? "Loading..." : "Login"}
-                </Button>
-              </div>
-            )}
+            <Button onClick={() => setShowLogin(true)}>Admin Login</Button>
+          </div>
+        )}
+        {showLogin && !canEditMatches && (
+          <div className="flex flex-col gap-2 items-center mb-6">
+            {loginError && <p className="text-red-600">{loginError}</p>}
+            <input className="border p-2 rounded" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} />
+            <input className="border p-2 rounded" placeholder="Password" type="password" value={password} onChange={e => setPassword(e.target.value)} />
+            <Button onClick={handleMatchesAdminLogin} disabled={actionLoading}>
+              {actionLoading ? "Loading..." : "Login"}
+            </Button>
           </div>
         )}
 
-        {/* ADD MATCH */}
-        {canEditMatches && (
-          <Card className="mb-6">
-            <CardContent className="flex flex-wrap gap-2">
-              <input
-                className="border p-2 rounded"
-                placeholder="Team A"
-                value={newMatch.teamA}
-                onChange={(e) =>
-                  setNewMatch({ ...newMatch, teamA: e.target.value })
-                }
-              />
-              <input
-                className="border p-2 rounded"
-                placeholder="Team B"
-                value={newMatch.teamB}
-                onChange={(e) =>
-                  setNewMatch({ ...newMatch, teamB: e.target.value })
-                }
-              />
-              <input
-                type="number"
-                className="border p-2 rounded w-20"
-                placeholder="Overs"
-                value={newMatch.overs}
-                onChange={(e) =>
-                  setNewMatch({ ...newMatch, overs: parseInt(e.target.value) })
-                }
-              />
-              <input
-                type="date"
-                className="border p-2 rounded"
-                value={newMatch.date}
-                onChange={(e) =>
-                  setNewMatch({ ...newMatch, date: e.target.value })
-                }
-              />
-              <input
-                type="time"
-                className="border p-2 rounded"
-                value={newMatch.time}
-                onChange={(e) =>
-                  setNewMatch({ ...newMatch, time: e.target.value })
-                }
-              />
-              <Button onClick={handleAddMatch} disabled={actionLoading}>
-                Add Match
-              </Button>
+        {/* ---------------- SCHEDULED MATCHES ---------------- */}
+        <h2 className="text-xl font-bold mt-6 mb-2">Scheduled Matches</h2>
+        {scheduledMatches.map(m => (
+          <Card key={m._id} className="mb-2">
+            <CardContent className="flex justify-between items-center">
+              <div>{m.teamA} vs {m.teamB} | Overs: {m.overs} | {m.date} {m.time}</div>
+              {canEditMatches && (
+                <div className="flex gap-2">
+                  <Button onClick={() => setEditMatch(m)} className="bg-yellow-500 text-white"><Edit size={16} /></Button>
+                  <Button onClick={() => handleStartMatch(m._id)} className="bg-green-600 text-white"><PlayCircle size={16} /></Button>
+                  <Button onClick={() => handleDeleteMatch(m._id)} className="bg-red-600 text-white"><Trash2 size={16} /></Button>
+                </div>
+              )}
             </CardContent>
           </Card>
-        )}
+        ))}
 
-        {/* ---------------- SCHEDULED ---------------- */}
-        <h2 className="text-2xl font-semibold mt-6 mb-2">Scheduled Matches</h2>
-        {scheduledMatches.length === 0 ? (
-          <p>No scheduled matches</p>
-        ) : (
-          scheduledMatches.map((m) => (
-            <Card key={m._id} className="mb-2">
-              <CardContent className="flex justify-between items-center">
-                <div>
-                  {m.teamA} vs {m.teamB} | {m.overs} Overs | {m.date} {m.time}
-                </div>
-                {canEditMatches && (
-                  <div className="flex gap-2">
-                    <Button onClick={() => setEditMatch(m)}>
-                      <Edit size={16} />
-                    </Button>
-                    <Button onClick={() => handleDeleteMatch(m._id)}>
-                      <Trash2 size={16} />
-                    </Button>
-                    <Button
-                      onClick={async () => {
-                        await fetch(`${MATCHES_API}/${m._id}`, {
-                          method: "PUT",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({ status: "ongoing" }),
-                        });
-                        await loadMatches();
-                      }}
-                      className="bg-green-600 text-white"
-                    >
-                      Start
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          ))
-        )}
+        {/* ---------------- ONGOING MATCHES ---------------- */}
+        <h2 className="text-xl font-bold mt-6 mb-2">Ongoing Matches</h2>
+        {ongoingMatches.map(m => (
+          <Card key={m._id} className="mb-2 border-l-4 border-red-600 animate-pulse">
+            <CardContent className="flex justify-between items-center">
+              <div>{m.teamA} vs {m.teamB} | Overs: {m.overs} | Started at: {m.time}</div>
+              {canEditMatches && (
+                <Button onClick={() => handleEndMatch(m._id)} className="bg-blue-600 text-white"><CheckCircle size={16} /></Button>
+              )}
+            </CardContent>
+          </Card>
+        ))}
 
-        {/* ---------------- ONGOING ---------------- */}
-        <h2 className="text-2xl font-semibold mt-6 mb-2">Ongoing Matches</h2>
-        {ongoingMatches.length === 0 ? (
-          <p>No ongoing matches</p>
-        ) : (
-          ongoingMatches.map((m) => (
-            <Card key={m._id} className="mb-2 animate-pulse">
-              <CardContent className="flex justify-between items-center">
-                <div>
-                  🔴 {m.teamA} vs {m.teamB} | {m.overs} Overs | Start:{" "}
-                  {m.date} {m.time}
-                </div>
-                {canEditMatches && (
-                  <div className="flex gap-2">
-                    <Button onClick={() => handleEndMatch(m)}>End</Button>
-                    <Button onClick={() => handleDeleteMatch(m._id)}>
-                      <Trash2 size={16} />
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          ))
-        )}
-
-        {/* ---------------- PAST ---------------- */}
-        <h2 className="text-2xl font-semibold mt-6 mb-2">Past Matches</h2>
-        {pastMatches.length === 0 ? (
-          <p>No past matches</p>
-        ) : (
-          pastMatches.map((m) => (
-            <Card key={m._id} className="mb-2">
-              <CardContent className="flex justify-between items-center">
-                <div>
-                  🏆 {m.winner} defeated {m.loser} | {m.overs} Overs |{" "}
-                  Score: {m.score?.teamA?.runs || 0}-
-                  {m.score?.teamA?.wickets || 0} vs {m.score?.teamB?.runs || 0}-
-                  {m.score?.teamB?.wickets || 0}
-                </div>
-              </CardContent>
-            </Card>
-          ))
-        )}
+        {/* ---------------- PAST MATCHES ---------------- */}
+        <h2 className="text-xl font-bold mt-6 mb-2">Past Matches</h2>
+        {pastMatches.map(m => (
+          <Card key={m._id} className="mb-2">
+            <CardContent className="flex justify-between items-center">
+              <div>
+                {m.teamA} ({m.score?.teamA?.runs}/{m.score?.teamA?.wickets}) vs {m.teamB} ({m.score?.teamB?.runs}/{m.score?.teamB?.wickets}) | Overs: {m.overs} | Winner: {m.winner}
+              </div>
+            </CardContent>
+          </Card>
+        ))}
 
         {/* ---------------- EDIT MODAL ---------------- */}
         {editMatch && (
           <div className="fixed inset-0 bg-black/40 flex justify-center items-center">
             <div className="bg-white p-6 rounded w-full max-w-md">
               <h2 className="font-bold mb-4">Edit Match</h2>
-              <input
-                className="border p-2 w-full mb-2"
-                value={editMatch.teamA}
-                onChange={(e) =>
-                  setEditMatch({ ...editMatch, teamA: e.target.value })
-                }
-              />
-              <input
-                className="border p-2 w-full mb-2"
-                value={editMatch.teamB}
-                onChange={(e) =>
-                  setEditMatch({ ...editMatch, teamB: e.target.value })
-                }
-              />
-              <input
-                type="number"
-                className="border p-2 w-full mb-2"
-                value={editMatch.overs}
-                onChange={(e) =>
-                  setEditMatch({ ...editMatch, overs: parseInt(e.target.value) })
-                }
-              />
+              <input className="border p-2 w-full mb-2" value={editMatch.teamA} onChange={e => setEditMatch({...editMatch, teamA: e.target.value})} />
+              <input className="border p-2 w-full mb-2" value={editMatch.teamB} onChange={e => setEditMatch({...editMatch, teamB: e.target.value})} />
+              <input type="date" className="border p-2 w-full mb-2" value={editMatch.date} onChange={e => setEditMatch({...editMatch, date: e.target.value})} />
+              <input type="time" className="border p-2 w-full mb-2" value={editMatch.time} onChange={e => setEditMatch({...editMatch, time: e.target.value})} />
+              <input type="number" className="border p-2 w-full mb-2" value={editMatch.overs} onChange={e => setEditMatch({...editMatch, overs: e.target.value})} />
               <div className="flex justify-end gap-2">
                 <Button onClick={() => setEditMatch(null)}>Cancel</Button>
                 <Button onClick={handleUpdateMatch}>Update</Button>
@@ -402,6 +265,7 @@ const MatchesPage = () => {
 };
 
 export default MatchesPage;
+
 
 
 
