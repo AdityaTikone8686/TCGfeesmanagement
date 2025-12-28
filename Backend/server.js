@@ -68,6 +68,8 @@ if (!PORT) {
   process.exit(1);
 }
 
+const server = http.createServer(app);
+
 initIO(server);
 
 // Start the server
