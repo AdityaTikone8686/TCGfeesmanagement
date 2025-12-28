@@ -22,78 +22,75 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuthStatus = async () => {
       if (token) {
-        const userType = localStorage.getItem('userType');
+        const userType = localStorage.getItem('userType')
         try {
           if (userType === 'admin') {
-            // Only check admin status for admin
-            const adminStatus = await authAPI.getAdminStatus(token);
+            const adminStatus = await authAPI.getAdminStatus(token)
             if (adminStatus && adminStatus.admin) {
-              setUser(adminStatus.admin);
+              setUser(adminStatus.admin)
             } else {
-              logout();
-              setLoading(false);
-              return;
+              logout()
+              setLoading(false)
+              return
             }
           } else if (userType === 'user') {
-            // Only check user status for student
-            const status = await authAPI.getUserStatus(token);
-            console.log('User status data:', status);
-            setUser(status.user);
-            setUserStatus(status);
-            // Optionally fetch payment status for user
-            if (status.user && status.user.email) {
+            const status = await authAPI.getUserStatus(token)
+            setUser(status.user)
+            setUserStatus(status)
+
+            if (status.user?.email) {
               try {
-                const paymentStatusData = await paymentStatusAPI.getPaymentStatusByEmail(token, status.user.email);
-                console.log('Payment status data:', paymentStatusData);
-                setPaymentStatus(paymentStatusData);
-              } catch (e) {
-                console.error('Error fetching payment status:', e);
-                setPaymentStatus(null);
+                const paymentStatusData =
+                  await paymentStatusAPI.getPaymentStatusByEmail(
+                    token,
+                    status.user.email
+                  )
+                setPaymentStatus(paymentStatusData)
+              } catch {
+                setPaymentStatus(null)
               }
             }
           } else {
-            // Unknown userType, try both (legacy fallback)
-            let adminStatus = null;
+            let adminStatus = null
             try {
-              adminStatus = await authAPI.getAdminStatus(token);
-            } catch (e) {
-              if (e.message && e.message.includes('403')) {
-                adminStatus = null;
-              } else if (e.message && (e.message.includes('401') || e.message.includes('Unauthorized'))) {
-                logout();
-                setLoading(false);
-                return;
-              } else {
-                adminStatus = null;
-              }
-            }
-            if (adminStatus && adminStatus.admin) {
-              setUser(adminStatus.admin);
+              adminStatus = await authAPI.getAdminStatus(token)
+            } catch {}
+
+            if (adminStatus?.admin) {
+              setUser(adminStatus.admin)
             } else {
-              const status = await authAPI.getUserStatus(token);
-              setUser(status.user);
-              setUserStatus(status);
-              if (status.user && status.user.email) {
+              const status = await authAPI.getUserStatus(token)
+              setUser(status.user)
+              setUserStatus(status)
+
+              if (status.user?.email) {
                 try {
-                  const paymentStatusData = await paymentStatusAPI.getPaymentStatusByEmail(token, status.user.email);
-                  setPaymentStatus(paymentStatusData);
-                } catch (e) {
-                  setPaymentStatus(null);
+                  const paymentStatusData =
+                    await paymentStatusAPI.getPaymentStatusByEmail(
+                      token,
+                      status.user.email
+                    )
+                  setPaymentStatus(paymentStatusData)
+                } catch {
+                  setPaymentStatus(null)
                 }
               }
             }
           }
         } catch (err) {
-          console.error('Error checking auth status:', err);
-          if (err.message && (err.message.includes('401') || err.message.includes('Unauthorized'))) {
-            logout();
+          if (
+            err.message?.includes('401') ||
+            err.message?.includes('Unauthorized')
+          ) {
+            logout()
           }
         }
       }
-      setLoading(false);
-    };
-    checkAuthStatus();
-  }, [token]);
+      setLoading(false)
+    }
+
+    checkAuthStatus()
+  }, [token])
 
   const loginUser = async (credentials) => {
     try {
@@ -101,22 +98,21 @@ export const AuthProvider = ({ children }) => {
       setLoading(true)
       const response = await authAPI.loginUser(credentials)
       const { token: userToken, user: userData } = response
-      
+
       setToken(userToken)
       setUser(userData)
       localStorage.setItem('token', userToken)
       localStorage.setItem('userType', 'user')
-      
-      // Get user status and payment status
+
       const [status, paymentStatusData] = await Promise.all([
         authAPI.getUserStatus(userToken),
-        paymentStatusAPI.getPaymentStatusByEmail(userToken, userData.email)
+        paymentStatusAPI.getPaymentStatusByEmail(userToken, userData.email),
       ])
-      
+
       setUserStatus(status)
       setPaymentStatus(paymentStatusData)
       setLoading(false)
-      
+
       return { success: true }
     } catch (err) {
       setError(err.message)
@@ -131,28 +127,17 @@ export const AuthProvider = ({ children }) => {
       setLoading(true)
       const response = await authAPI.loginAdmin(credentials)
       const { token: adminToken, admin: adminData } = response
-      
+
       setToken(adminToken)
       setUser(adminData)
       localStorage.setItem('token', adminToken)
       localStorage.setItem('userType', 'admin')
       setLoading(false)
-      
+
       return { success: true }
     } catch (err) {
       setError(err.message)
       setLoading(false)
-      return { success: false, error: err.message }
-    }
-  }
-
-  const registerAdmin = async (adminData) => {
-    try {
-      setError(null)
-      const response = await authAPI.registerAdmin(adminData, token)
-      return { success: true, data: response }
-    } catch (err) {
-      setError(err.message)
       return { success: false, error: err.message }
     }
   }
@@ -168,26 +153,18 @@ export const AuthProvider = ({ children }) => {
     setLoading(false)
   }
 
-  const clearError = () => {
-    setError(null)
-  }
+  const clearError = () => setError(null)
 
   const refreshUserStatus = async () => {
     if (token && user?.email) {
       try {
         const [status, paymentStatusData] = await Promise.all([
           authAPI.getUserStatus(token),
-          paymentStatusAPI.getPaymentStatusByEmail(token, user.email)
+          paymentStatusAPI.getPaymentStatusByEmail(token, user.email),
         ])
-        
-        console.log('Refreshed user status:', status)
-        console.log('Refreshed payment status:', paymentStatusData)
-        
         setUserStatus(status)
         setPaymentStatus(paymentStatusData)
-      } catch (err) {
-        console.error('Error refreshing user status:', err)
-      }
+      } catch {}
     }
   }
 
@@ -204,7 +181,10 @@ export const AuthProvider = ({ children }) => {
     clearError,
     refreshUserStatus,
     isAuthenticated: !!token,
-    isAdmin: user?.isAdmin || user?.role === 'admin' || localStorage.getItem('userType') === 'admin',
+    isAdmin:
+      user?.isAdmin ||
+      user?.role === 'admin' ||
+      localStorage.getItem('userType') === 'admin',
   }
 
   return (
@@ -212,5 +192,6 @@ export const AuthProvider = ({ children }) => {
       {children}
     </AuthContext.Provider>
   )
-} 
+}
+
 
