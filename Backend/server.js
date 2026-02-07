@@ -43,6 +43,8 @@ app.use("/api/payment-requests", paymentRequestRoutes);
 app.use("/api/matches", matchRoutes);
 app.use("/api/admin", adminAuthRoutes);
 app.use("/api/matches-admin", matchAdminAuthRoutes);
+app.use("/api/visitors", visitorRoutes);
+
 
 
 
