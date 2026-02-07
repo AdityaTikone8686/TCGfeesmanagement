@@ -17,6 +17,8 @@ import matchRoutes from "./routes/matches.js";
 import adminAuthRoutes from "./routes/adminAuth.js";
 import matchAdminAuthRoutes from "./routes/matchAdminAuth.js";
 import { initIO } from "./socket.js";
+import visitorRoutes from "./routes/visitorRoutes.js";
+
 
 
 dotenv.config();
