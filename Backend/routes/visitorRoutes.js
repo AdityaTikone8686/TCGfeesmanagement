@@ -5,14 +5,23 @@ const router = express.Router();
 
 // Track visit + heartbeat
 router.post("/track", async (req, res) => {
+  console.log("📥 /track hit", req.body);
+  
   const { visitorId } = req.body;
 
+   if (!visitorId) {
+    console.log("❌ visitorId missing");
+    return res.status(400).json({ error: "visitorId missing" });
+  }
+   
   await Visitor.findOneAndUpdate(
     { visitorId },
     { lastActive: new Date() },
     { upsert: true, new: true }
   );
-
+  
+  console.log("✅ visitor saved:", visitorId);
+  
   res.sendStatus(200);
 });
 
