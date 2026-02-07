@@ -9,6 +9,8 @@ import {
   ArrowRight,
 } from "lucide-react";
 import useVisitors from "../../hooks/useVisitors";
+import AnimatedNumber from "../ui/AnimatedNumber";
+
 
 
 
@@ -137,16 +139,23 @@ export default function Footer() {
         {/* Bottom Section */}
         <div className="border-t border-border mt-10 pt-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="flex flex-wrap justify-center md:justify-start gap-6 text-sm text-muted-foreground">
-  <span>
-    👥 Live Visitors:{" "}
-    <span className="font-semibold text-foreground">{live}</span>
-  </span>
-  <span>
-    📊 Total Visitors:{" "}
-    <span className="font-semibold text-foreground">{total}</span>
-  </span>
+            <div className="flex gap-6 text-sm text-muted-foreground">
+  <div className="flex items-center gap-2">
+    <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+    Live:
+    <span className="font-semibold text-foreground">
+      <AnimatedNumber value={live} />
+    </span>
+  </div>
+
+  <div className="flex items-center gap-2">
+    Total:
+    <span className="font-semibold text-foreground">
+      <AnimatedNumber value={total} />
+    </span>
+  </div>
 </div>
+
 
             <p className="text-sm text-muted-foreground text-center md:text-left">
               © 2025 Tikone Cricket Gurukul | All rights reserved.
