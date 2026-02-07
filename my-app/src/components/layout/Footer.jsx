@@ -8,6 +8,8 @@ import {
   Instagram,
   ArrowRight,
 } from "lucide-react";
+import useVisitors from "../hooks/useVisitors";
+
 
 export default function Footer() {
   return (
