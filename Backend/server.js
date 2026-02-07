@@ -29,7 +29,11 @@ const app = express();
 connectDB();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST"],
+}));
+
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
