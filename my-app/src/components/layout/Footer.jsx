@@ -12,6 +12,8 @@ import useVisitors from "../hooks/useVisitors";
 
 
 export default function Footer() {
+  const { total, live } = useVisitors();
+
   return (
     <footer className="bg-card text-card-foreground border-t border-border">
       <div className="container mx-auto px-3 sm:px-4 py-12 sm:py-16">
