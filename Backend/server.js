@@ -30,9 +30,11 @@ connectDB();
 
 // Middleware
 app.use(cors({
-  origin: "*",
-  methods: ["GET", "POST"],
+  origin: "https://tikonecricketgurukul.vercel.app", // frontend URL
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // allow all needed methods
+  credentials: true, // if using cookies or auth headers
 }));
+
 
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
