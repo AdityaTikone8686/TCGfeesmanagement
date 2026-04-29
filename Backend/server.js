@@ -29,10 +29,22 @@ const app = express();
 connectDB();
 
 // Middleware
+const allowedOrigins = [
+  "https://tikonecricketgurukul.vercel.app",
+  "https://tikonecricketgurukul.in",
+  "https://www.tikonecricketgurukul.in"
+];
+
 app.use(cors({
-  origin: "https://tikonecricketgurukul.vercel.app", // frontend URL
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // allow all needed methods
-  credentials: true, // if using cookies or auth headers
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  credentials: true,
 }));
 
 
