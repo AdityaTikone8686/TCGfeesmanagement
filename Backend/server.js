@@ -19,6 +19,7 @@ import matchAdminAuthRoutes from "./routes/matchAdminAuth.js";
 import { initIO } from "./socket.js";
 import visitorRoutes from "./routes/visitorRoutes.js";
 import registrationRoutes from "./routes/registrationRoutes.js";
+import registerRoutes from "./routes/registerRoutes.js";
 
 
 
@@ -66,6 +67,7 @@ app.use("/api/admin", adminAuthRoutes);
 app.use("/api/matches-admin", matchAdminAuthRoutes);
 app.use("/api/visitors", visitorRoutes);
 app.use("/api/register", registrationRoutes);
+app.use("/api/register", registerRoutes);
 
 
 
