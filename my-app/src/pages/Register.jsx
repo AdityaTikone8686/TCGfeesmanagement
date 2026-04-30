@@ -264,11 +264,16 @@ function Step2({ data, setData, onNext, onBack }) {
       </div>
       <div style={styles.card}>
         <Field label="Preferred batch timing">
-          <RadioGroup
-            options={["Morning (6–8 AM)", "Evening (5–7 PM)", "Weekend only"]}
-            value={data.batch}
-            onChange={set("batch")}
-          />
+          <div style={styles.radioGroup}>
+            <div style={{border:"0.5px solid #f09595",borderRadius:"8px",padding:"8px 14px",background:"#fcebeb",display:"flex",alignItems:"center",gap:"8px",cursor:"not-allowed",userSelect:"none"}}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#a32d2d" strokeWidth="2.2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+              <span style={{fontSize:"13px",color:"#a32d2d",fontWeight:500}}>Morning (6–8 AM)</span>
+              <span style={{fontSize:"11.5px",color:"#e24b4a"}}>— this slot is not available</span>
+            </div>
+            {["Evening (5–7 PM)", "Weekend only"].map((o) => (
+              <div key={o} style={styles.radioOpt(data.batch === o)} onClick={() => set("batch")(o)}>{o}</div>
+            ))}
+          </div>
         </Field>
         <Field label="Program duration">
           <Select
