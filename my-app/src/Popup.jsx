@@ -22,14 +22,12 @@ export default function Popup() {
         <div style={header}>
           <button style={closeBtn} onClick={() => setShow(false)}>✕</button>
           <div style={iconCircle}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <ellipse cx="12" cy="12" rx="9" ry="9" stroke="white" strokeWidth="1.5"/>
-              <line x1="12" y1="3" x2="12" y2="21" stroke="white" strokeWidth="1.5"/>
-              <line x1="3" y1="12" x2="21" y2="12" stroke="white" strokeWidth="1.5"/>
-              <line x1="5.6" y1="5.6" x2="18.4" y2="18.4" stroke="white" strokeWidth="1"/>
-              <line x1="18.4" y1="5.6" x2="5.6" y2="18.4" stroke="white" strokeWidth="1"/>
-            </svg>
-          </div>
+  <img
+    src="/cropped_circle_image-removebg-preview.png"
+    alt="Tikone Cricket Gurukul"
+    style={logoImg}
+  />
+</div>
           <span style={badge}>Admissions Open 2026</span>
           <h2 style={title}>Tikone Cricket Gurukul</h2>
           <p style={subtitle}>Shape your game with expert coaching</p>
