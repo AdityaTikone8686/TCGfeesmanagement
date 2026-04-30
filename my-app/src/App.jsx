@@ -62,7 +62,6 @@ function AppRoutes() {
   }
 
   return (
-    <Router>
       <Routes>
         <Route path="/" element={
           isAuthenticated
@@ -150,7 +149,6 @@ function AppRoutes() {
         {/* Catch all route */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </Router>
   )
 }
 
