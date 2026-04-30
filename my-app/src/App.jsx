@@ -16,6 +16,7 @@ import MediaPage from "./pages/MediaPage";
 import MatchesPage from "./pages/MatchesPage";
 import AdminLoginPage from "./pages/AdminLoginPage";
 import Popup from "./Popup";
+import CookieConsent from "./CookieConsent";
 import './App.css'
 
 // Protected Route Component
@@ -137,6 +138,7 @@ function App() {
   return (
     <AuthProvider>
       <Popup />
+      <CookieConsent />
       <AppRoutes />
     </AuthProvider>
   );
