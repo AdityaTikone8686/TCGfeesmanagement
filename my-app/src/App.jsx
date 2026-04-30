@@ -17,6 +17,7 @@ import MatchesPage from "./pages/MatchesPage";
 import AdminLoginPage from "./pages/AdminLoginPage";
 import Popup from "./Popup";
 import CookieConsent from "./CookieConsent";
+import Register from './pages/Register';
 import './App.css'
 
 // Protected Route Component
@@ -126,7 +127,14 @@ function AppRoutes() {
             </ProtectedRoute>
           } 
         />
-        
+
+        <Route 
+          path="/student/register" 
+          element={
+          <Register />
+          } 
+          />
+
         {/* Catch all route */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
