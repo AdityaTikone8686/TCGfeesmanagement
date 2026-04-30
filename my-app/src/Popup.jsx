@@ -83,6 +83,24 @@ const header = {
   background: "linear-gradient(135deg, #1a5c2a 0%, #2d8a45 100%)",
   padding: "20px 20px 16px", textAlign: "center", position: "relative",
 };
+const iconCircle = {
+  width: "48px",
+  height: "48px",
+  background: "rgba(255,255,255,0.15)",
+  borderRadius: "50%",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  margin: "0 auto 10px",
+  overflow: "hidden", // important for clean circle crop
+};
+
+const logoImg = {
+  width: "100%",
+  height: "100%",
+  objectFit: "cover", // or "contain" if you don’t want cropping
+};
+
 const closeBtn = {
   position: "absolute", top: "10px", right: "12px",
   background: "rgba(255,255,255,0.15)", border: "none", color: "#fff",
