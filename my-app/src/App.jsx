@@ -15,6 +15,7 @@ import Footer from "./components/layout/Footer";
 import MediaPage from "./pages/MediaPage";
 import MatchesPage from "./pages/MatchesPage";
 import AdminLoginPage from "./pages/AdminLoginPage";
+import Popup from "./Popup";
 import './App.css'
 
 // Protected Route Component
@@ -135,6 +136,7 @@ function AppRoutes() {
 function App() {
   return (
     <AuthProvider>
+      <Popup />
       <AppRoutes />
     </AuthProvider>
   )
