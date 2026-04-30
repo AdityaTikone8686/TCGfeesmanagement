@@ -18,6 +18,7 @@ import AdminLoginPage from "./pages/AdminLoginPage";
 import Popup from "./Popup";
 import CookieConsent from "./CookieConsent";
 import Register from './pages/Register';
+import Registrations from "./pages/admin/Registrations";
 import './App.css'
 
 // Protected Route Component
@@ -127,6 +128,17 @@ function AppRoutes() {
             </ProtectedRoute>
           } 
         />
+
+
+        <Route
+          path="/admin/registrations"
+          element={
+         <ProtectedRoute 
+           requireAdmin={true}>
+          <Registrations />
+         </ProtectedRoute>
+         }
+         />
 
         <Route 
           path="/student/register" 
