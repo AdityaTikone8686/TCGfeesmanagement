@@ -26,6 +26,7 @@ const AdminDashboard = () => {
   const [students, setStudents] = useState([])
   const [payments, setPayments] = useState([])
   const [feePlans, setFeePlans] = useState([])
+  const [registrations, setRegistrations] = useState([])
   const [subscriptions, setSubscriptions] = useState([])
   const [paymentRequests, setPaymentRequests] = useState([])
   const [report, setReport] = useState(null)
