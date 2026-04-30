@@ -107,11 +107,6 @@ const closeBtn = {
   width: "28px", height: "28px", borderRadius: "50%",
   cursor: "pointer", fontSize: "13px",
 };
-const iconCircle = {
-  width: "40px", height: "40px", background: "rgba(255,255,255,0.15)",
-  borderRadius: "50%", display: "flex", alignItems: "center",
-  justifyContent: "center", margin: "0 auto 10px",
-};
 const badge = {
   display: "inline-block", background: "rgba(255,255,255,0.18)",
   color: "#d4f5da", fontSize: "11px", fontWeight: 500,
