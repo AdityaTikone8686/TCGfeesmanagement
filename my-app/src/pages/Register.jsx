@@ -404,7 +404,7 @@ export default function RegistrationPage() {
 
   try {
     const res = await fetch(
-     "https://www.tikonecricketgurukul.in/api/register", // or localhost
+     "https://tikonecricketgurukulbackend.onrender.com/api/register", // or localhost
       {
         method: "POST",
         headers: {
