@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Popup() {
   const [show, setShow] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const seen = localStorage.getItem("popupSeen");
@@ -53,7 +55,7 @@ export default function Popup() {
             <p style={offerText}>Limited seats — Early enrollment discount active</p>
           </div>
 
-          <button style={cta} onClick={() => window.location.href = "https://www.tikonecricketgurukul.in/student/register"}>
+          <button style={cta} onClick={() => navigate("/student/register"}>
             Enroll Now
           </button>
           <p style={footerNote}>Questions? <a href="/contact" style={link}>Contact us</a></p>
