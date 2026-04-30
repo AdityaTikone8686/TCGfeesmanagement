@@ -395,6 +395,38 @@ export default function RegistrationPage() {
     batch: "Morning (6–8 AM)", duration: "3 months", notes: "",
   });
 
+  const handleFinalSubmit = async () => {
+  const allData = {
+    refNum,
+    ...personalData,
+    ...batchData,
+  };
+
+  try {
+    const res = await fetch(
+      "https://tikonecricketgurukul.in/api/register", // or localhost
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(allData),
+      }
+    );
+
+    const result = await res.json();
+
+    if (result.success) {
+      setSubmitted(true);
+    } else {
+      alert("Something went wrong");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Server error");
+  }
+};
+
   const goNext1 = () => {
     if (!personalData.fname || !personalData.lname || !personalData.phone) {
       alert("Please fill in first name, last name, and mobile number.");
