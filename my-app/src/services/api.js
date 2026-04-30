@@ -381,3 +381,18 @@ export const miscAPI = {
 		return handleResponse(response);
 	},
 };
+
+//registration API's
+export const registrationAPI = {
+  getAll: async (token) => {
+    const res = await fetch(
+      "https://tikonecricketgurukulbackend.onrender.com/api/register",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return res.json();
+  },
+};
