@@ -31,4 +31,14 @@ router.get("/", async (req, res) => {
   res.json(students);
 });
 
+// GET all registrations (ADMIN ONLY)
+router.get("/", async (req, res) => {
+  try {
+    const data = await Registration.find().sort({ createdAt: -1 });
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 export default router;
