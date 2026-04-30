@@ -158,7 +158,7 @@ export default function Footer() {
 
 
             <p className="text-sm text-muted-foreground text-center md:text-left">
-              © 2025 Tikone Cricket Gurukul | All rights reserved.
+              © 2026 Tikone Cricket Gurukul | All rights reserved.
             </p>
 
             <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm">
