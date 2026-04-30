@@ -53,7 +53,7 @@ export default function Popup() {
             <p style={offerText}>Limited seats — Early enrollment discount active</p>
           </div>
 
-          <button style={cta} onClick={() => window.location.href = "/student/register"}>
+          <button style={cta} onClick={() => window.location.href = "https://www.tikonecricketgurukul.in/student/register"}>
             Enroll Now
           </button>
           <p style={footerNote}>Questions? <a href="/contact" style={link}>Contact us</a></p>
