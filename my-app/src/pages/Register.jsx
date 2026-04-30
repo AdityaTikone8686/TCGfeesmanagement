@@ -470,7 +470,7 @@ export default function RegistrationPage() {
         <>
           {step === 1 && <Step1 data={personalData} setData={setPersonalData} onNext={goNext1} />}
           {step === 2 && <Step2 data={batchData} setData={setBatchData} onNext={() => setStep(3)} onBack={() => setStep(1)} />}
-          {step === 3 && <Step3 data={{ ...personalData, ...batchData }} onBack={() => setStep(2)} onSubmit={() => setSubmitted(true)} />}
+          {step === 3 && <Step3 data={{ ...personalData, ...batchData }} onBack={() => setStep(2)} onSubmit={handleFinalSubmit} />}
         </>
       ) : (
         <Success refNum={refNum} />
