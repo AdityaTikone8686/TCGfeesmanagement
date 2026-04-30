@@ -156,11 +156,13 @@ function AppRoutes() {
 
 function App() {
   return (
+    <Router>
     <AuthProvider>
       <Popup />
       <CookieConsent />
       <AppRoutes />
     </AuthProvider>
+    </Router>
   );
 }
 
