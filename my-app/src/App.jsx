@@ -139,7 +139,7 @@ function App() {
       <Popup />
       <AppRoutes />
     </AuthProvider>
-  )
+  );
 }
 
 export default App
