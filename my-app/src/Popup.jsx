@@ -22,12 +22,12 @@ export default function Popup() {
         <div style={header}>
           <button style={closeBtn} onClick={() => setShow(false)}>✕</button>
           <div style={iconCircle}>
-  <img
-    src="/cropped_circle_image-removebg-preview.png"
-    alt="Tikone Cricket Gurukul"
-    style={logoImg}
-  />
-</div>
+             <img
+               src="/cropped_circle_image-removebg-preview.png"
+               alt="Tikone Cricket Gurukul"
+               style={logoImg}
+              />
+          </div>
           <span style={badge}>Admissions Open 2026</span>
           <h2 style={title}>Tikone Cricket Gurukul</h2>
           <p style={subtitle}>Shape your game with expert coaching</p>
