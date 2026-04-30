@@ -8,6 +8,7 @@ import { Input } from '../../components/ui/input'
 import { Label } from '../../components/ui/label'
 import { Users, CreditCard, Book, Settings, LogOut, Trash2, DollarSign, Award, Menu, X, Plus, Edit, Eye, Trophy, UserCircle, TrendingUp, CalendarCheck, CheckCircle, Star, History } from 'lucide-react'
 
+
 const SIDEBAR_ITEMS = [
   { id: 'overview', label: 'Overview', icon: <Award className="w-5 h-5 mr-2" /> },
   { id: 'students', label: 'Students', icon: <Users className="w-5 h-5 mr-2" /> },
@@ -17,6 +18,7 @@ const SIDEBAR_ITEMS = [
   { id: 'subscriptions', label: 'Subscriptions', icon: <CreditCard className="w-5 h-5 mr-2" /> },
   { id: 'reports', label: 'Reports', icon: <Settings className="w-5 h-5 mr-2" /> },
   { id: 'settings', label: 'Settings', icon: <Settings className="w-5 h-5 mr-2" /> },
+  { id: 'registrations', label: 'Registrations', icon: <Users className="w-5 h-5 mr-2" /> },
 ]
 
 const AdminDashboard = () => {
