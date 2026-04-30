@@ -30,7 +30,7 @@ export default function Popup() {
               <line x1="18.4" y1="5.6" x2="5.6" y2="18.4" stroke="white" strokeWidth="1"/>
             </svg>
           </div>
-          <span style={badge}>Admissions Open 2025</span>
+          <span style={badge}>Admissions Open 2026</span>
           <h2 style={title}>Tikone Cricket Gurukul</h2>
           <p style={subtitle}>Shape your game with expert coaching</p>
         </div>
