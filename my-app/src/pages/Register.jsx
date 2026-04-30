@@ -406,7 +406,7 @@ export default function RegistrationPage() {
         <img src={LOGO} alt="Tikone Cricket Gurukul logo" style={styles.logoImg} />
         <div>
           <h1 style={styles.headerTitle}>Tikone Cricket Gurukul</h1>
-          <p style={styles.headerSub}>Player registration — 2025 season</p>
+          <p style={styles.headerSub}>Player Registration</p>
         </div>
       </div>
 
