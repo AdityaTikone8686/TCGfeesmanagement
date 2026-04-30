@@ -7,7 +7,7 @@ import { Button } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
 import { Label } from '../../components/ui/label'
 import { Users, CreditCard, Book, Settings, LogOut, Trash2, DollarSign, Award, Menu, X, Plus, Edit, Eye, Trophy, UserCircle, TrendingUp, CalendarCheck, CheckCircle, Star, History } from 'lucide-react'
-
+import { registrationAPI } from '../../services/api'
 
 const SIDEBAR_ITEMS = [
   { id: 'overview', label: 'Overview', icon: <Award className="w-5 h-5 mr-2" /> },
@@ -74,13 +74,14 @@ const AdminDashboard = () => {
     setLoading(true)
     const token = localStorage.getItem('token')
     try {
-      const [studentsData, paymentsData, feePlansData, subscriptionsData, reportData, paymentRequestsData] = await Promise.all([
+      const [studentsData, paymentsData, feePlansData, subscriptionsData, reportData, paymentRequestsData,  registrationsData] = await Promise.all([
         adminAPI.getAllStudents(token),
         adminAPI.getAllPayments(token),
         feePlansAPI.getAllFeePlans(token),
         subscriptionsAPI.getAllSubscriptions(token),
         reportsAPI.getSummaryReport(token, { month: new Date().getMonth() + 1, year: new Date().getFullYear() }),
-        paymentRequestAPI.getAllPaymentRequests(token)
+        paymentRequestAPI.getAllPaymentRequests(token),
+        registrationAPI.getAll(token)
       ])
       setStudents(studentsData)
       setPayments(paymentsData.payments || paymentsData)
@@ -88,6 +89,7 @@ const AdminDashboard = () => {
       setSubscriptions(subscriptionsData)
       setReport(reportData)
       setPaymentRequests(paymentRequestsData)
+      setRegistrations(registrationsData)
     } catch (e) {
       console.error('Error fetching dashboard data:', e)
     } finally {
