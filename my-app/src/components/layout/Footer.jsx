@@ -52,6 +52,47 @@ export default function Footer() {
               >
                 <Instagram className="h-5 w-5" />
               </a>
+
+              {/* X (Twitter) */}
+  <a
+    href="https://x.com/yourprofile"
+    target="_blank"
+    rel="noreferrer"
+    className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition"
+  >
+    <span className="text-sm font-bold">X</span>
+  </a>
+
+  {/* Facebook */}
+  <a
+    href="https://facebook.com/yourprofile"
+    target="_blank"
+    rel="noreferrer"
+    className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition"
+  >
+    <span className="text-sm font-bold">f</span>
+  </a>
+
+  {/* Threads */}
+  <a
+    href="https://threads.net/@yourprofile"
+    target="_blank"
+    rel="noreferrer"
+    className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition"
+  >
+    <span className="text-sm font-bold">@</span>
+  </a>
+
+  {/* YouTube */}
+  <a
+    href="https://youtube.com/@yourchannel"
+    target="_blank"
+    rel="noreferrer"
+    className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition"
+  >
+    <span className="text-sm font-bold">▶</span>
+  </a>
+              
             </div>
           </div>
 
