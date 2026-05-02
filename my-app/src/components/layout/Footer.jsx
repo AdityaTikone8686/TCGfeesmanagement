@@ -6,6 +6,7 @@ import {
   MapPin,
   Clock,
   Instagram,
+  Youtube,
   ArrowRight,
 } from "lucide-react";
 import useVisitors from "../../hooks/useVisitors";
@@ -83,15 +84,16 @@ export default function Footer() {
     <span className="text-sm font-bold">@</span>
   </a>
 
-  {/* YouTube */}
-  <a
-    href="https://youtube.com/@officialtikonecricketgurukul?si=23hnVurVkNuVoqbk"
-    target="_blank"
-    rel="noreferrer"
-    className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition"
-  >
-    <span className="text-sm font-bold">▶</span>
-  </a>
+  
+              {/* YouTube */}
+<a
+  href="https://youtube.com/@officialtikonecricketgurukul?si=23hnVurVkNuVoqbk"
+  target="_blank"
+  rel="noreferrer"
+  className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition"
+>
+  <Youtube className="h-5 w-5" />
+</a>
               
             </div>
           </div>
