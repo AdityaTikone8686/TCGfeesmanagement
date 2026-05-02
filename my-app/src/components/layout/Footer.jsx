@@ -55,7 +55,7 @@ export default function Footer() {
 
               {/* X (Twitter) */}
   <a
-    href="https://x.com/yourprofile"
+    href="https://x.com/main_tcg?s=21"
     target="_blank"
     rel="noreferrer"
     className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition"
@@ -65,7 +65,7 @@ export default function Footer() {
 
   {/* Facebook */}
   <a
-    href="https://facebook.com/yourprofile"
+    href="https://www.facebook.com/share/1QUmmojSSn/?mibextid=wwXIfr"
     target="_blank"
     rel="noreferrer"
     className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition"
@@ -75,7 +75,7 @@ export default function Footer() {
 
   {/* Threads */}
   <a
-    href="https://threads.net/@yourprofile"
+    href="https://www.threads.com/@officialtikonecricketgurukul?igshid=NTc4MTIwNjQ2YQ=="
     target="_blank"
     rel="noreferrer"
     className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition"
@@ -85,7 +85,7 @@ export default function Footer() {
 
   {/* YouTube */}
   <a
-    href="https://youtube.com/@yourchannel"
+    href="https://youtube.com/@officialtikonecricketgurukul?si=23hnVurVkNuVoqbk"
     target="_blank"
     rel="noreferrer"
     className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition"
