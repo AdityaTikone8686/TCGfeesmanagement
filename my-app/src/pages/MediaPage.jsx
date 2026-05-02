@@ -9,17 +9,7 @@ const mediaItems = [
   { type: "image", src: "/U-14 TEAM PHOTO.jpg", alt: "pr" },
   { type: "image", src: "/TCG U-13 MATCH.jpg", alt: "pr" },
   { type: "image", src: "/21 DEC 25 MATCH PHOTO.jpeg", alt: "pr" },
-  { type: "image", src: "/1.jpg", alt: "pr" },
   { type: "image", src: "/2.jpg", alt: "pr" },
-  { type: "image", src: "/3.jpg", alt: "pr" },
-  { type: "image", src: "/4.jpg", alt: "pr" },
-  { type: "image", src: "/5.jpg", alt: "pr" },
-  { type: "image", src: "/6.jpg", alt: "pr" },
-  { type: "image", src: "/7.jpg", alt: "pr" },
-  { type: "image", src: "/8.jpg", alt: "pr" },
-  { type: "image", src: "/9.jpg", alt: "pr" },
-  { type: "image", src: "/10.jpg", alt: "pr" },
-  
 ];
 
 const MediaPage = () => {
