@@ -189,7 +189,7 @@ export default function Header() {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <nav className="lg:hidden mt-4 pb-4 border-t border-border animate-slide-up">
+          <nav className="md:hidden mt-4 pb-4 border-t border-border animate-slide-up">
             <div className="flex flex-col space-y-4 pt-4">
               {!isAuthenticated ? (
                 <>
