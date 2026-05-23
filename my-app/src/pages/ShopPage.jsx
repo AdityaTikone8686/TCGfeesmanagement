@@ -632,6 +632,11 @@ const ShopPage = () => {
             <p className="text-gray-600 mt-3 text-lg">
               Find the best cricket gear for every player
             </p>
+             <div className="mt-4">
+    <span className="bg-green-600 text-white px-4 py-2 rounded-full font-semibold">
+      Cart Items: {cart.length}
+    </span>
+  </div>
           </div>
 
           {/* Categories */}
