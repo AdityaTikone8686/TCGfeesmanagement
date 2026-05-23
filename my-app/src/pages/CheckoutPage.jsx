@@ -10,37 +10,8 @@ import {
   Package, ChevronDown, ChevronUp, Edit2, Zap
 } from 'lucide-react'
 import Layout from '../components/layout/Layout'
+import { useCart } from '../context/CartContext'
 
-/* ── Sample order data – replace with real cart context ── */
-const ORDER_ITEMS = [
-  {
-    id: 1,
-    name: 'TCG Premium Cricket Bat',
-    variant: 'English Willow · Size 6',
-    price: 4500,
-    originalPrice: 5500,
-    quantity: 1,
-    image: '/tcg_ground.jpeg',
-  },
-  {
-    id: 2,
-    name: 'TCG Training Kit Bag',
-    variant: 'Large · Green',
-    price: 1800,
-    originalPrice: 2200,
-    quantity: 2,
-    image: '/tcg_ground.jpeg',
-  },
-  {
-    id: 3,
-    name: 'Thigh Guard + Arm Guard Combo',
-    variant: 'Adult · One Size',
-    price: 950,
-    originalPrice: null,
-    quantity: 1,
-    image: '/tcg_ground.jpeg',
-  },
-]
 
 const STEPS = ['Delivery', 'Payment', 'Review']
 
@@ -81,6 +52,7 @@ function Field({ label, id, type = 'text', placeholder, value, onChange, require
 
 export default function CheckoutPage() {
   const navigate = useNavigate()
+  const { cartItems, setCartItems } = useCart()
   const [step, setStep] = useState(0)   // 0 = Delivery, 1 = Payment, 2 = Review
   const [orderPlaced, setOrderPlaced] = useState(false)
   const [summaryOpen, setSummaryOpen] = useState(false)
@@ -96,8 +68,17 @@ export default function CheckoutPage() {
   const set = key => e => setForm(f => ({ ...f, [key]: e.target.value }))
 
   /* ── Totals ── */
-  const subtotal  = ORDER_ITEMS.reduce((s, i) => s + i.price * i.quantity, 0)
-  const savings   = ORDER_ITEMS.reduce((s, i) => s + (i.originalPrice ? (i.originalPrice - i.price) * i.quantity : 0), 0)
+  const subtotal = cartItems.reduce(
+  (s, i) =>
+    s +
+    Number(String(i.price).replace(/[^0-9]/g, "")) *
+      i.quantity,
+  0
+)
+  const savings   = cartItems.reduce((s, i) => s + (i.originalPrice ? (
+  Number(String(i.mrp).replace(/[^0-9]/g, "")) -
+  Number(String(i.price).replace(/[^0-9]/g, ""))
+) * i.quantity : 0), 0)
   const discount  = 360          // assume promo already applied from CartPage
   const shipping  = subtotal > 2000 ? 0 : 150
   const total     = subtotal - discount + shipping
@@ -114,7 +95,11 @@ export default function CheckoutPage() {
   const next = () => { if (step < 2) setStep(s => s + 1) }
   const back = () => { if (step > 0) setStep(s => s - 1) }
 
-  const placeOrder = () => setOrderPlaced(true)
+  const placeOrder = () => {
+  setOrderPlaced(true)
+  setCartItems([])
+  localStorage.removeItem("cartItems")
+}
 
   /* ── Success screen ── */
   if (orderPlaced) {
