@@ -4,6 +4,7 @@
 import React, { useState } from "react";
 import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
+import { ShoppingCart } from "lucide-react";
 
 const products = [
   {
@@ -624,20 +625,35 @@ const ShopPage = () => {
         <div className="max-w-7xl mx-auto px-4">
 
           {/* Heading */}
-          <div className="text-center mb-12">
-            <h1 className="text-5xl font-bold text-gray-900">
-              Cricket Shop
-            </h1>
+         <div className="flex justify-between items-center mb-12">
 
-            <p className="text-gray-600 mt-3 text-lg">
-              Find the best cricket gear for every player
-            </p>
-             <div className="mt-4">
-    <span className="bg-green-600 text-white px-4 py-2 rounded-full font-semibold">
-      Cart Items: {cart.length}
+  {/* Left Side Cart */}
+  <div className="relative">
+    <button className="bg-white p-4 rounded-full shadow-md hover:shadow-xl transition">
+      <ShoppingCart className="w-7 h-7 text-green-600" />
+    </button>
+
+    {/* Cart Count */}
+    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-6 h-6 flex items-center justify-center rounded-full font-bold">
+      {cart.length}
     </span>
   </div>
-          </div>
+
+  {/* Center Heading */}
+  <div className="text-center flex-1">
+    <h1 className="text-5xl font-bold text-gray-900">
+      Cricket Shop
+    </h1>
+
+    <p className="text-gray-600 mt-3 text-lg">
+      Find the best cricket gear for every player
+    </p>
+  </div>
+
+  {/* Empty Space for Balance */}
+  <div className="w-16"></div>
+
+</div>
 
           {/* Categories */}
           <div className="flex flex-wrap justify-center gap-3 mb-12">
