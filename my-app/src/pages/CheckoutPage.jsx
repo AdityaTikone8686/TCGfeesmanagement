@@ -383,10 +383,10 @@ export default function CheckoutPage() {
                       )}
 
                       {payMethod === 'cod' && (
-                        <div className="col-span-2 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl px-4 py-3">
+                        <div className="col-span-2 bg-black-50 dark:bg-black-950/30 border border-black-200 dark:border-black-800 rounded-xl px-4 py-3">
                           <div className="flex items-start gap-3">
-                            <Wallet className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
-                            <p className="text-sm text-amber-700 dark:text-amber-400 leading-relaxed">
+                            <Wallet className="h-5 w-5 text-black-600 flex-shrink-0 mt-0.5" />
+                            <p className="text-sm text-black-700 dark:text-black-400 leading-relaxed">
                               Pay in cash when your order arrives. Please keep exact change ready. A ₹50 COD handling fee may apply.
                             </p>
                           </div>
