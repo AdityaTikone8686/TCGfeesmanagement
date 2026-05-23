@@ -605,7 +605,7 @@ const categories = [
 const ShopPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const { addToCart, cartItems } = useCart();
-  alert(`${product.name} added to cart`);
+  
    
 
   const filteredProducts =
@@ -633,7 +633,7 @@ const ShopPage = () => {
 
     {/* Cart Count */}
     <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-6 h-6 flex items-center justify-center rounded-full font-bold">
-      {cart.length}
+      {cartItems.length}
     </span>
   </div>
 
@@ -690,7 +690,7 @@ const ShopPage = () => {
                     <img
                       src={product.img}
                       alt={product.name}
-                      className={`object-contain ${product.size} group-hover:scale-115 transition duration-300`}
+                      className={`object-contain ${product.size} group-hover:scale-105 transition duration-300`}
                     />
                   </div>
 
