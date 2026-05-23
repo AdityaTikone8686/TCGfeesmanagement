@@ -21,6 +21,7 @@ import Register from './pages/Register';
 import Registrations from "./pages/admin/Registrations";
 import './App.css'
 import CartPage from "./pages/CartPage";
+import CheckoutPage from "./pages/CheckoutPage";
 
 // Protected Route Component
 const ProtectedRoute = ({ children, requireAdmin = false }) => {
@@ -79,6 +80,8 @@ function AppRoutes() {
         <Route path="/matches" element={<MatchesPage />} />
 
         <Route path="/cart" element={<CartPage />} />
+
+        <Route path="/checkout" element={<CheckoutPage />} />
 
         {/* Match ADMIN PAGE */}
          <Route path="/admin-login" element={<AdminLoginPage />} />
