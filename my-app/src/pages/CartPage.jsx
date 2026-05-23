@@ -9,68 +9,20 @@ import {
   ShoppingBag, Star, Zap, Gift
 } from 'lucide-react'
 import Layout from '../components/layout/Layout'
+import { useCart } from "../context/CartContext";
 
-// Sample cart data – replace with your real cart state/context
-const initialCartItems = [
-  {
-    id: 1,
-    name: 'TCG Premium Cricket Bat',
-    variant: 'English Willow · Size 6',
-    price: 4500,
-    originalPrice: 5500,
-    quantity: 1,
-    image: '/tcg_ground.jpeg',
-    badge: 'Bestseller',
-    badgeVariant: 'success',
-    inStock: true,
-  },
-  {
-    id: 2,
-    name: 'TCG Training Kit Bag',
-    variant: 'Large · Green',
-    price: 1800,
-    originalPrice: 2200,
-    quantity: 2,
-    image: '/tcg_ground.jpeg',
-    badge: 'Sale',
-    badgeVariant: 'warning',
-    inStock: true,
-  },
-  {
-    id: 3,
-    name: 'Thigh Guard + Arm Guard Combo',
-    variant: 'Adult · One Size',
-    price: 950,
-    originalPrice: null,
-    quantity: 1,
-    image: '/tcg_ground.jpeg',
-    badge: null,
-    inStock: true,
-  },
-]
+
 
 const PROMO_CODES = { TCG10: 10, GURUKUL15: 15, CRICKET20: 20 }
 
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState(initialCartItems)
+  const { cartItems, removeFromCart, increaseQty, decreaseQty } = useCart();
   const [promoInput, setPromoInput] = useState('')
   const [appliedPromo, setAppliedPromo] = useState(null)
   const [promoError, setPromoError] = useState('')
   const [promoSuccess, setPromoSuccess] = useState('')
 
-  /* ── helpers ── */
-  const updateQty = (id, delta) =>
-    setCartItems(prev =>
-      prev.map(item =>
-        item.id === id
-          ? { ...item, quantity: Math.max(1, item.quantity + delta) }
-          : item
-      )
-    )
-
-  const removeItem = id =>
-    setCartItems(prev => prev.filter(item => item.id !== id))
-
+  
   const subtotal = cartItems.reduce((sum, i) => sum + i.price * i.quantity, 0)
   const savings = cartItems.reduce(
     (sum, i) => sum + (i.originalPrice ? (i.originalPrice - i.price) * i.quantity : 0),
@@ -220,7 +172,7 @@ export default function CartPage() {
                             <p className="text-xs text-muted-foreground mt-0.5">{item.variant}</p>
                           </div>
                           <button
-                            onClick={() => removeItem(item.id)}
+                            onClick={() => removeFromCart(item.id)}
                             className="text-muted-foreground hover:text-red-500 transition-colors p-1 rounded-lg hover:bg-red-50 dark:hover:bg-red-950 flex-shrink-0"
                             aria-label="Remove item"
                           >
@@ -249,7 +201,7 @@ export default function CartPage() {
                           {/* Quantity */}
                           <div className="flex items-center border border-border rounded-xl overflow-hidden w-fit shadow-sm">
                             <button
-                              onClick={() => updateQty(item.id, -1)}
+                              onClick={() => decreaseQty(item.id)}
                               className="px-3 py-1.5 hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
                               aria-label="Decrease quantity"
                             >
@@ -259,7 +211,7 @@ export default function CartPage() {
                               {item.quantity}
                             </span>
                             <button
-                              onClick={() => updateQty(item.id, 1)}
+                             onClick={() => increaseQty(item.id)}
                               className="px-3 py-1.5 hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
                               aria-label="Increase quantity"
                             >
