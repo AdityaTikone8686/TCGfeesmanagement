@@ -237,7 +237,7 @@ export default function Header() {
 
                   <Link
   to="/cart"
-  onClick={() => setIsOpen(false)}
+  onClick={() => setIsMenuOpen(false)}
   className="flex items-center justify-between px-4 py-3 border-b hover:bg-green-50 transition"
 >
   <div className="flex items-center gap-3">
