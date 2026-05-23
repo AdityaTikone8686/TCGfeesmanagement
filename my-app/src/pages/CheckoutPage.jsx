@@ -464,10 +464,10 @@ export default function CheckoutPage() {
                         <div className="w-9 h-9 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow">
                           <Package className="h-4 w-4 text-white" />
                         </div>
-                        <h3 className="font-semibold text-foreground text-sm">Order Items ({ORDER_ITEMS.length})</h3>
+                        <h3 className="font-semibold text-foreground text-sm">Order Items ({cartItems.length})</h3>
                       </div>
                       <div className="space-y-3">
-                        {ORDER_ITEMS.map(item => (
+                        {cartItems.map(item => (
                           <div key={item.id} className="flex items-center gap-3">
                             <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 border border-border">
                               <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
