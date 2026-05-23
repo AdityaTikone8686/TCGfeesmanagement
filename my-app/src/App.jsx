@@ -20,6 +20,7 @@ import CookieConsent from "./CookieConsent";
 import Register from './pages/Register';
 import Registrations from "./pages/admin/Registrations";
 import './App.css'
+import CartPage from "./pages/CartPage";
 
 // Protected Route Component
 const ProtectedRoute = ({ children, requireAdmin = false }) => {
@@ -76,6 +77,8 @@ function AppRoutes() {
         
         {/* Matches Page */}
         <Route path="/matches" element={<MatchesPage />} />
+
+        <Route path="/cart" element={<CartPage />} />
 
         {/* Match ADMIN PAGE */}
          <Route path="/admin-login" element={<AdminLoginPage />} />
