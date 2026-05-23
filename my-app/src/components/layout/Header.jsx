@@ -10,7 +10,6 @@ import { Trophy, Menu, X, LogOut, User, Home, Shield, GraduationCap, ChevronDown
 import { useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { ShoppingCart } from "lucide-react";
-import { Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 
 export default function Header() {
