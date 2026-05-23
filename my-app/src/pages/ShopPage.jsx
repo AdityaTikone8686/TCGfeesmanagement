@@ -693,7 +693,7 @@ const ShopPage = () => {
                     {/* Buttons */}
                     <div className="flex gap-2 mt-5">
                       <button className="w-1/2 bg-gray-900 hover:bg-black text-white py-2 rounded-xl transition">
-                        Add Cart
+                        Add To Cart
                       </button>
 
                       <button className="w-1/2 bg-green-600 hover:bg-green-700 text-white py-2 rounded-xl transition">
