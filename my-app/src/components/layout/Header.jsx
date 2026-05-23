@@ -9,6 +9,9 @@ import { LogIn } from 'lucide-react'
 import { Trophy, Menu, X, LogOut, User, Home, Shield, GraduationCap, ChevronDown } from 'lucide-react'
 import { useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
+import { ShoppingCart } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useCart } from "../../context/CartContext";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -16,6 +19,7 @@ export default function Header() {
   const location = useLocation()
   const navigate = useNavigate()
   const { user, isAuthenticated, isAdmin, logout } = useAuth()
+  
 
   const isHomePage = location.pathname === '/'
 
@@ -23,6 +27,7 @@ export default function Header() {
     logout()
     navigate('/')
   }
+  const { cartItems } = useCart()
 
   return (
     <header className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border sticky top-0 z-50 shadow-sm">
@@ -89,6 +94,16 @@ export default function Header() {
                   <TvMinimal className="h-4 w-4" />
                   <span>Matches</span>
                  </Link>
+
+                <Link to="/cart" className="relative">
+  <ShoppingCart className="w-7 h-7 text-gray-800" />
+
+  {cartItems.length > 0 && (
+    <span className="absolute -top-2 -right-2 bg-green-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+      {cartItems.length}
+    </span>
+  )}
+</Link>
 
                   <div className="flex items-center space-x-3">
                   <Link to="/admin/login">
@@ -220,6 +235,23 @@ export default function Header() {
                   <TvMinimal className="h-5 w-5" />
                   <span>Matches</span>
                   </Link>
+
+                  <Link
+  to="/cart"
+  onClick={() => setIsOpen(false)}
+  className="flex items-center justify-between px-4 py-3 border-b hover:bg-green-50 transition"
+>
+  <div className="flex items-center gap-3">
+    <ShoppingCart className="w-5 h-5" />
+    <span>Cart</span>
+  </div>
+
+  {cartItems.length > 0 && (
+    <span className="bg-green-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+      {cartItems.length}
+    </span>
+  )}
+</Link>
 
                   <div className="px-4 space-y-3">
                     <Link to="/admin/login" onClick={() => setIsMenuOpen(false)}>
