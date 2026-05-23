@@ -614,9 +614,19 @@ const ShopPage = () => {
                 </div>
               </div>
 
-              <button className="mt-4 w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition">
-                Enquire Now
-              </button>
+              <div className="mt-4 flex gap-2">
+  <button
+    className="w-1/2 bg-gray-900 text-white py-2 rounded-lg hover:bg-black transition"
+  >
+    Add to Cart
+  </button>
+
+  <button
+    className="w-1/2 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition"
+  >
+    Buy Now
+  </button>
+</div>
             </div>
           ))}
         </div>
