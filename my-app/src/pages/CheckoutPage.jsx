@@ -474,7 +474,7 @@ export default function CheckoutPage() {
                             </div>
                             <div className="flex-1 min-w-0">
                               <p className="text-sm font-medium text-foreground truncate">{item.name}</p>
-                              <p className="text-[11px] text-muted-foreground">{item.variant} · Qty {item.quantity}</p>
+                              <p className="text-[11px] text-muted-foreground"> Qty {item.quantity}</p>
                             </div>
                             <p className="text-sm font-bold text-green-600 flex-shrink-0">
                               ₹{(item.price * item.quantity).toLocaleString()}
@@ -525,10 +525,10 @@ export default function CheckoutPage() {
                   <div className={`space-y-3 ${summaryOpen ? 'block' : 'hidden sm:block'}`}>
                     {/* Items */}
                     <div className="space-y-3 pb-3 border-b border-border">
-                      {ORDER_ITEMS.map(item => (
+                      {cartItems.map(item => (
                         <div key={item.id} className="flex gap-3 items-center">
                           <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 border border-border">
-                            <img src={item.img} alt={item.name} className="w-full h-full object-cover" />
+                            <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-xs font-medium text-foreground leading-tight truncate">{item.name}</p>
