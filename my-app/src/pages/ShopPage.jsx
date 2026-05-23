@@ -4,7 +4,8 @@ import Footer from "../components/layout/Footer";
 
 const products = [
     {
-     name: "NEW BALANCE TC 100i KASHMIR WILLOW CRICKET BAT",
+    id: 1, 
+    name: "NEW BALANCE TC 100i KASHMIR WILLOW CRICKET BAT",
     img: "dsc wildfire ember.webp",
     mrp: "₹2,319",
     price: "₹2,899",
@@ -14,7 +15,8 @@ const products = [
     size: "h-40",
   },
     {
-     name: "GRAY-NICOLLS JUMBO KASHMIR WILLOW CRICKET BAT",
+    id: 2, 
+    name: "GRAY-NICOLLS JUMBO KASHMIR WILLOW CRICKET BAT",
     img: "gray nicols jumbo.webp",
     mrp: "₹7,799",
     price: "₹5,849",
@@ -24,6 +26,7 @@ const products = [
     size: "h-40",
   },
     {
+        id: 3, 
      name: "DSC WILDFIRE FALCON KASHMIR WILLOW CRICKET BAT",
     img: "dsc falcon.webp",
     mrp: "₹2,699",
@@ -34,6 +37,7 @@ const products = [
     size: "h-40",
   },
     {
+       id: 4,  
      name: "SF CANNON KASHMIR WILLOW CRICKET BAT",
     img: "sf cannon.webp",
     mrp: "₹1,632",
@@ -44,6 +48,7 @@ const products = [
     size: "h-40",
   },
     {
+         id: 5,
      name: "KOOKABURA PLAYERS EDITION KASHMIR WILLOW CRICKET BAT",
     img: "kookbura players edition.webp",
     mrp: "₹6,299",
@@ -55,6 +60,7 @@ const products = [
   },
   
    {
+        id: 6,
      name: "GRAY-NICOLLS SUPRA BLAZER KASHMIR WILLOW CRICKET BAT",
     img: "/Gray-Nicolls_Supra_Blazer_Kashmir_Willow_Cricket_Bat-01_1500x.webp",
     mrp: "₹3,999",
@@ -65,6 +71,7 @@ const products = [
     size: "h-40",
   },
    {
+        id: 7,
      name: "DSC WILDFIRE EMBER KASHMIR WILLOW CRICKET BAT",
     img: "dsc wildfire ember.webp",
     mrp: "₹2,699",
@@ -75,6 +82,7 @@ const products = [
     size: "h-40",
   },
     {
+         id: 8,
      name: "SG KLR FLICKER KASHMIR WILLOW CRICKET BAT",
     img: "/sg klr flicker.webp",
     mrp: "₹2,699",
@@ -85,6 +93,7 @@ const products = [
     size: "h-40",
   },
     {
+         id: 9,
      name: "SS PLAYER JUMBO KASHMIR WILLOW CRICKET BAT",
     img: "/ss player jambo.webp",
     mrp: "₹3,300",
@@ -95,6 +104,7 @@ const products = [
     size: "h-40",
   },
     {
+         id: 10,
      name: "SG STROKEWELL CLASSIC KASHMIR WILLOW CRICKET BAT",
     img: "/sg strokewell classic.webp",
     mrp: "₹3,499",
@@ -105,6 +115,7 @@ const products = [
     size: "h-40",
   },
     {
+         id: 11,
      name: "KOOKABURA PRODIGY 2L0 KASHMIR WILLOW CRICKET BAT",
     img: "/kookabura prodigy 2.0.webp",
     mrp: "₹2,490",
@@ -115,6 +126,7 @@ const products = [
     size: "h-40",
   },
     {
+         id: 12,
      name: "NEW BALANCE DC 100i KASHMIR WILLOW CRICKET BAT",
     img: "/nb dc 100i.webp",
     mrp: "₹2,899",
@@ -125,6 +137,7 @@ const products = [
     size: "h-40",
   },
     {
+         id: 13,
      name: "NEW BALANCE TC 200i KASHMIR WILLOW CRICKET BAT",
     img: "/nb tc 200i.webp",
     mrp: "₹3,399",
@@ -135,6 +148,7 @@ const products = [
     size: "h-40",
   },
     {
+         id: 14,
      name: "DSC MASTER 2000 KASHMIR WILLOW CRICKET BAT",
     img: "/dsc master 2000.webp",
     mrp: "₹2,959",
@@ -145,6 +159,7 @@ const products = [
     size: "h-40",
   },
     {
+         id: 15,
      name: "SS SKY SUPER KASHMIR WILLOW CRICKET BAT",
     img: "/ss sky super.webp",
     mrp: "₹2,650",
@@ -155,6 +170,7 @@ const products = [
     size: "h-40",
   },
    {
+        id: 16,
      name: "DSC WILDFIRE FLARE KASHMIR WILLOW CRICKET BAT",
     img: "/dsc wildfire flare.webp",
     mrp: "₹2,174",
@@ -165,6 +181,7 @@ const products = [
     size: "h-40",
   },
    {
+        id: 17,
      name: "DSC WILDFIRE HEAT KASHMIR WILLOW CRICKET BAT",
     img: "/dsc wildfire heat.webp",
     mrp: "₹3,075",
@@ -175,6 +192,7 @@ const products = [
     size: "h-40",
   },
   {
+       id: 18,
      name: "DSC WILDFIRE VOLCANO KASHMIR WILLOW CRICKET BAT",
     img: "/dsc wildfire volcano.webp",
     mrp: "₹2,775",
@@ -185,6 +203,7 @@ const products = [
     size: "h-40",
   },
   {
+       id: 19,
      name: "KOOKABURA AURA PRO 9.0 KASHMIR WILLOW CRICKET BAT",
     img: "/kookabura aura.webp",
     mrp: "₹2,699",
@@ -195,6 +214,7 @@ const products = [
     size: "h-40",
   },
   {
+       id: 20,
      name: "DSC WILDFIRE MAGMA KASHMIR WILLOW CRICKET BAT",
     img: "/dsc wildfire magma.webp",
     mrp: "₹3,275",
@@ -205,6 +225,7 @@ const products = [
     size: "h-40",
   },
    {
+        id: 21,
      name: "DSC PENTAZONE KASHMIR WILLOW CRICKET BAT",
     img: "/dsc pentazone.webp",
     mrp: "₹3,409",
@@ -215,6 +236,7 @@ const products = [
     size: "h-40",
   },
   {
+       id: 22,
      name: "SG THUNDER PLUS KASHMIR WILLOW CRICKET BAT",
     img: "/sg thunder plus.webp",
     mrp: "₹2,499",
@@ -225,6 +247,7 @@ const products = [
     size: "h-40",
   },
    {
+        id: 23,
      name: "SS 281 KASHMIR WILLOW CRICKET BAT",
     img: "/ss 281.webp",
     mrp: "₹3,130",
@@ -235,6 +258,7 @@ const products = [
     size: "h-40",
   },
    {
+        id: 24,
      name: "TON MAXIMUS KASHMIR WILLOW CRICKET BAT",
     img: "/ss ton maximus.webp",
     mrp: "₹2,930",
@@ -245,6 +269,7 @@ const products = [
     size: "h-40",
   },
    {
+        id: 25,
      name: "SG KLR SPARK KASHMIR WILLOW CRICKET BAT",
     img: "/sg klr spark.webp",
     mrp: "₹2,899",
@@ -255,6 +280,7 @@ const products = [
     size: "h-40",
   },
   {
+       id: 26,
      name: "SG RSD KASHMIR WILLOW CRICKET BAT",
     img: "/SG_RSD_Spark_Kashmir_Willow_Cricket_Bat_1066x.webp",
     mrp: "₹2,749",
@@ -265,6 +291,7 @@ const products = [
     size: "h-40",
   },
   {
+       id: 27,
      name: "MRF CHAMP KASHMIR WILLOW CRICKET BAT",
     img: "/mrf chaamp best.webp",
     mrp: "₹2,820",
@@ -275,6 +302,7 @@ const products = [
     size: "h-40",
   },
    {
+        id: 28,
      name: "SS GUTSY KASHMIR WILLOW CRICKET BAT",
     img: "/ss gutsyy.jpg",
     mrp: "₹3,110",
@@ -285,6 +313,7 @@ const products = [
     size: "h-40",
   },
   {
+       id: 29,
      name: "SS KLASSEN KASHMIR WILLOW CRICKET BAT",
     img: "/ss klassen.jpg",
     mrp: "₹3,010",
@@ -295,6 +324,7 @@ const products = [
     size: "h-40",
   },
   {
+       id: 30,
      name: "SS CLUB VELLUM KASHMIR WILLOW CRICKET BAT",
     img: "/ss club vellum.jpg",
     mrp: "₹3,010",
@@ -305,6 +335,7 @@ const products = [
     size: "h-40",
   },
   {
+       id: 31,
      name: "SS SUPER POWER KASHMIR WILLOW CRICKET BAT",
     img: "/ss super power.jpg",
     mrp: "₹2,970",
@@ -315,6 +346,7 @@ const products = [
     size: "h-40",
   },
   {
+       id: 32,
      name: "SS POWER KASHMIR WILLOW CRICKET BAT",
     img: "/ss power kashmir.jpg",
     mrp: "₹2,920",
@@ -325,6 +357,7 @@ const products = [
     size: "h-40",
   },
   {
+       id: 33,
      name: "SS TILAK VERMA KASHMIR WILLOW CRICKET BAT",
     img: "/ss tilak.jpg",
     mrp: "₹2,453",
@@ -335,6 +368,7 @@ const products = [
     size: "h-40",
   },
   {
+       id: 34,
      name: "SS SKY STUNNER KASHMIR WILLOW CRICKET BAT",
     img: "/ss sky stunner.jpg",
     mrp: "₹2,453",
@@ -345,6 +379,7 @@ const products = [
     size: "h-40",
   },
   {
+       id: 35,
      name: "SS SHIVAM DUBE KASHMIR WILLOW CRICKET BAT",
     img: "/ss shivam dube'.jpg",
     mrp: "₹2,453",
@@ -355,6 +390,7 @@ const products = [
     size: "h-40",
   },
   {
+       id: 36,
      name: "SS JOSH KASHMIR WILLOW CRICKET BAT",
     img: "/ss josh.jpg",
     mrp: "₹2,590",
@@ -365,6 +401,7 @@ const products = [
     size: "h-40",
   },
   {
+       id: 37,
      name: "SS IKON KASHMIR WILLOW CRICKET BAT",
     img: "/ss ikon.webp",
     mrp: "₹2,590",
@@ -375,6 +412,7 @@ const products = [
     size: "h-40",
   },
   {
+       id: 38,
      name: "GRAY NICOLLS GN2 SUPRA ENGLISH WILLOW CRICKET BAT",
     img: "/Gray-Nicolls_GN2_Supra_English_Willow_Cricket_Bat-01_1500x.webp",
     mrp: "₹9,349",
@@ -385,6 +423,7 @@ const products = [
     size: "h-40",
   },
   {
+       id: 39,
     name: "MRF GENIUS GRAND ENGLISH WILLOW CRICKET BAT",
     img: "/MRF_Genius_Grand_Cricket_Bat-01_1500x.webp",
     mrp: "₹44,249",
@@ -395,6 +434,7 @@ const products = [
     size: "h-40",
   },
   {
+       id: 40,
      name: "KOOKABURRA EMPOWER PRO 3.0 ENGLISH WILLOW CRICKET BAT",
     img: "/Kookaburra_Empower_Pro_3.0_English_Willow_Cricket_Bat-01_1500x.webp",
     mrp: "₹24,499",
@@ -405,6 +445,7 @@ const products = [
     size: "h-40",
   },
   {
+       id: 41,
     name: "SS TON GLORY ENGLISH WILLOW CRICKET BAT",
     img: "/SS_Ton_Glory_English_Willow_Cricket_Bat-01_1500x.webp",
     mrp: "₹17,900",
@@ -415,6 +456,7 @@ const products = [
     size: "h-40",
   },
   {
+       id: 42,
      name: "GM DIAMOND 505 ENGLISH WILLOW CRICKET BAT",
     img: "/GM_Diamond_505_English_Willow_Cricket_Bat-01_1500x.webp",
     mrp: "₹17,749",
@@ -425,6 +467,7 @@ const products = [
     size: "h-40",
   },
   {
+       id: 43,
     name: "SG CENTURY CLASSIC ENGLISH WILLOW CRICKET BAT",
     img: "/SG_Century_Classic_English_Willow_Cricket_Bat-01_e9399ea7-3701-495e-8e9e-c00a95c988f3_1500x.webp",
     mrp: "₹13,999",
@@ -435,6 +478,7 @@ const products = [
     size: "h-40",
   },
   {
+       id: 44,
     name: "SF STANLITE ENGLISH WILLOW CRICKET BAT",
     img: "/SF_Stanlite_English_Willow_Cricket_Bat-01_1500x.webp",
     mrp: "₹15,600",
@@ -445,6 +489,7 @@ const products = [
     size: "h-40",
   },
   {
+       id: 45,
     name: "CEAT HITMAN JR CRICKET ENGLISH WILLOW BAT",
     img: "/71Gtb5_F3kL._SY879_375x.webp",
     mrp: "₹19,679",
@@ -455,6 +500,7 @@ const products = [
     size: "h-40",
   },
   {
+       id: 46,
     name: "SS DEVILS GREEN ENGLISH WILLOW CRICKET BAT",
     img: "/SS_Devils_Green_English_Willow_Cricket_Bat-01_1500x.webp",
     mrp: "₹25,400",
@@ -465,6 +511,7 @@ const products = [
     size: "h-40",
   },
   {
+       id: 47,
     name: "DSC KRUNCH 3.0 ENGLISH WILLOW CRICKET BAT",
     img: "/DSC_Krunch_3.0_English_Willow_Cricket_Bat-01_1500x.webp",
     mrp: "₹27,199",
@@ -475,6 +522,7 @@ const products = [
     size: "h-40",
   },
   {
+       id: 48,
     name: "SG SAVAGE ENGLISH WILLOW CRICKET BAT",
     img: "/cricket_bat.webp",
     mrp: "₹27,999",
@@ -485,6 +533,7 @@ const products = [
     size: "h-40",
   },
   {
+       id: 49,
     name: "Cricket Ball",
     img: "/cricket_ball1.jpg",
     mrp: "₹699",
@@ -495,6 +544,7 @@ const products = [
     size: "h-28",
   },
   {
+       id: 50,
     name: "Kit Bag",
     img: "/kitbag_1.webp",
     mrp: "₹3,999",
@@ -505,6 +555,7 @@ const products = [
     size: "h-32",
   },
   {
+       id: 51,
     name: "Batting Gloves",
     img: "/cricket_gloves.jpg",
     mrp: "₹1,799",
@@ -515,6 +566,7 @@ const products = [
     size: "h-32",
   },
   {
+       id: 52,
     name: "Keeping Gloves",
     img: "/cricket_keeping.jpg",
     mrp: "₹1,999",
@@ -525,6 +577,7 @@ const products = [
     size: "h-32",
   },
   {
+       id: 53,
     name: "Cricket Dress",
     img: "/cricket-dress.jpg",
     mrp: "₹1,299",
