@@ -77,6 +77,7 @@ export const CartProvider = ({ children }) => {
         removeFromCart,
         increaseQty,
         decreaseQty,
+        setCartItems,
       }}
     >
       {children}
