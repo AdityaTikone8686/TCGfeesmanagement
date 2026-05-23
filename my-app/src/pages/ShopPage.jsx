@@ -405,7 +405,7 @@ const products = [
   {
     id: 37,
     name: "SS IKON KASHMIR WILLOW CRICKET BAT",
-    img: "/ss ikon.webp",
+    img: "/shopping.webp",
     mrp: "₹2,590",
     price: "2,253",
     discount: "13% OFF",
