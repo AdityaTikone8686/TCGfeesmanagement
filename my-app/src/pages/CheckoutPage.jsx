@@ -16,7 +16,7 @@ import { useCart } from '../context/CartContext'
 const STEPS = ['Delivery', 'Payment', 'Review']
 
 const PAYMENT_METHODS = [
-  { id: 'upi',  label: 'UPI',          icon: Smartphone,  desc: 'GPay, PhonePe, Paytm & more' },
+  { id: 'upi',  label: 'UPI', icon: Smartphone,  desc: 'GPay, PhonePe, Paytm & more' },
   { id: 'card', label: 'Credit / Debit Card', icon: CreditCard, desc: 'Visa, Mastercard, RuPay' },
   { id: 'netbanking', label: 'Net Banking', icon: Building2, desc: 'All major banks supported' },
   { id: 'cod',  label: 'Cash on Delivery', icon: Wallet,   desc: 'Pay when you receive' },
@@ -528,7 +528,7 @@ export default function CheckoutPage() {
                       {ORDER_ITEMS.map(item => (
                         <div key={item.id} className="flex gap-3 items-center">
                           <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 border border-border">
-                            <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                            <img src={item.img} alt={item.name} className="w-full h-full object-cover" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-xs font-medium text-foreground leading-tight truncate">{item.name}</p>
