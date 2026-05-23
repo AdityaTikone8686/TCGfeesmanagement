@@ -606,6 +606,7 @@ const ShopPage = () => {
 
    const addToCart = (product) => {
     setCart([...cart, product]);
+    alert(`${product.name} added to cart`);
    };
 
   const filteredProducts =
