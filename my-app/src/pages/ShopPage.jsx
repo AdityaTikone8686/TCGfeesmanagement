@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
 import { ShoppingCart } from "lucide-react";
+import { useCart } from "../context/CartContext";
 
 const products = [
   {
@@ -603,12 +604,9 @@ const categories = [
 
 const ShopPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [cart, setCart] = useState([]);
-
-   const addToCart = (product) => {
-    setCart([...cart, product]);
-    alert(`${product.name} added to cart`);
-   };
+  const { addToCart, cartItems } = useCart();
+  alert(`${product.name} added to cart`);
+   
 
   const filteredProducts =
     selectedCategory === "All"
