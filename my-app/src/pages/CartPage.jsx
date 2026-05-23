@@ -110,7 +110,7 @@ export default function CartPage() {
       {/* ── Trust bar ── */}
       <section className="bg-green-50 dark:bg-green-950/30 border-b border-green-100 dark:border-green-900 py-3">
         <div className="container mx-auto px-3 sm:px-4">
-          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8 text-xs sm:text-sm text-green-700 dark:text-green-400">
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8 text-xs sm:text-sm text-black-700 dark:text-black-400">
             <div className="flex items-center space-x-2">
               <Truck className="h-4 w-4" />
               <span>Free shipping above ₹2,000</span>
