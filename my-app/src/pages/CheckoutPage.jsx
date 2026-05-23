@@ -470,7 +470,7 @@ export default function CheckoutPage() {
                         {cartItems.map(item => (
                           <div key={item.id} className="flex items-center gap-3">
                             <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 border border-border">
-                              <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                              <img src={item.img} alt={item.name} className="w-full h-full object-cover" />
                             </div>
                             <div className="flex-1 min-w-0">
                               <p className="text-sm font-medium text-foreground truncate">{item.name}</p>
@@ -528,7 +528,7 @@ export default function CheckoutPage() {
                       {cartItems.map(item => (
                         <div key={item.id} className="flex gap-3 items-center">
                           <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 border border-border">
-                            <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                            <img src={item.img} alt={item.name} className="w-full h-full object-cover" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-xs font-medium text-foreground leading-tight truncate">{item.name}</p>
