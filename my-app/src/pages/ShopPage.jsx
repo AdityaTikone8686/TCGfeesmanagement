@@ -602,6 +602,11 @@ const categories = [
 
 const ShopPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [cart, setCart] = useState([]);
+
+   const addToCart = (product) => {
+    setCart([...cart, product]);
+   };
 
   const filteredProducts =
     selectedCategory === "All"
@@ -691,10 +696,12 @@ const ShopPage = () => {
                     </div>
 
                     {/* Buttons */}
-                    <div className="flex gap-2 mt-5">
-                      <button className="w-1/2 bg-gray-900 hover:bg-black text-white py-2 rounded-xl transition">
-                        Add To Cart
-                      </button>
+                    <button
+  onClick={() => addToCart(product)}
+  className="w-1/2 bg-gray-900 hover:bg-black text-white py-2 rounded-xl transition"
+>
+  Add Cart
+</button>
 
                       <button className="w-1/2 bg-green-600 hover:bg-green-700 text-white py-2 rounded-xl transition">
                         Buy Now
