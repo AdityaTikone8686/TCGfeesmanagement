@@ -665,7 +665,7 @@ const ShopPage = () => {
                     <img
                       src={product.img}
                       alt={product.name}
-                      className={`object-contain ${product.size} group-hover:scale-105 transition duration-300`}
+                      className={`object-contain ${product.size} group-hover:scale-115 transition duration-300`}
                     />
                   </div>
 
