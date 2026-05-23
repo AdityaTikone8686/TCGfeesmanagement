@@ -11,7 +11,7 @@ const products = [
   {
     id: 1,
     name: "NEW BALANCE TC 100i KASHMIR WILLOW CRICKET BAT",
-    img: "dsc wildfire ember.webp",
+    img: "/dsc wildfire ember.webp",
     mrp: "₹2,319",
     price: "2,899",
     discount: "20% OFF",
@@ -22,7 +22,7 @@ const products = [
   {
     id: 2,
     name: "GRAY-NICOLLS JUMBO KASHMIR WILLOW CRICKET BAT",
-    img: "gray nicols jumbo.webp",
+    img: "/gray nicols jumbo.webp",
     mrp: "₹7,799",
     price: "5,849",
     discount: "25% OFF",
@@ -33,7 +33,7 @@ const products = [
   {
     id: 3,
     name: "DSC WILDFIRE FALCON KASHMIR WILLOW CRICKET BAT",
-    img: "dsc falcon.webp",
+    img: "/dsc falcon.webp",
     mrp: "₹2,699",
     price: "2,159",
     discount: "25% OFF",
@@ -44,7 +44,7 @@ const products = [
   {
     id: 4,
     name: "SF CANNON KASHMIR WILLOW CRICKET BAT",
-    img: "sf cannon.webp",
+    img: "/sf cannon.webp",
     mrp: "₹1,632",
     price: "2,040",
     discount: "20% OFF",
@@ -55,7 +55,7 @@ const products = [
   {
     id: 5,
     name: "KOOKABURA PLAYERS EDITION KASHMIR WILLOW CRICKET BAT",
-    img: "kookbura players edition.webp",
+    img: "/kookbura players edition.webp",
     mrp: "₹6,299",
     price: "5,039",
     discount: "20% OFF",
@@ -77,7 +77,7 @@ const products = [
   {
     id: 7,
     name: "DSC WILDFIRE EMBER KASHMIR WILLOW CRICKET BAT",
-    img: "dsc wildfire ember.webp",
+    img: "/dsc wildfire ember.webp",
     mrp: "₹2,699",
     price: "2,159",
     discount: "20% OFF",
