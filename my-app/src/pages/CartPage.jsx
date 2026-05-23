@@ -149,7 +149,7 @@ export default function CartPage() {
                       {/* Image */}
                       <div className="relative w-full sm:w-36 lg:w-44 h-40 sm:h-auto flex-shrink-0">
                         <img
-                          src={item.image}
+                          src={item.img}
                           alt={item.name}
                           className="w-full h-full object-cover sm:rounded-l-xl group-hover:scale-105 transition-transform duration-300"
                         />
