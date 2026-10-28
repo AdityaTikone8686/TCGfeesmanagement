@@ -477,7 +477,7 @@ export default function LandingPage() {
                   Join as Student
                   <ArrowRight size={16} className="arr" />
                 </Link>
-                <Link to="/admin/login" className="tcg-btn line">
+                <Link to="/admin/login" className="tcg-btn line">517764
                   <Shield size={20} />
                   Admin Access
                 </Link>
@@ -487,7 +487,5 @@ export default function LandingPage() {
         </section>
       </div>
     </Layout>
-  )
-}
   )
 } 
