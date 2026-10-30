@@ -1445,9 +1445,6 @@ export default function Registrations() {
                 {batchesList.map((batch) => (
                   <option key={batch._id} value={batch._id}>
                     {batch.name} — {batch.timing || "Timing not specified"}
-                    {batch.available !== undefined
-                      ? ` (${batch.available} seats available)`
-                      : ""}
                   </option>
                 ))}
               </select>
