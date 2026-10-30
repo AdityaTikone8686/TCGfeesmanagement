@@ -175,7 +175,7 @@ updatePassword: async (token, passwordData) => {
 
 	return handleResponse(response);
 },
-```
+
 
 };
 
