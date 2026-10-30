@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '../../context/AuthContext'
-import { adminAPI, paymentsAPI, feePlansAPI, subscriptionsAPI, reportsAPI, paymentRequestAPI, registrationAPI } from '../../services/api'
+import {
+  adminAPI,
+  paymentsAPI,
+  feePlansAPI,
+  subscriptionsAPI,
+  reportsAPI,
+  paymentRequestAPI,
+  registrationAdminAPI
+} from '../../services/api'
+
 import {
   Users, CreditCard, Book, Settings, LogOut, Trash2, DollarSign, Award, Menu, X, Plus, Edit, Eye,
   CalendarCheck, CheckCircle, Star, History, BarChart3, ClipboardList, Search, AlertCircle, Check
@@ -272,6 +281,34 @@ const AdminDashboard = () => {
   const [deletePaymentRequest, setDeletePaymentRequest] = useState(null)
   const [regSearch, setRegSearch] = useState('')
 
+  // Advanced registration management
+const [regStatusFilter, setRegStatusFilter] = useState('all')
+const [selectedRegistration, setSelectedRegistration] = useState(null)
+const [registrationDetails, setRegistrationDetails] = useState(null)
+const [registrationHistory, setRegistrationHistory] = useState([])
+const [registrationPayments, setRegistrationPayments] = useState([])
+const [registrationDuplicates, setRegistrationDuplicates] = useState([])
+
+const [registrationBatches, setRegistrationBatches] = useState([])
+const [registrationFeePlans, setRegistrationFeePlans] = useState([])
+
+const [registrationModal, setRegistrationModal] = useState('')
+const [registrationAction, setRegistrationAction] = useState('')
+const [registrationReason, setRegistrationReason] = useState('')
+const [registrationRemarks, setRegistrationRemarks] = useState('')
+
+const [registrationEditForm, setRegistrationEditForm] = useState({})
+const [registrationBatchId, setRegistrationBatchId] = useState('')
+const [registrationFeePlanId, setRegistrationFeePlanId] = useState('')
+
+const [registrationPaymentId, setRegistrationPaymentId] = useState('')
+const [registrationTransactionId, setRegistrationTransactionId] = useState('')
+const [registrationScreenshot, setRegistrationScreenshot] = useState('')
+
+const [registrationLoading, setRegistrationLoading] = useState(false)
+const [registrationMessage, setRegistrationMessage] = useState('')
+const [registrationError, setRegistrationError] = useState('')
+
   // Form states
   const [newStudent, setNewStudent] = useState({ name: '', email: '', phone: '', password: '' })
   const [newFeePlan, setNewFeePlan] = useState({ planName: '', amount: '', durationInDays: '', description: '' })
@@ -308,7 +345,7 @@ const AdminDashboard = () => {
         subscriptionsAPI.getAllSubscriptions(token),
         reportsAPI.getSummaryReport(token, { month: new Date().getMonth() + 1, year: new Date().getFullYear() }),
         paymentRequestAPI.getAllPaymentRequests(token),
-        registrationAPI.getAll(token)
+        registrationAdminAPI.getAll(token)
       ])
       setStudents(studentsData)
       setPayments(paymentsData.payments || paymentsData)
@@ -316,7 +353,9 @@ const AdminDashboard = () => {
       setSubscriptions(subscriptionsData)
       setReport(reportData)
       setPaymentRequests(paymentRequestsData)
-      setRegistrations(registrationsData)
+      setRegistrations(
+        registrationsData?.data || registrationsData?.registrations || []
+  )
     } catch (e) {
       console.error('Error fetching dashboard data:', e)
     } finally {
@@ -599,6 +638,304 @@ const AdminDashboard = () => {
   }
 
   const closeReview = () => { setSelectedRequest(null); setAdminNotes(''); setTransactionId('') }
+
+  // Load registration batches and fee plans
+const fetchRegistrationMeta = async () => {
+  try {
+    const token = localStorage.getItem('token')
+
+    const [batchResult, planResult] = await Promise.all([
+      registrationAdminAPI.getBatches(token),
+      registrationAdminAPI.getFeePlans(token)
+    ])
+
+    setRegistrationBatches(batchResult?.data || [])
+    setRegistrationFeePlans(planResult?.data || [])
+  } catch (error) {
+    console.error('Error loading registration information:', error)
+  }
+}
+
+// View registration details
+const handleViewRegistration = async (registration) => {
+  try {
+    setRegistrationLoading(true)
+    setRegistrationError('')
+    setSelectedRegistration(registration)
+    setRegistrationModal('details')
+
+    const token = localStorage.getItem('token')
+    const result = await registrationAdminAPI.getById(token, registration._id)
+
+    const data = result?.data || result
+
+    setRegistrationDetails(data.registration || null)
+    setRegistrationHistory(data.history || [])
+    setRegistrationPayments(data.payments || [])
+    setRegistrationDuplicates(data.duplicates || [])
+  } catch (error) {
+    setRegistrationError(error.message || 'Unable to load registration')
+  } finally {
+    setRegistrationLoading(false)
+  }
+}
+
+// Refresh registration list
+const refreshRegistrations = async () => {
+  try {
+    const token = localStorage.getItem('token')
+    const result = await registrationAdminAPI.getAll(token)
+
+    setRegistrations(
+      result?.data || result?.registrations || []
+    )
+  } catch (error) {
+    setRegistrationError(error.message || 'Unable to refresh registrations')
+  }
+}
+
+// Change registration status
+const handleRegistrationStatus = async () => {
+  if (!selectedRegistration || !registrationAction) return
+
+  try {
+    setRegistrationLoading(true)
+    setRegistrationError('')
+
+    const token = localStorage.getItem('token')
+
+    await registrationAdminAPI.updateStatus(
+      token,
+      selectedRegistration._id,
+      {
+        action: registrationAction,
+        reason: registrationReason,
+        remarks: registrationRemarks
+      }
+    )
+
+    setRegistrationMessage('Registration status updated successfully.')
+    setRegistrationModal('')
+    setRegistrationReason('')
+    setRegistrationRemarks('')
+    setRegistrationAction('')
+
+    await refreshRegistrations()
+  } catch (error) {
+    setRegistrationError(error.message || 'Unable to update registration')
+  } finally {
+    setRegistrationLoading(false)
+  }
+}
+
+// Edit registration details
+const handleSaveRegistration = async () => {
+  try {
+    setRegistrationLoading(true)
+    setRegistrationError('')
+
+    const token = localStorage.getItem('token')
+
+    await registrationAdminAPI.update(
+      token,
+      selectedRegistration._id,
+      registrationEditForm
+    )
+
+    setRegistrationMessage('Registration details updated.')
+    setRegistrationModal('')
+
+    await refreshRegistrations()
+    await handleViewRegistration(selectedRegistration)
+  } catch (error) {
+    setRegistrationError(error.message || 'Unable to update registration')
+  } finally {
+    setRegistrationLoading(false)
+  }
+}
+
+// Assign batch
+const handleAssignRegistrationBatch = async () => {
+  if (!registrationBatchId) {
+    setRegistrationError('Please select a batch.')
+    return
+  }
+
+  try {
+    setRegistrationLoading(true)
+    setRegistrationError('')
+
+    const token = localStorage.getItem('token')
+
+    await registrationAdminAPI.assignBatch(
+      token,
+      selectedRegistration._id,
+      registrationBatchId
+    )
+
+    setRegistrationMessage('Batch assigned successfully.')
+    setRegistrationModal('')
+
+    await refreshRegistrations()
+    await handleViewRegistration(selectedRegistration)
+  } catch (error) {
+    setRegistrationError(error.message || 'Unable to assign batch')
+  } finally {
+    setRegistrationLoading(false)
+  }
+}
+
+// Create fee payment request
+const handleCreateRegistrationPayment = async () => {
+  if (!registrationFeePlanId) {
+    setRegistrationError('Please select a fee plan.')
+    return
+  }
+
+  try {
+    setRegistrationLoading(true)
+    setRegistrationError('')
+
+    const token = localStorage.getItem('token')
+
+    await registrationAdminAPI.createPaymentRequest(
+      token,
+      selectedRegistration._id,
+      {
+        feePlanId: registrationFeePlanId,
+        notes: registrationRemarks
+      }
+    )
+
+    setRegistrationMessage('Payment request created successfully.')
+    setRegistrationModal('')
+    setRegistrationRemarks('')
+
+    await refreshRegistrations()
+    await handleViewRegistration(selectedRegistration)
+  } catch (error) {
+    setRegistrationError(error.message || 'Unable to create payment request')
+  } finally {
+    setRegistrationLoading(false)
+  }
+}
+
+// Verify registration payment
+const handleVerifyRegistrationPayment = async () => {
+  if (!registrationPaymentId) {
+    setRegistrationError('Payment request ID is missing.')
+    return
+  }
+
+  try {
+    setRegistrationLoading(true)
+    setRegistrationError('')
+
+    const token = localStorage.getItem('token')
+
+    await registrationAdminAPI.verifyPayment(
+      token,
+      selectedRegistration._id,
+      {
+        paymentRequestId: registrationPaymentId,
+        transactionId: registrationTransactionId,
+        remarks: registrationRemarks
+      }
+    )
+
+    setRegistrationMessage('Payment verified successfully.')
+    setRegistrationModal('')
+    setRegistrationTransactionId('')
+    setRegistrationRemarks('')
+
+    await refreshRegistrations()
+    await handleViewRegistration(selectedRegistration)
+  } catch (error) {
+    setRegistrationError(error.message || 'Unable to verify payment')
+  } finally {
+    setRegistrationLoading(false)
+  }
+}
+
+// Reject registration payment
+const handleRejectRegistrationPayment = async () => {
+  if (!registrationPaymentId || registrationReason.trim().length < 3) {
+    setRegistrationError('Please provide a valid rejection reason.')
+    return
+  }
+
+  try {
+    setRegistrationLoading(true)
+    setRegistrationError('')
+
+    const token = localStorage.getItem('token')
+
+    await registrationAdminAPI.rejectPayment(
+      token,
+      selectedRegistration._id,
+      {
+        paymentRequestId: registrationPaymentId,
+        reason: registrationReason
+      }
+    )
+
+    setRegistrationMessage('Payment rejected.')
+    setRegistrationModal('')
+    setRegistrationReason('')
+
+    await refreshRegistrations()
+    await handleViewRegistration(selectedRegistration)
+  } catch (error) {
+    setRegistrationError(error.message || 'Unable to reject payment')
+  } finally {
+    setRegistrationLoading(false)
+  }
+}
+
+// Convert registration into a student
+const handleConvertRegistration = async () => {
+  if (!window.confirm('Convert this registration into a student account?')) {
+    return
+  }
+
+  try {
+    setRegistrationLoading(true)
+    setRegistrationError('')
+
+    const token = localStorage.getItem('token')
+
+    const result = await registrationAdminAPI.convertToStudent(
+      token,
+      selectedRegistration._id,
+      {
+        remarks: registrationRemarks
+      }
+    )
+
+    const data = result?.data || result
+
+    setRegistrationMessage(
+      data?.temporaryPassword
+        ? `Student created successfully. Temporary password: ${data.temporaryPassword}`
+        : 'Registration converted into a student successfully.'
+    )
+
+    setRegistrationModal('')
+    await refreshRegistrations()
+    await fetchDashboardData()
+  } catch (error) {
+    setRegistrationError(error.message || 'Unable to convert registration')
+  } finally {
+    setRegistrationLoading(false)
+  }
+}
+
+  useEffect(() => {
+  if (user) {
+    fetchDashboardData()
+    fetchRegistrationMeta()
+  }
+}, [user])
 
   const filteredRegistrations = registrations.filter((r) => {
     const q = regSearch.toLowerCase()
