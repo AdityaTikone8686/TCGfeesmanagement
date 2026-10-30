@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import Registrations from "./Registrations";
 import { useAuth } from '../../context/AuthContext'
 import {
   adminAPI,
@@ -1232,45 +1233,11 @@ const handleConvertRegistration = async () => {
               </Panel>
             </>
           )}
-
-          {/* Registrations Tab */}
-          {activeTab === 'registrations' && (
-            <>
-              <div className="td-bar"><h2>Registrations</h2></div>
-              <Panel
-                title={`${filteredRegistrations.length} of ${registrations.length} registrations`}
-                pad={false}
-                action={
-                  <div className="td-search">
-                    <Search size={15} />
-                    <input className="td-input" value={regSearch} onChange={(e) => setRegSearch(e.target.value)} placeholder="Search name, phone or ref no..." aria-label="Search registrations" />
-                  </div>
-                }
-              >
-                <div className="td-scroll">
-                  <table className="td-table">
-                    <thead><tr><th>Ref no</th><th>Player name</th><th>Phone</th><th>Email</th><th>Batch</th><th>Level</th><th>Role</th><th>Program</th><th>Registered</th></tr></thead>
-                    <tbody>
-                      {filteredRegistrations.map((r) => (
-                        <tr key={r._id}>
-                          <td className="strong nw">{r.refNum || '—'}</td>
-                          <td className="strong nw">{r.fname} {r.lname}</td>
-                          <td className="nw">{r.phone || '—'}</td>
-                          <td>{r.email || '—'}</td>
-                          <td className="nw">{r.batch ? <Pill tone="ok">{r.batch}</Pill> : '—'}</td>
-                          <td className="nw">{r.level || '—'}</td>
-                          <td className="nw">{r.role || '—'}</td>
-                          <td className="nw">{r.duration || '—'}</td>
-                          <td className="nw">{r.createdAt ? new Date(r.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  {filteredRegistrations.length === 0 && <div className="td-empty">No registrations found.</div>}
-                </div>
-              </Panel>
-            </>
-          )}
+          
+           {/* Registrations Tab */}
+            {activeTab === "registrations" && (
+              <Registrations />
+              )}
 
           {/* Settings Tab */}
           {activeTab === 'settings' && (
