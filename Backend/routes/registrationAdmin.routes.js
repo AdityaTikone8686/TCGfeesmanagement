@@ -1652,12 +1652,12 @@ router.post('/:id/notify', asyncH(async (req, res) => {
   );
 
   if (!result.sent) {
-    return res.status(501).json({
-      success: false,
-      code: result.reason,
-      message: 'Email is not configured on the server (set SMTP_* variables and install nodemailer). Nothing was sent.'
-    });
-  }
+  return res.status(502).json({
+    success: false,
+    code: result.reason,
+    message: `Email could not be sent (${result.reason}). Nothing was sent.`
+  });
+}
 
   await tx(async (session) =>
     logHistory(
