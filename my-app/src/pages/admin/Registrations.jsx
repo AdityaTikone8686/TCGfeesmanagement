@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Search, RefreshCw, AlertCircle, Users, Sun, CalendarDays, ClipboardList } from "lucide-react";
 
 const LOGO = "/cropped_circle_image-removebg-preview.png";
-const API = "https://tikonecricketgurukulbackend.onrender.com/api/register";
+const API = "https://tikonecricketgurukulbackend.onrender.com/api/admin/registrations";
 
 /* ------------------------------------------------------------------
    THEME (same as LandingPage / AdminLogin / AdminDashboard)
