@@ -1,6 +1,28 @@
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { Search, RefreshCw, AlertCircle, Users, Sun, CalendarDays, ClipboardList } from "lucide-react";
+
+import {
+  Search,
+  RefreshCw,
+  AlertCircle,
+  Users,
+  Sun,
+  CalendarDays,
+  ClipboardList,
+  Eye,
+  Pencil,
+  CheckCircle,
+  XCircle,
+  Clock,
+  CreditCard,
+  History,
+  Trash2,
+  UserPlus,
+  Mail,
+  X,
+  Save,
+  Layers,
+} from "lucide-react";
 
 const LOGO = "/cropped_circle_image-removebg-preview.png";
 const API = "https://tikonecricketgurukulbackend.onrender.com/api/admin/registrations";
@@ -101,189 +123,703 @@ const styles = `
 `;
 
 export default function Registrations() {
+  const { token, isAdmin } = useAuth();
 
-   const { token, isAdmin } = useAuth();
+  const [selected, setSelected] = useState(null);
+  const [modal, setModal] = useState("");
+  const [actionLoading, setActionLoading] = useState(false);
+  const [notice, setNotice] = useState("");
 
-   const [statsData, setStatsData] = useState({});
-   const [availableBatches, setAvailableBatches] = useState([]);
-   const [pagination, setPagination] = useState({
-     page: 1,
-     limit: 10,
-     total: 0,
-     pages: 1,
-   });
-  const [page, setPage] = useState(1);
   const [data, setData] = useState([]);
+  const [statsData, setStatsData] = useState({});
+  const [availableBatches, setAvailableBatches] = useState([]);
+  const [batchesList, setBatchesList] = useState([]);
+  const [feePlans, setFeePlans] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
   const [search, setSearch] = useState("");
   const [batchFilter, setBatchFilter] = useState("All");
+  const [page, setPage] = useState(1);
 
-  const load = useCallback(async (requestedPage) => {
-  setLoading(true);
-  setError(null);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 10,
+    total: 0,
+    pages: 1,
+  });
 
-  try {
-    if (!token || !isAdmin) {
-      throw new Error("Please log in using your admin account.");
-    }
+  const [editFields, setEditFields] = useState([]);
+  const [editValues, setEditValues] = useState({});
 
-    const params = new URLSearchParams({
-      page: String(requestedPage),
-      limit: "10",
+  const [actionForm, setActionForm] = useState({
+    reason: "",
+    remarks: "",
+    batchId: "",
+    feePlanId: "",
+    paymentRequestId: "",
+    transactionId: "",
+    notes: "",
+    skipPayment: false,
+    screenshot: "",
+  });
+
+  const resetActionForm = () => {
+    setActionForm({
+      reason: "",
+      remarks: "",
+      batchId: "",
+      feePlanId: "",
+      paymentRequestId: "",
+      transactionId: "",
+      notes: "",
+      skipPayment: false,
+      screenshot: "",
     });
+  };
 
-    if (search.trim()) {
-      params.append("search", search.trim());
-    }
-
-    if (batchFilter !== "All") {
-      params.append("batch", batchFilter);
-    }
-
-    const response = await fetch(`${API}?${params.toString()}`, {
-      method: "GET",
+  const apiRequest = async (path, method = "GET", body = null) => {
+    const response = await fetch(`${API}${path}`, {
+      method,
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
+      ...(body !== null ? { body: JSON.stringify(body) } : {}),
     });
 
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(
-        result.message || "Failed to fetch registrations"
-      );
+      throw new Error(result.message || "Request failed");
     }
 
-    setData(Array.isArray(result.data) ? result.data : []);
+    return result;
+  };
 
-    setStatsData(result.stats || {});
+  const load = useCallback(async (requestedPage = 1) => {
+    setLoading(true);
+    setError(null);
 
-    setAvailableBatches(
-      Array.isArray(result.filters?.batches)
-        ? result.filters.batches
-        : []
-    );
-
-    setPagination(
-      result.pagination || {
-        page: 1,
-        limit: 10,
-        total: 0,
-        pages: 1,
+    try {
+      if (!token || !isAdmin) {
+        throw new Error("Please log in using your admin account.");
       }
+
+      const params = new URLSearchParams({
+        page: String(requestedPage),
+        limit: "10",
+      });
+
+      if (search.trim()) {
+        params.append("search", search.trim());
+      }
+
+      if (batchFilter !== "All") {
+        params.append("batch", batchFilter);
+      }
+
+      const result = await apiRequest(`?${params.toString()}`);
+
+      setData(Array.isArray(result.data) ? result.data : []);
+      setStatsData(result.stats || {});
+
+      setAvailableBatches(
+        Array.isArray(result.filters?.batches)
+          ? result.filters.batches
+          : []
+      );
+
+      setPagination(
+        result.pagination || {
+          page: 1,
+          limit: 10,
+          total: 0,
+          pages: 1,
+        }
+      );
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [token, isAdmin, search, batchFilter]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      load(page);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [load, page]);
+
+  const loadBatchesAndPlans = async () => {
+    try {
+      const [batchResult, feeResult] = await Promise.all([
+        apiRequest("/meta/batches"),
+        apiRequest("/meta/fee-plans"),
+      ]);
+
+      setBatchesList(batchResult.data || []);
+      setFeePlans(feeResult.data || []);
+    } catch (err) {
+      setNotice(err.message);
+    }
+  };
+
+  const openRegistration = async (id) => {
+    try {
+      setActionLoading(true);
+
+      const result = await apiRequest(`/${id}`);
+
+      setSelected(result.data);
+      setModal("view");
+    } catch (err) {
+      setNotice(err.message);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const refreshSelected = async () => {
+    if (selected?.registration?._id) {
+      const result = await apiRequest(
+        `/${selected.registration._id}`
+      );
+
+      setSelected(result.data);
+    }
+  };
+
+  const openAction = async (type) => {
+    resetActionForm();
+
+    if (type === "batch" || type === "paymentRequest") {
+      await loadBatchesAndPlans();
+    }
+
+    if (type === "edit") {
+      try {
+        const fields = selected?.editableFields || [];
+
+        setEditFields(fields);
+
+        const values = {};
+
+        fields.forEach((field) => {
+          values[field.key] =
+            selected.registration?.[field.key] ?? "";
+        });
+
+        setEditValues(values);
+      } catch (err) {
+        setNotice(err.message);
+        return;
+      }
+    }
+
+    setModal(type);
+  };
+
+  const performAction = async (request, successMessage) => {
+    try {
+      setActionLoading(true);
+
+      await request();
+
+      setModal("");
+      setNotice(successMessage);
+
+      await load(page);
+
+      if (selected?.registration?._id) {
+        await openRegistration(selected.registration._id);
+      }
+    } catch (err) {
+      setNotice(err.message);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  // EDIT REGISTRATION
+  const saveEdit = async () => {
+    await performAction(
+      () =>
+        apiRequest(
+          `/${selected.registration._id}`,
+          "PATCH",
+          editValues
+        ),
+      "Registration updated successfully."
+    );
+  };
+
+  // STATUS MANAGEMENT
+  const updateStatus = async (action) => {
+    if (
+      ["reject", "waitlist"].includes(action) &&
+      actionForm.reason.trim().length < 3
+    ) {
+      setNotice("Please enter a reason.");
+      return;
+    }
+
+    await performAction(
+      () =>
+        apiRequest(
+          `/${selected.registration._id}/status`,
+          "POST",
+          {
+            action,
+            reason: actionForm.reason,
+            remarks: actionForm.remarks,
+          }
+        ),
+      `Registration ${action} action completed successfully.`
+    );
+  };
+
+  // ASSIGN BATCH
+  const assignBatch = async () => {
+    if (!actionForm.batchId) {
+      setNotice("Please select a batch.");
+      return;
+    }
+
+    await performAction(
+      () =>
+        apiRequest(
+          `/${selected.registration._id}/batch`,
+          "PUT",
+          { batchId: actionForm.batchId }
+        ),
+      "Batch assigned successfully."
+    );
+  };
+
+  // CREATE PAYMENT REQUEST
+  const createPaymentRequest = async () => {
+    if (!actionForm.feePlanId) {
+      setNotice("Please select a fee plan.");
+      return;
+    }
+
+    await performAction(
+      () =>
+        apiRequest(
+          `/${selected.registration._id}/payment-request`,
+          "POST",
+          {
+            feePlanId: actionForm.feePlanId,
+            notes: actionForm.notes,
+          }
+        ),
+      "Payment request created successfully."
+    );
+  };
+
+  // RECORD PAYMENT PROOF
+  const recordPaymentProof = async () => {
+    if (
+      !actionForm.paymentRequestId ||
+      (!actionForm.screenshot && !actionForm.transactionId.trim())
+    ) {
+      setNotice("Select a payment request and provide payment proof.");
+      return;
+    }
+
+    await performAction(
+      () =>
+        apiRequest(
+          `/${selected.registration._id}/payment/proof`,
+          "POST",
+          {
+            paymentRequestId: actionForm.paymentRequestId,
+            screenshot: actionForm.screenshot,
+            transactionId: actionForm.transactionId,
+          }
+        ),
+      "Payment proof recorded. Verification is still required."
+    );
+  };
+
+  // VERIFY PAYMENT
+  const verifyPayment = async () => {
+    if (!actionForm.paymentRequestId) {
+      setNotice("Select a payment request.");
+      return;
+    }
+
+    await performAction(
+      () =>
+        apiRequest(
+          `/${selected.registration._id}/payment/verify`,
+          "POST",
+          {
+            paymentRequestId: actionForm.paymentRequestId,
+            transactionId: actionForm.transactionId,
+            remarks: actionForm.remarks,
+          }
+        ),
+      "Payment verified successfully."
+    );
+  };
+
+  // REJECT PAYMENT
+  const rejectPayment = async () => {
+    if (
+      !actionForm.paymentRequestId ||
+      actionForm.reason.trim().length < 3
+    ) {
+      setNotice("Select a payment request and enter a rejection reason.");
+      return;
+    }
+
+    await performAction(
+      () =>
+        apiRequest(
+          `/${selected.registration._id}/payment/reject`,
+          "POST",
+          {
+            paymentRequestId: actionForm.paymentRequestId,
+            reason: actionForm.reason,
+          }
+        ),
+      "Payment rejected."
+    );
+  };
+
+  // CONVERT TO STUDENT
+  const convertToStudent = async () => {
+    const confirmed = window.confirm(
+      "Convert this registration into a student account?"
     );
 
-  } catch (err) {
-    setError(err.message);
-  } finally {
-    setLoading(false);
-  }
-}, [token, isAdmin, search, batchFilter]);
+    if (!confirmed) return;
 
- useEffect(() => {
-  const timer = setTimeout(() => {
-    load(page);
-  }, 300);
+    try {
+      setActionLoading(true);
 
-  return () => clearTimeout(timer);
-}, [load, page]);
+      const result = await apiRequest(
+        `/${selected.registration._id}/convert`,
+        "POST",
+        {
+          skipPayment: actionForm.skipPayment,
+          remarks: actionForm.remarks,
+        }
+      );
+
+      const student = result.data?.student;
+      const password = result.data?.temporaryPassword;
+
+      setModal("");
+
+      setNotice(
+        `Student created successfully. Student ID: ${
+          student?.studentId || "Created"
+        }` +
+          (password ? ` | Temporary password: ${password}` : "")
+      );
+
+      await load(page);
+      await openRegistration(selected.registration._id);
+    } catch (err) {
+      setNotice(err.message);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  // SEND NOTIFICATION
+  const sendNotification = async () => {
+    const type = window.prompt(
+      "Enter notification type:\napproved\nrejected\nwaitlisted\nbatch_assigned\npayment_instructions\npayment_confirmed\nadmission_confirmed"
+    );
+
+    if (!type) return;
+
+    const allowedTypes = [
+      "approved",
+      "rejected",
+      "waitlisted",
+      "batch_assigned",
+      "payment_instructions",
+      "payment_confirmed",
+      "admission_confirmed",
+    ];
+
+    if (!allowedTypes.includes(type.trim())) {
+      setNotice("Invalid notification type.");
+      return;
+    }
+
+    await performAction(
+      () =>
+        apiRequest(
+          `/${selected.registration._id}/notify`,
+          "POST",
+          { type: type.trim() }
+        ),
+      "Notification sent successfully."
+    );
+  };
+
+  // DELETE REGISTRATION
+  const deleteRegistration = async () => {
+    if (actionForm.reason.trim().length < 3) {
+      setNotice("Please provide a deletion reason.");
+      return;
+    }
+
+    const confirmed = window.confirm(
+      "Are you sure you want to permanently delete this registration?"
+    );
+
+    if (!confirmed) return;
+
+    try {
+      setActionLoading(true);
+
+      await apiRequest(
+        `/${selected.registration._id}`,
+        "DELETE",
+        { reason: actionForm.reason }
+      );
+
+      setModal("");
+      setSelected(null);
+      setNotice("Registration deleted successfully.");
+
+      await load(page);
+    } catch (err) {
+      setNotice(err.message);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  // PAYMENT SCREENSHOT
+  const handleScreenshot = (file) => {
+    if (!file) return;
+
+    if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
+      setNotice("Please upload a PNG, JPG or WEBP image.");
+      return;
+    }
+
+    if (file.size > 1.8 * 1024 * 1024) {
+      setNotice("Image must be smaller than 1.8 MB.");
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      setActionForm((prev) => ({
+        ...prev,
+        screenshot: reader.result,
+      }));
+    };
+
+    reader.onerror = () => {
+      setNotice("Could not read the image.");
+    };
+
+    reader.readAsDataURL(file);
+  };
 
   const batches = ["All", ...availableBatches];
 
-  const filtered = data;
-
   const stats = [
-  {
-    label: "Total registrations",
-    value: statsData.total || 0,
-    Icon: Users,
-  },
-  {
-    label: "Pending applications",
-    value: statsData.pending || 0,
-    Icon: ClipboardList,
-  },
-  {
-    label: "Approved registrations",
-    value: statsData.approved || 0,
-    Icon: Sun,
-  },
-  {
-    label: "Converted students",
-    value: statsData.converted || 0,
-    Icon: CalendarDays,
-  },
-];
+    {
+      label: "Total registrations",
+      value: statsData.total || 0,
+      Icon: Users,
+    },
+    {
+      label: "Pending applications",
+      value: statsData.pending || 0,
+      Icon: ClipboardList,
+    },
+    {
+      label: "Approved registrations",
+      value: statsData.approved || 0,
+      Icon: Sun,
+    },
+    {
+      label: "Converted students",
+      value: statsData.converted || 0,
+      Icon: CalendarDays,
+    },
+  ];
+
+  const reg = selected?.registration;
+  const payments = selected?.payments || [];
+  const history = selected?.history || [];
+
+  const formInput = {
+    width: "100%",
+    padding: "11px 13px",
+    border: "2px solid #2A0A3F",
+    borderRadius: 10,
+    font: "inherit",
+    color: "#2A0A3F",
+    background: "#fff",
+    marginTop: 6,
+  };
+
+  const labelStyle = {
+    display: "block",
+    marginBottom: 13,
+    fontSize: 13,
+    fontWeight: 700,
+  };
+
+  const modalOverlay = {
+    position: "fixed",
+    inset: 0,
+    zIndex: 1000,
+    background: "rgba(25, 5, 35, .72)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 16,
+  };
+
+  const modalBox = {
+    width: "min(760px, 100%)",
+    maxHeight: "90vh",
+    overflowY: "auto",
+    background: "#FFF6FC",
+    border: "3px solid #2A0A3F",
+    borderRadius: 22,
+    padding: 22,
+    boxShadow: "8px 8px 0 #FFA8E0",
+  };
+
+  const actionButton = {
+    padding: "9px 13px",
+    background: "#C6FF3D",
+    color: "#2A0A3F",
+    border: "2px solid #2A0A3F",
+    borderRadius: 10,
+    fontWeight: 700,
+    cursor: "pointer",
+    margin: "4px",
+  };
+
+  const closeModal = () => {
+    setModal("");
+    resetActionForm();
+  };
 
   return (
     <div className="tr">
       <style>{styles}</style>
-      <div className="tr-grid" />
-      <div className="tr-ball" style={{ width: 34, height: 34, top: "22%", right: "5%", animation: "tr-float 6s ease-in-out infinite" }} />
-      <div className="tr-ball" style={{ width: 22, height: 22, bottom: "10%", left: "4%", animation: "tr-float 5s ease-in-out infinite .8s" }} />
 
-      {/* Header */}
+      <div className="tr-grid" />
+
+      <div
+        className="tr-ball"
+        style={{
+          width: 34,
+          height: 34,
+          top: "22%",
+          right: "5%",
+          animation: "tr-float 6s ease-in-out infinite",
+        }}
+      />
+
+      <div
+        className="tr-ball"
+        style={{
+          width: 22,
+          height: 22,
+          bottom: "10%",
+          left: "4%",
+          animation: "tr-float 5s ease-in-out infinite .8s",
+        }}
+      />
+
+      {/* HEADER */}
       <header className="tr-header">
         <div className="tr-brand">
-          <div className="tr-logo"><img src={LOGO} alt="TCG logo" /></div>
+          <div className="tr-logo">
+            <img src={LOGO} alt="TCG logo" />
+          </div>
+
           <div>
             <h1>Tikone Cricket Gurukul</h1>
             <p>Admin — registrations dashboard</p>
           </div>
         </div>
-        <button className={`tr-btn ${loading ? "spinning" : ""}`} onClick={load} disabled={loading}>
+
+        <button
+          className={`tr-btn ${loading ? "spinning" : ""}`}
+          onClick={() => load(page)}
+          disabled={loading}
+        >
           <RefreshCw size={15} />
           Refresh
         </button>
       </header>
 
       <div className="tr-body">
-        {/* Stat cards */}
+        {/* STATISTICS */}
         <div className="tr-stats">
           {stats.map((s, i) => (
-            <div key={s.label} className="tr-stat" style={{ animationDelay: `${i * 80}ms` }}>
-              <div className="tr-stat-ic"><s.Icon size={19} /></div>
+            <div
+              key={s.label}
+              className="tr-stat"
+              style={{ animationDelay: `${i * 80}ms` }}
+            >
+              <div className="tr-stat-ic">
+                <s.Icon size={19} />
+              </div>
+
               <small>{s.label}</small>
               <strong>{s.value}</strong>
             </div>
           ))}
         </div>
 
-        {/* Filters */}
+        {/* SEARCH AND FILTERS */}
         <div className="tr-filters">
           <div className="tr-search">
             <Search size={16} color="#2A0A3F" />
+
             <input
               className="tr-input"
               value={search}
               onChange={(e) => {
-                 setSearch(e.target.value);
-                 setPage(1);
-               }}
+                setSearch(e.target.value);
+                setPage(1);
+              }}
               placeholder="Search by name, phone or ref no..."
               aria-label="Search registrations"
             />
           </div>
+
           <div className="tr-chips">
             {batches.map((b) => (
-  <button
-    key={b}
-    className={`tr-chip ${batchFilter === b ? "on" : ""}`}
-    onClick={() => {
-      setBatchFilter(b);
-      setPage(1);
-    }}
-  >
-    {b}
-  </button>
-))}
+              <button
+                key={b}
+                className={`tr-chip ${batchFilter === b ? "on" : ""}`}
+                onClick={() => {
+                  setBatchFilter(b);
+                  setPage(1);
+                }}
+              >
+                {b}
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Table card */}
+        {/* REGISTRATION TABLE */}
         <div className="tr-card">
           {loading ? (
             <div className="tr-state">
@@ -295,37 +831,89 @@ export default function Registrations() {
               <AlertCircle size={34} />
               <div>Could not load data: {error}</div>
             </div>
-          ) : filtered.length === 0 ? (
+          ) : data.length === 0 ? (
             <div className="tr-state">No registrations found.</div>
           ) : (
             <div className="tr-scroll">
               <table className="tr-table">
                 <thead>
                   <tr>
-                    {["Ref no", "Player name", "Phone", "Email", "Batch", "Level", "Role", "Program", "Registered"].map((h) => (
+                    {[
+                      "Ref no",
+                      "Player name",
+                      "Phone",
+                      "Email",
+                      "Batch",
+                      "Level",
+                      "Role",
+                      "Program",
+                      "Status",
+                      "Registered",
+                      "Action",
+                    ].map((h) => (
                       <th key={h}>{h}</th>
                     ))}
                   </tr>
                 </thead>
+
                 <tbody>
-                  {filtered.map((r) => (
+                  {data.map((r) => (
                     <tr key={r._id}>
-                      <td className="ref">{r.refNum || "—"}</td>
-                      <td className="name">{r.fname} {r.lname}</td>
+                      <td className="ref">
+                        {r.refNum || r.registrationNumber || "—"}
+                      </td>
+
+                      <td className="name">
+                        {r.fname || r.firstName || ""}{" "}
+                        {r.lname || r.lastName || ""}
+                      </td>
+
                       <td>{r.phone || "—"}</td>
                       <td>{r.email || "—"}</td>
+
                       <td>
-                       {(r.batchName || r.batch) ? (
-                         <span className="tr-pill">{r.batchName || r.batch}</span>
-                       ) : (
-                         "—"
-                       )}
-                     </td>
+                        {(r.batchName || r.batch) ? (
+                          <span className="tr-pill">
+                            {r.batchName || r.batch}
+                          </span>
+                        ) : (
+                          "—"
+                        )}
+                      </td>
+
                       <td>{r.level || "—"}</td>
-                      <td>{r.role || "—"}</td>
-                      <td>{r.duration || "—"}</td>
+                      <td>{r.role || r.playingRole || "—"}</td>
+                      <td>{r.duration || r.program || "—"}</td>
+
+                      <td>
+                        <span className="tr-pill">
+                          {(r.status || "pending").replaceAll("_", " ")}
+                        </span>
+                      </td>
+
                       <td className="muted">
-                        {r.createdAt ? new Date(r.createdAt).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }) : "—"}
+                        {r.createdAt
+                          ? new Date(r.createdAt).toLocaleDateString(
+                              "en-IN",
+                              {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                              }
+                            )
+                          : "—"}
+                      </td>
+
+                      <td>
+                        <button
+                          className="tr-btn"
+                          style={{ padding: "7px 12px" }}
+                          onClick={() => openRegistration(r._id)}
+                          disabled={actionLoading}
+                        >
+                          <Eye size={15} />
+                          Manage
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -337,37 +925,940 @@ export default function Registrations() {
           {!loading && !error && (
             <div className="tr-foot">
               <span>
-                Showing <strong>{filtered.length}</strong> registrations
+                Showing <strong>{data.length}</strong> registrations
                 out of <strong>{pagination.total}</strong>
               </span>
-            
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                }}
+              >
                 <button
                   className="tr-btn"
                   disabled={page <= 1 || loading}
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  onClick={() =>
+                    setPage((p) => Math.max(1, p - 1))
+                  }
                 >
                   Previous
                 </button>
-            
+
                 <strong>
                   {pagination.page} / {pagination.pages}
                 </strong>
-            
+
                 <button
                   className="tr-btn"
                   disabled={page >= pagination.pages || loading}
-                  onClick={() => setPage((p) => Math.min(pagination.pages, p + 1))}
+                  onClick={() =>
+                    setPage((p) =>
+                      Math.min(pagination.pages, p + 1)
+                    )
+                  }
                 >
                   Next
                 </button>
               </div>
-            
+
               <span>Tikone Cricket Gurukul — Admin</span>
             </div>
           )}
         </div>
       </div>
+
+      {/* NOTICE */}
+      {notice && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: 20,
+            right: 20,
+            zIndex: 2000,
+            maxWidth: 380,
+            padding: 15,
+            background: "#2A0A3F",
+            color: "#fff",
+            border: "2px solid #C6FF3D",
+            borderRadius: 12,
+            boxShadow: "4px 4px 0 #FFA8E0",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 15,
+            }}
+          >
+            <span>{notice}</span>
+
+            <button
+              onClick={() => setNotice("")}
+              style={{
+                background: "transparent",
+                border: 0,
+                color: "#fff",
+                cursor: "pointer",
+              }}
+            >
+              <X size={18} />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* REGISTRATION DETAILS MODAL */}
+      {modal === "view" && reg && (
+        <div style={modalOverlay}>
+          <div style={modalBox}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: 12,
+              }}
+            >
+              <h2>Registration Details</h2>
+
+              <button
+                onClick={closeModal}
+                style={actionButton}
+                aria-label="Close"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <p>
+              <strong>Status:</strong>{" "}
+              <span className="tr-pill">
+                {(reg.status || "pending").replaceAll("_", " ")}
+              </span>
+            </p>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))",
+                gap: 12,
+              }}
+            >
+              {Object.entries(reg).map(([key, value]) => {
+                if (
+                  [
+                    "_id",
+                    "__v",
+                    "createdAt",
+                    "updatedAt",
+                    "approvedBy",
+                    "rejectedBy",
+                  ].includes(key) ||
+                  value === null ||
+                  typeof value === "object"
+                ) {
+                  return null;
+                }
+
+                return (
+                  <div
+                    key={key}
+                    style={{
+                      background: "#fff",
+                      border: "1px solid #e6c9df",
+                      borderRadius: 10,
+                      padding: 11,
+                    }}
+                  >
+                    <small style={{ color: "#76547f" }}>
+                      {key.replace(/([A-Z])/g, " $1")}
+                    </small>
+
+                    <div style={{ fontWeight: 700, marginTop: 4 }}>
+                      {String(value)}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <h3>Admin Actions</h3>
+
+            <div style={{ display: "flex", flexWrap: "wrap" }}>
+              <button
+                style={actionButton}
+                onClick={() => openAction("edit")}
+              >
+                <Pencil size={14} /> Edit
+              </button>
+
+              <button
+                style={actionButton}
+                onClick={() => openAction("review")}
+              >
+                <Eye size={14} /> Review
+              </button>
+
+              <button
+                style={actionButton}
+                onClick={() => openAction("approve")}
+              >
+                <CheckCircle size={14} /> Approve
+              </button>
+
+              <button
+                style={actionButton}
+                onClick={() => openAction("reject")}
+              >
+                <XCircle size={14} /> Reject
+              </button>
+
+              <button
+                style={actionButton}
+                onClick={() => openAction("waitlist")}
+              >
+                <Clock size={14} /> Waitlist
+              </button>
+
+              <button
+                style={actionButton}
+                onClick={() => updateStatus("reopen")}
+              >
+                Reopen
+              </button>
+
+              <button
+                style={actionButton}
+                onClick={() => openAction("batch")}
+              >
+                <Layers size={14} /> Assign batch
+              </button>
+
+              <button
+                style={actionButton}
+                onClick={() => openAction("paymentRequest")}
+              >
+                <CreditCard size={14} /> Payment request
+              </button>
+
+              <button
+                style={actionButton}
+                onClick={() => openAction("proof")}
+              >
+                Record payment proof
+              </button>
+
+              <button
+                style={actionButton}
+                onClick={() => openAction("verify")}
+              >
+                Verify payment
+              </button>
+
+              <button
+                style={actionButton}
+                onClick={() => openAction("rejectPayment")}
+              >
+                Reject payment
+              </button>
+
+              <button
+                style={actionButton}
+                onClick={() => openAction("convert")}
+              >
+                <UserPlus size={14} /> Convert student
+              </button>
+
+              <button
+                style={actionButton}
+                onClick={sendNotification}
+              >
+                <Mail size={14} /> Notify
+              </button>
+
+              <button
+                style={{
+                  ...actionButton,
+                  background: "#ffd0d0",
+                }}
+                onClick={() => openAction("delete")}
+              >
+                <Trash2 size={14} /> Delete
+              </button>
+            </div>
+
+            <h3>Payment Requests</h3>
+
+            {payments.length === 0 ? (
+              <p>No payment requests found.</p>
+            ) : (
+              payments.map((payment) => (
+                <div
+                  key={payment._id}
+                  style={{
+                    background: "#fff",
+                    padding: 12,
+                    borderRadius: 10,
+                    marginBottom: 8,
+                    border: "1px solid #e6c9df",
+                  }}
+                >
+                  <strong>Amount:</strong> ₹{payment.amount}
+                  <br />
+                  <strong>Status:</strong> {payment.status}
+                  <br />
+                  <strong>Description:</strong>{" "}
+                  {payment.description || "—"}
+                  {payment.transactionId && (
+                    <>
+                      <br />
+                      <strong>Transaction ID:</strong>{" "}
+                      {payment.transactionId}
+                    </>
+                  )}
+                  {payment.screenshot && (
+                    <div style={{ marginTop: 8 }}>
+                      <a
+                        href={payment.screenshot}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        View payment screenshot
+                      </a>
+                    </div>
+                  )}
+                </div>
+              ))
+            )}
+
+            <h3>
+              <History size={17} style={{ verticalAlign: "middle" }} />{" "}
+              Registration History
+            </h3>
+
+            {history.length === 0 ? (
+              <p>No history available.</p>
+            ) : (
+              history.map((item, index) => (
+                <div
+                  key={item._id || index}
+                  style={{
+                    borderLeft: "3px solid #2A0A3F",
+                    padding: "5px 12px",
+                    marginBottom: 10,
+                    background: "#fff",
+                  }}
+                >
+                  <strong>
+                    {item.action || item.status || "Update"}
+                  </strong>
+
+                  <div>{item.remarks || item.reason || ""}</div>
+
+                  <small>
+                    {item.createdAt
+                      ? new Date(item.createdAt).toLocaleString("en-IN")
+                      : ""}
+                  </small>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* EDIT MODAL */}
+      {modal === "edit" && (
+        <div style={modalOverlay}>
+          <div style={modalBox}>
+            <h2>Edit Registration</h2>
+
+            {editFields.length === 0 ? (
+              <p>No editable fields were returned by the backend.</p>
+            ) : (
+              editFields.map((field) => (
+                <label key={field.key} style={labelStyle}>
+                  {field.key.replace(/([A-Z])/g, " $1")}
+
+                  {field.options?.length ? (
+                    <select
+                      style={formInput}
+                      value={editValues[field.key] ?? ""}
+                      onChange={(e) =>
+                        setEditValues((prev) => ({
+                          ...prev,
+                          [field.key]: e.target.value,
+                        }))
+                      }
+                    >
+                      <option value="">Select</option>
+
+                      {field.options.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  ) : field.type === "textarea" ? (
+                    <textarea
+                      style={formInput}
+                      value={editValues[field.key] ?? ""}
+                      onChange={(e) =>
+                        setEditValues((prev) => ({
+                          ...prev,
+                          [field.key]: e.target.value,
+                        }))
+                      }
+                    />
+                  ) : (
+                    <input
+                      style={formInput}
+                      type={
+                        field.type === "number"
+                          ? "number"
+                          : field.type === "date"
+                          ? "date"
+                          : "text"
+                      }
+                      value={editValues[field.key] ?? ""}
+                      onChange={(e) =>
+                        setEditValues((prev) => ({
+                          ...prev,
+                          [field.key]: e.target.value,
+                        }))
+                      }
+                    />
+                  )}
+                </label>
+              ))
+            )}
+
+            <button
+              style={actionButton}
+              onClick={saveEdit}
+              disabled={actionLoading || editFields.length === 0}
+            >
+              <Save size={15} /> Save Changes
+            </button>
+
+            <button style={actionButton} onClick={closeModal}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* STATUS MODALS */}
+      {["review", "approve", "reject", "waitlist"].includes(modal) && (
+        <div style={modalOverlay}>
+          <div style={modalBox}>
+            <h2>
+              {modal.charAt(0).toUpperCase() + modal.slice(1)} Registration
+            </h2>
+
+            {["reject", "waitlist"].includes(modal) && (
+              <label style={labelStyle}>
+                Reason *
+                <textarea
+                  style={formInput}
+                  value={actionForm.reason}
+                  onChange={(e) =>
+                    setActionForm((prev) => ({
+                      ...prev,
+                      reason: e.target.value,
+                    }))
+                  }
+                  placeholder="Enter reason..."
+                />
+              </label>
+            )}
+
+            <label style={labelStyle}>
+              Admin remarks
+              <textarea
+                style={formInput}
+                value={actionForm.remarks}
+                onChange={(e) =>
+                  setActionForm((prev) => ({
+                    ...prev,
+                    remarks: e.target.value,
+                  }))
+                }
+                placeholder="Optional remarks..."
+              />
+            </label>
+
+            <button
+              style={actionButton}
+              disabled={actionLoading}
+              onClick={() => updateStatus(modal)}
+            >
+              Confirm
+            </button>
+
+            <button style={actionButton} onClick={closeModal}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* BATCH MODAL */}
+      {modal === "batch" && (
+        <div style={modalOverlay}>
+          <div style={modalBox}>
+            <h2>Assign Batch</h2>
+
+            <label style={labelStyle}>
+              Select batch
+
+              <select
+                style={formInput}
+                value={actionForm.batchId}
+                onChange={(e) =>
+                  setActionForm((prev) => ({
+                    ...prev,
+                    batchId: e.target.value,
+                  }))
+                }
+              >
+                <option value="">Select batch</option>
+
+                {batchesList.map((batch) => (
+                  <option key={batch._id} value={batch._id}>
+                    {batch.name} — {batch.timing || "Timing not specified"}
+                    {batch.available !== undefined
+                      ? ` (${batch.available} seats available)`
+                      : ""}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <button
+              style={actionButton}
+              onClick={assignBatch}
+              disabled={actionLoading}
+            >
+              Assign Batch
+            </button>
+
+            <button style={actionButton} onClick={closeModal}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* PAYMENT REQUEST MODAL */}
+      {modal === "paymentRequest" && (
+        <div style={modalOverlay}>
+          <div style={modalBox}>
+            <h2>Create Payment Request</h2>
+
+            <label style={labelStyle}>
+              Select fee plan
+
+              <select
+                style={formInput}
+                value={actionForm.feePlanId}
+                onChange={(e) =>
+                  setActionForm((prev) => ({
+                    ...prev,
+                    feePlanId: e.target.value,
+                  }))
+                }
+              >
+                <option value="">Select fee plan</option>
+
+                {feePlans.map((plan) => (
+                  <option key={plan._id} value={plan._id}>
+                    {plan.name || plan.title || "Fee plan"} — ₹
+                    {plan.amount || plan.price || plan.fee || 0}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label style={labelStyle}>
+              Notes
+
+              <textarea
+                style={formInput}
+                value={actionForm.notes}
+                onChange={(e) =>
+                  setActionForm((prev) => ({
+                    ...prev,
+                    notes: e.target.value,
+                  }))
+                }
+                placeholder="Optional payment instructions..."
+              />
+            </label>
+
+            <button
+              style={actionButton}
+              onClick={createPaymentRequest}
+              disabled={actionLoading}
+            >
+              Create Request
+            </button>
+
+            <button style={actionButton} onClick={closeModal}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* RECORD PAYMENT PROOF MODAL */}
+      {modal === "proof" && (
+        <div style={modalOverlay}>
+          <div style={modalBox}>
+            <h2>Record Payment Proof</h2>
+
+            <label style={labelStyle}>
+              Payment request
+
+              <select
+                style={formInput}
+                value={actionForm.paymentRequestId}
+                onChange={(e) =>
+                  setActionForm((prev) => ({
+                    ...prev,
+                    paymentRequestId: e.target.value,
+                  }))
+                }
+              >
+                <option value="">Select payment request</option>
+
+                {payments
+                  .filter((p) => p.status === "pending")
+                  .map((payment) => (
+                    <option key={payment._id} value={payment._id}>
+                      ₹{payment.amount} — {payment.description}
+                    </option>
+                  ))}
+              </select>
+            </label>
+
+            <label style={labelStyle}>
+              Transaction ID
+
+              <input
+                style={formInput}
+                value={actionForm.transactionId}
+                onChange={(e) =>
+                  setActionForm((prev) => ({
+                    ...prev,
+                    transactionId: e.target.value,
+                  }))
+                }
+                placeholder="Enter transaction ID"
+              />
+            </label>
+
+            <label style={labelStyle}>
+              Payment screenshot
+
+              <input
+                style={formInput}
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                onChange={(e) => handleScreenshot(e.target.files?.[0])}
+              />
+            </label>
+
+            <button
+              style={actionButton}
+              onClick={recordPaymentProof}
+              disabled={actionLoading}
+            >
+              Save Payment Proof
+            </button>
+
+            <button style={actionButton} onClick={closeModal}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* VERIFY PAYMENT MODAL */}
+      {modal === "verify" && (
+        <div style={modalOverlay}>
+          <div style={modalBox}>
+            <h2>Verify Payment</h2>
+
+            <label style={labelStyle}>
+              Payment request
+
+              <select
+                style={formInput}
+                value={actionForm.paymentRequestId}
+                onChange={(e) =>
+                  setActionForm((prev) => ({
+                    ...prev,
+                    paymentRequestId: e.target.value,
+                  }))
+                }
+              >
+                <option value="">Select payment request</option>
+
+                {payments
+                  .filter((p) => p.status === "pending")
+                  .map((payment) => (
+                    <option key={payment._id} value={payment._id}>
+                      ₹{payment.amount} — {payment.description}
+                      {payment.proofSubmittedAt
+                        ? " (Proof submitted)"
+                        : ""}
+                    </option>
+                  ))}
+              </select>
+            </label>
+
+            <label style={labelStyle}>
+              Transaction ID
+
+              <input
+                style={formInput}
+                value={actionForm.transactionId}
+                onChange={(e) =>
+                  setActionForm((prev) => ({
+                    ...prev,
+                    transactionId: e.target.value,
+                  }))
+                }
+              />
+            </label>
+
+            <label style={labelStyle}>
+              Remarks
+
+              <textarea
+                style={formInput}
+                value={actionForm.remarks}
+                onChange={(e) =>
+                  setActionForm((prev) => ({
+                    ...prev,
+                    remarks: e.target.value,
+                  }))
+                }
+              />
+            </label>
+
+            <button
+              style={actionButton}
+              onClick={verifyPayment}
+              disabled={actionLoading}
+            >
+              Verify Payment
+            </button>
+
+            <button style={actionButton} onClick={closeModal}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* REJECT PAYMENT MODAL */}
+      {modal === "rejectPayment" && (
+        <div style={modalOverlay}>
+          <div style={modalBox}>
+            <h2>Reject Payment</h2>
+
+            <label style={labelStyle}>
+              Payment request
+
+              <select
+                style={formInput}
+                value={actionForm.paymentRequestId}
+                onChange={(e) =>
+                  setActionForm((prev) => ({
+                    ...prev,
+                    paymentRequestId: e.target.value,
+                  }))
+                }
+              >
+                <option value="">Select payment request</option>
+
+                {payments
+                  .filter((p) => p.status === "pending")
+                  .map((payment) => (
+                    <option key={payment._id} value={payment._id}>
+                      ₹{payment.amount} — {payment.description}
+                    </option>
+                  ))}
+              </select>
+            </label>
+
+            <label style={labelStyle}>
+              Rejection reason *
+
+              <textarea
+                style={formInput}
+                value={actionForm.reason}
+                onChange={(e) =>
+                  setActionForm((prev) => ({
+                    ...prev,
+                    reason: e.target.value,
+                  }))
+                }
+              />
+            </label>
+
+            <button
+              style={actionButton}
+              onClick={rejectPayment}
+              disabled={actionLoading}
+            >
+              Reject Payment
+            </button>
+
+            <button style={actionButton} onClick={closeModal}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* CONVERT STUDENT MODAL */}
+      {modal === "convert" && (
+        <div style={modalOverlay}>
+          <div style={modalBox}>
+            <h2>Convert to Student</h2>
+
+            <p>
+              This action creates a student account from the selected
+              registration.
+            </p>
+
+            <label
+              style={{
+                ...labelStyle,
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={actionForm.skipPayment}
+                onChange={(e) =>
+                  setActionForm((prev) => ({
+                    ...prev,
+                    skipPayment: e.target.checked,
+                  }))
+                }
+              />
+
+              Skip payment verification (admin-authorised waiver)
+            </label>
+
+            <label style={labelStyle}>
+              Remarks
+
+              <textarea
+                style={formInput}
+                value={actionForm.remarks}
+                onChange={(e) =>
+                  setActionForm((prev) => ({
+                    ...prev,
+                    remarks: e.target.value,
+                  }))
+                }
+              />
+            </label>
+
+            <button
+              style={actionButton}
+              onClick={convertToStudent}
+              disabled={actionLoading}
+            >
+              <UserPlus size={15} /> Convert Student
+            </button>
+
+            <button style={actionButton} onClick={closeModal}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* DELETE MODAL */}
+      {modal === "delete" && (
+        <div style={modalOverlay}>
+          <div style={modalBox}>
+            <h2>Delete Registration</h2>
+
+            <p>This action cannot be undone.</p>
+
+            <label style={labelStyle}>
+              Deletion reason *
+
+              <textarea
+                style={formInput}
+                value={actionForm.reason}
+                onChange={(e) =>
+                  setActionForm((prev) => ({
+                    ...prev,
+                    reason: e.target.value,
+                  }))
+                }
+                placeholder="Enter reason for deletion..."
+              />
+            </label>
+
+            <button
+              style={{
+                ...actionButton,
+                background: "#ffb7b7",
+              }}
+              onClick={deleteRegistration}
+              disabled={actionLoading}
+            >
+              <Trash2 size={15} /> Confirm Delete
+            </button>
+
+            <button style={actionButton} onClick={closeModal}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ACTION LOADING */}
+      {actionLoading && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 3000,
+            background: "rgba(42,10,63,.25)",
+            display: "grid",
+            placeItems: "center",
+            pointerEvents: "none",
+          }}
+        >
+          <div
+            style={{
+              background: "#fff",
+              padding: 18,
+              borderRadius: 14,
+              fontWeight: 800,
+              border: "2px solid #2A0A3F",
+            }}
+          >
+            Please wait...
+          </div>
+        </div>
+      )}
     </div>
   );
 }
