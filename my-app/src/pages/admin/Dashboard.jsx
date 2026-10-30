@@ -52,7 +52,27 @@ const styles = `
 .td-side { position: fixed; z-index: 40; inset: 0 auto 0 0; width: 272px; display: flex; flex-direction: column; background: var(--plum); color: #fff; border-right: 3px solid var(--plum); transform: translateX(-100%); transition: transform .3s cubic-bezier(.2,.8,.2,1); overflow-y: auto; }
 .td-side.open { transform: none; }
 .td-scrim { position: fixed; inset: 0; z-index: 35; background: rgba(42,10,63,.55); backdrop-filter: blur(3px); }
-@media (min-width: 768px) { .td-side { position: sticky; top: 0; height: 100vh; transform: none; flex-shrink: 0; } .td-scrim, .td-burger { display: none; } }
+@media (min-width: 768px) {
+  .td-side {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 272px;
+    height: 100vh;
+    transform: none;
+    flex-shrink: 0;
+  }
+
+  .td-main {
+    margin-left: 272px;
+  }
+
+  .td-scrim,
+  .td-burger {
+    display: none;
+  }
+}
 .td-brand { display: flex; align-items: center; gap: 12px; padding: 20px 18px; border-bottom: 2px dashed rgba(255,255,255,.2); }
 .td-logo { flex-shrink: 0; width: 56px; height: 56px; border-radius: 16px; background: #fff; border: 3px solid var(--lime); overflow: hidden; transform: rotate(-3deg); }
 .td-logo img { width: 100%; height: 100%; object-fit: contain; display: block; }
