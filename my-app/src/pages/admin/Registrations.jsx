@@ -1870,11 +1870,9 @@ export default function Registrations() {
             }}
           >
             Please wait...
-          </div>
-        </div>
-      )}
-    </div>
-  );
+         </div>
+      </div>
+    )}
+  </div>
+);
 }
-      )}
-    </div>
