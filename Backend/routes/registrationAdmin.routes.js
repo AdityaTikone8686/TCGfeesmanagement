@@ -1298,13 +1298,6 @@ router.post('/:id/payment/proof', asyncH(async (req, res) => {
       throw new HttpError(404, 'Open payment request not found');
     }
 
-    if (!pr.proofSubmittedAt) {
-     throw new HttpError(
-       409,
-       'Payment proof has not been submitted yet'
-     );
-   }   
-
     if (screenshot) {
       pr.screenshot = screenshot;
     }
