@@ -338,10 +338,7 @@ async function acquireSeat(batchId, session) {
   const b = await Batch.findOneAndUpdate(
     {
       _id: batchId,
-      active: true,
-      $expr: {
-        $lt: ['$enrolled', '$capacity']
-      }
+      active: true
     },
     {
       $inc: {
@@ -363,9 +360,7 @@ async function acquireSeat(batchId, session) {
 
     throw new HttpError(
       409,
-      exists.active
-        ? `Batch "${exists.name}" is full`
-        : `Batch "${exists.name}" is not active`
+      `Batch "${exists.name}" is not active`
     );
   }
 
