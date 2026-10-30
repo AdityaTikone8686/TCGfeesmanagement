@@ -69,6 +69,7 @@ app.use("/api/matches-admin", matchAdminAuthRoutes);
 app.use("/api/visitors", visitorRoutes);
 app.use("/api/register", registrationRoutes);
 app.use("/api/register", registerRoutes);
+app.use("/api/admin/registrations", registrationAdminRoutes);
 
 
 
