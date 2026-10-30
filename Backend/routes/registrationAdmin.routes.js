@@ -13,32 +13,18 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import crypto from 'node:crypto';
-import authenticate from '../middleware/auth.js';
+import { protect, adminOnly } from '../middleware/authMiddleware.js';
 
 const { Schema } = mongoose;
 const router = express.Router();
 
 /* ===================================================================
-   1. ADAPT: your existing auth middleware (must populate req.user)
+   1. EXISTING ADMIN AUTHENTICATION
 =================================================================== */
-
-const requireAdmin = (req, res, next) => {
-  if (req.user && (
-    req.user.isAdmin === true ||
-    req.user.role === 'admin' ||
-    req.user.role === 'superadmin'
-  )) {
-    return next();
-  }
-
-  return res.status(403).json({
-    success: false,
-    message: 'Admin access required'
-  });
-};
 
 const canDelete = (user) =>
   user && (
+    user.isAdmin === true ||
     user.role === 'admin' ||
     user.role === 'superadmin'
   );
@@ -99,11 +85,15 @@ async function tx(fn) {
   }
 }
 
-const actor = (req) => ({
-  id: req.user._id || req.user.id,
-  name: req.user.name || req.user.email,
-  email: req.user.email
-});
+const actor = (req) => {
+  const admin = req.admin || req.user;
+
+  return {
+    id: admin._id || admin.id,
+    name: admin.name || admin.email || 'Administrator',
+    email: admin.email || ''
+  };
+};
 
 /* ===================================================================
    3. New collections (history + batches)
@@ -494,7 +484,7 @@ async function sendEmail(to, subject, text) {
    6. Routes — everything below requires an authenticated admin
 =================================================================== */
 
-router.use(authenticate, requireAdmin);
+router.use(protect, adminOnly);
 
 router.param('id', (req, res, next, id) =>
   isId(id)
@@ -693,7 +683,7 @@ router.get('/', asyncH(async (req, res) => {
     },
 
     permissions: {
-      canDelete: DELETE_ROLES.includes(req.user.role),
+      canDelete: canDelete(req.user),
       canManageBatches: true
     }
   });
@@ -1548,6 +1538,13 @@ router.post('/:id/convert', asyncH(async (req, res) => {
       );
     }
 
+    if (!reg.phone) {
+     throw new HttpError(
+       422,
+       'Registration has no phone number — add one before converting'
+     );
+   }
+
     const email = reg.email.toLowerCase().trim();
 
     const or = [{ email }];
@@ -1582,7 +1579,7 @@ router.post('/:id/convert', asyncH(async (req, res) => {
             email,
             phone: reg.phone,
             password: tempPassword,
-            role: 'student',
+            role: 'user',
             status: 'active',
             studentId,
             registration: reg._id,
@@ -1597,116 +1594,75 @@ router.post('/:id/convert', asyncH(async (req, res) => {
 
     const now = new Date();
 
-    if (reg.feePlan) {
-      const plan = await FeePlan()
-        .findById(reg.feePlan)
-        .session(session);
+const paid = await PayReq()
+  .findOne({
+    registration: reg._id,
+    status: 'approved'
+  })
+  .session(session);
 
-      if (plan) {
-        await Subscription().create(
-          [
-            {
-              user: student._id,
-              plan: plan._id,
-              startDate: now,
-              endDate: new Date(
-                now.getTime() + plan.durationInDays * 86400000
-              ),
-              status: 'active'
-            }
-          ],
-          { session }
-        );
-      }
-    }
+let payment = null;
+let subscription = null;
 
-    const paid = await PayReq()
-      .findOne({
-        registration: reg._id,
-        status: 'approved'
-      })
-      .session(session);
+if (paid) {
+  paid.user = student._id;
 
-    if (paid) {
-      paid.user = student._id;
+  await paid.save({ session });
 
-      await paid.save({ session });
+  const rawMethod = String(
+    paid.paymentMethod || 'online'
+  ).toLowerCase();
 
-      await Payment().create(
-        [
-          {
-            user: student._id,
-            email,
-            amount: paid.amount,
-            method: 'online',
-            description: `Admission fee (${reg.refNum})`
-          }
-        ],
-        { session }
-      );
-    }
+  const method = ['cash', 'online', 'upi'].includes(rawMethod)
+    ? rawMethod
+    : 'online';
 
-    const from = st;
-
-    reg.convertedStudent = student._id;
-    reg.convertedAt = now;
-    reg.status = 'admission_confirmed';
-    reg.statusUpdatedAt = now;
-
-    if (clean(remarks, 1000)) {
-      reg.adminRemarks = clean(remarks, 1000);
-    }
-
-    await reg.save({ session });
-
-    await logHistory(
-      session,
-      reg,
-      'converted_to_student',
+  [payment] = await Payment().create(
+    [
       {
-        from,
-        to: 'admission_confirmed',
+        user: student._id,
+        email,
+        amount: paid.amount,
+        method,
+        description: `Admission fee (${reg.refNum})`,
+        transactionId: paid.transactionId || ''
+      }
+    ],
+    { session }
+  );
+}
 
-        remarks: skipPayment
-          ? `Admitted without payment. ${clean(remarks, 300)}`
-          : clean(remarks, 300),
+if (reg.feePlan) {
+  const plan = await FeePlan()
+    .findById(reg.feePlan)
+    .session(session);
 
-        meta: {
-          student: student._id,
-          studentId: student.studentId
+  if (plan) {
+    [subscription] = await Subscription().create(
+      [
+        {
+          user: student._id,
+          plan: plan._id,
+          startDate: now,
+          endDate: new Date(
+            now.getTime() + plan.durationInDays * 86400000
+          ),
+          payment: payment ? payment._id : undefined,
+          status: 'active'
         }
-      },
-      req
+      ],
+      { session }
     );
 
-    return {
-      already: false,
-      student,
-      tempPassword
-    };
-  });
-
-  res.status(out.already ? 200 : 201).json({
-    success: true,
-
-    message: out.already
-      ? 'Already converted — no duplicate created'
-      : 'Student created and admission confirmed',
-
-    data: {
-      alreadyConverted: out.already,
-
-      student: {
-        _id: out.student?._id,
-        name: out.student?.name,
-        email: out.student?.email,
-        studentId: out.student?.studentId
-      },
-
-      tempPassword: out.tempPassword
+    if (payment) {
+      payment.subscription = subscription._id;
+      await payment.save({ session });
     }
-  });
-}));
+
+    student.activeSubscription = subscription._id;
+    await student.save({ session });
+  }
+}
 
 /* ---------- notifications ---------- */
 
@@ -1866,10 +1822,11 @@ router.use((err, req, res, next) => {
 
   console.error('[registrations]', err);
 
-  res.status(500).json({
-    success: false,
-    message: 'Something went wrong. Please try again.'
-  });
+   const statusCode = err.statusCode || 500;
+
+res.status(statusCode).json({
+  success: false,
+  message: err.message || 'Something went wrong. Please try again.'
 });
 
 export default router;
