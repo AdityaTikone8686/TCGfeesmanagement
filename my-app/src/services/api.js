@@ -8,7 +8,6 @@ const API_BASE_URL = "https://tikonecricketgurukulbackend.onrender.com/api";
 const handleResponse = async (response) => {
 let data = null;
 
-```
 try {
 	data = await response.json();
 } catch {
@@ -27,7 +26,7 @@ return data || {
 	success: true,
 	message: "Operation completed successfully",
 };
-```
+
 
 };
 
@@ -50,7 +49,7 @@ headers: { "Content-Type": "application/json" },
 body: JSON.stringify(credentials),
 });
 
-```
+
 	return handleResponse(response);
 },
 
@@ -95,7 +94,7 @@ getAdminStatus: async (token) => {
 
 	return handleResponse(response);
 },
-```
+
 
 };
 
@@ -110,7 +109,7 @@ method: "GET",
 headers: getAuthHeaders(token),
 });
 
-```
+
 	return handleResponse(response);
 },
 
@@ -192,7 +191,7 @@ headers: getAuthHeaders(token),
 body: JSON.stringify(feePlanData),
 });
 
-```
+
 	return handleResponse(response);
 },
 
@@ -229,7 +228,7 @@ deleteFeePlan: async (token, feePlanId) => {
 
 	return handleResponse(response);
 },
-```
+
 
 };
 
@@ -245,7 +244,7 @@ headers: getAuthHeaders(token),
 body: JSON.stringify(paymentData),
 });
 
-```
+
 	return handleResponse(response);
 },
 
@@ -306,7 +305,7 @@ deletePayment: async (token, paymentId) => {
 
 	return handleResponse(response);
 },
-```
+
 
 };
 
@@ -322,7 +321,7 @@ headers: getAuthHeaders(token),
 body: JSON.stringify(subscriptionData),
 });
 
-```
+
 	return handleResponse(response);
 },
 
@@ -388,7 +387,6 @@ deleteSubscription: async (token, subscriptionId) => {
 
 	return handleResponse(response);
 },
-```
 
 };
 
@@ -406,10 +404,10 @@ headers: getAuthHeaders(token),
 }
 );
 
-```
+
 	return handleResponse(response);
 },
-```
+
 
 };
 
@@ -428,7 +426,7 @@ authorization: `Bearer ${token}`,
 body: formData,
 });
 
-```
+
 	return handleResponse(response);
 },
 
@@ -511,7 +509,6 @@ deletePaymentRequest: async (token, requestId) => {
 
 	return handleResponse(response);
 },
-```
 
 };
 
@@ -523,7 +520,7 @@ export const reportsAPI = {
 getSummaryReport: async (token, filters = {}) => {
 const params = new URLSearchParams(filters);
 
-```
+
 	const response = await fetch(
 		`${API_BASE_URL}/reports/summary?${params}`,
 		{
@@ -534,7 +531,7 @@ const params = new URLSearchParams(filters);
 
 	return handleResponse(response);
 },
-```
+
 
 };
 
@@ -551,10 +548,10 @@ method: "GET",
 }
 );
 
-```
+
 	return handleResponse(response);
 },
-```
+
 
 };
 
@@ -573,10 +570,10 @@ headers: getAuthHeaders(token),
 }
 );
 
-```
+
 	return handleResponse(response);
 },
-```
+
 
 };
 
@@ -591,7 +588,7 @@ headers: getAuthHeaders(token),
 
 export const registrationAdminAPI = {
 
-```
+
 // ---------------------------------
 // GET ALL REGISTRATIONS
 // ---------------------------------
@@ -868,6 +865,5 @@ delete: async (token, id, reason) => {
 
 	return handleResponse(response);
 },
-```
 
 };
