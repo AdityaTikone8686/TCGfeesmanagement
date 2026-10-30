@@ -1878,5 +1878,3 @@ export default function Registrations() {
 }
       )}
     </div>
-  );
-}
