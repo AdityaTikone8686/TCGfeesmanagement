@@ -1663,6 +1663,56 @@ if (reg.feePlan) {
     await student.save({ session });
   }
 }
+    // Confirm admission and link the registration to the student.
+    reg.status = 'admission_confirmed';
+    reg.statusUpdatedAt = new Date();
+    reg.convertedStudent = student._id;
+    reg.convertedAt = new Date();
+
+    await reg.save({ session });
+
+    // Record the conversion in the registration history.
+    await logHistory(
+      session,
+      reg,
+      'converted_to_student',
+      {
+        from: st,
+        to: 'admission_confirmed',
+        remarks: clean(remarks, 500) || 'Registration converted to student',
+        meta: {
+          studentId: student.studentId,
+          student: student._id,
+          payment: payment?._id || null,
+          subscription: subscription?._id || null,
+          skipPayment: skipPayment === true
+        }
+      },
+      req
+    );
+
+    return {
+      already: false,
+      student: {
+        id: student._id,
+        name: student.name,
+        email: student.email,
+        studentId: student.studentId
+      },
+      temporaryPassword: tempPassword || null,
+      payment,
+      subscription
+    };
+  });
+
+  res.status(out.already ? 200 : 201).json({
+    success: true,
+    data: out,
+    message: out.already
+      ? 'Student already exists for this registration'
+      : 'Registration successfully converted to student'
+  });
+}));
 
 /* ---------- notifications ---------- */
 
@@ -1822,11 +1872,12 @@ router.use((err, req, res, next) => {
 
   console.error('[registrations]', err);
 
-   const statusCode = err.statusCode || 500;
+  const statusCode = err.statusCode || 500;
 
-res.status(statusCode).json({
-  success: false,
-  message: err.message || 'Something went wrong. Please try again.'
+  res.status(statusCode).json({
+    success: false,
+    message: err.message || 'Something went wrong. Please try again.'
+  });
 });
 
 export default router;
