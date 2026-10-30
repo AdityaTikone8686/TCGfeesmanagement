@@ -1,263 +1,600 @@
-import { useEffect, useState } from "react";
-import { Search, RefreshCw, AlertCircle, Users, Sun, CalendarDays, ClipboardList } from "lucide-react";
+'use strict';
+/**
+ * Tikone Cricket Gurukul — Registration Admission Management
+ * Mount:  app.use('/api/admin/registrations', require('./routes/registrationAdmin.routes'));
+ *
+ * Every route here is admin-only. Read SETUP.md first: it lists the schema fields
+ * you must add to your existing models and the assumptions made about them.
+ */
+const express = require('express');
+const mongoose = require('mongoose');
+const crypto = require('crypto');
 
-const LOGO = "/cropped_circle_image-removebg-preview.png";
-const API = "https://tikonecricketgurukulbackend.onrender.com/api/register";
+const { Schema } = mongoose;
+const router = express.Router();
 
-/* ------------------------------------------------------------------
-   THEME (same as LandingPage / AdminLogin / AdminDashboard)
-   Pink #FFA8E0 · Plum #2A0A3F · Lime #C6FF3D · Cream #FFF6FC
-------------------------------------------------------------------- */
-const styles = `
-@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=DM+Sans:wght@400;500;600;700&display=swap');
+/* ===================================================================
+   1. ADAPT: your existing auth middleware (must populate req.user)
+=================================================================== */
+const { protect } = require('../middleware/auth');
 
-.tr {
-  --pink: #FFA8E0; --pink-soft: #FFD3F0; --plum: #2A0A3F; --plum-2: #4A1470; --lime: #C6FF3D; --cream: #FFF6FC;
-  font-family: 'DM Sans', system-ui, sans-serif; color: var(--plum);
-  min-height: 100vh; position: relative; overflow-x: hidden;
-  background: linear-gradient(135deg, #fff0fa 0%, var(--cream) 50%, var(--pink-soft) 100%);
+const ADMIN_ROLES = (process.env.REGISTRATION_ADMIN_ROLES || 'admin,superadmin').split(',').map((s) => s.trim());
+const DELETE_ROLES = (process.env.REGISTRATION_DELETE_ROLES || 'admin,superadmin').split(',').map((s) => s.trim());
+
+const requireAdmin = (req, res, next) =>
+  req.user && ADMIN_ROLES.includes(req.user.role)
+    ? next()
+    : res.status(403).json({ success: false, message: 'Admin access required' });
+
+/* ===================================================================
+   2. Helpers
+=================================================================== */
+class HttpError extends Error {
+  constructor(status, message) { super(message); this.status = status; }
 }
-.tr * { box-sizing: border-box; }
-.tr h1, .tr h2, .tr b.tr-display { font-family: 'Bricolage Grotesque', 'DM Sans', sans-serif; letter-spacing: -0.02em; }
+const asyncH = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
+const clean = (v, max = 500) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
+const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const isId = (v) => mongoose.Types.ObjectId.isValid(v);
 
-@keyframes tr-spin { to { transform: rotate(360deg) } }
-@keyframes tr-pop-in { 0% { opacity: 0; transform: scale(.94) translateY(16px) } 100% { opacity: 1; transform: none } }
-@keyframes tr-float { 0%,100% { transform: translateY(0) rotate(0deg) } 50% { transform: translateY(-18px) rotate(6deg) } }
+// Resolve your existing models lazily (names are tried in order).
+const pick = (...names) => {
+  for (const n of names) if (mongoose.models[n]) return mongoose.models[n];
+  throw new HttpError(500, `Model not found (${names.join(' / ')}). Update the model names at the top of registrationAdmin.routes.js`);
+};
+const Reg = () => pick('Registration', 'Register');
+const Student = () => pick('User', 'Student');
+const FeePlan = () => pick('FeePlan');
+const PayReq = () => pick('PaymentRequest');
+const Payment = () => pick('Payment');
+const Subscription = () => pick('Subscription');
 
-.tr-grid { position: absolute; inset: 0; pointer-events: none; opacity: .45;
-  background-image: linear-gradient(rgba(42,10,63,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(42,10,63,.06) 1px, transparent 1px);
-  background-size: 44px 44px; -webkit-mask-image: radial-gradient(circle at 60% 20%, #000 10%, transparent 70%); mask-image: radial-gradient(circle at 60% 20%, #000 10%, transparent 70%); }
-.tr-ball { position: absolute; border-radius: 50%; pointer-events: none;
-  background: radial-gradient(circle at 30% 30%, #ff6fb8, #c4156f 70%);
-  box-shadow: inset -5px -7px 12px rgba(0,0,0,.25), 0 10px 20px rgba(42,10,63,.2); }
-.tr-ball::after { content: ''; position: absolute; inset: 8% 45% 8% 45%; border-left: 2px dashed rgba(255,255,255,.7); border-right: 2px dashed rgba(255,255,255,.7); border-radius: 50%; }
-
-/* header */
-.tr-header { position: relative; z-index: 2; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; padding: 16px 28px; background: var(--plum); border-bottom: 3px solid var(--plum); }
-.tr-brand { display: flex; align-items: center; gap: 14px; }
-.tr-logo { width: 56px; height: 56px; border-radius: 16px; background: #fff; border: 3px solid var(--lime); overflow: hidden; transform: rotate(-3deg); flex-shrink: 0; }
-.tr-logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.tr-brand h1 { margin: 0; color: #fff; font-size: 20px; font-weight: 800; line-height: 1.1; }
-.tr-brand p { margin: 3px 0 0; color: var(--pink); font-size: 13px; font-weight: 600; }
-
-/* buttons */
-.tr-btn { position: relative; overflow: hidden; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 18px; font: inherit; font-weight: 700; font-size: 14px; color: var(--plum); background: var(--lime); border: 2px solid var(--plum); border-radius: 14px; cursor: pointer; transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s; }
-.tr-btn::before { content: ''; position: absolute; top: 0; left: -120%; width: 60%; height: 100%; background: linear-gradient(120deg, transparent, rgba(255,255,255,.55), transparent); transform: skewX(-20deg); transition: left .7s; }
-.tr-btn:hover:not(:disabled)::before { left: 140%; }
-.tr-btn:hover:not(:disabled) { transform: translateY(-3px) rotate(-1deg); box-shadow: 5px 5px 0 var(--pink); }
-.tr-btn:active:not(:disabled) { transform: none; box-shadow: none; }
-.tr-btn:disabled { opacity: .65; cursor: not-allowed; }
-.tr-btn:focus-visible, .tr-input:focus-visible, .tr-chip:focus-visible { outline: 3px solid var(--plum-2); outline-offset: 3px; }
-.tr-btn.spinning svg { animation: tr-spin 1s linear infinite; }
-
-.tr-body { position: relative; z-index: 2; max-width: 1280px; margin: 0 auto; padding: 28px 20px 48px; }
-
-/* stats */
-.tr-stats { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); margin-bottom: 26px; }
-.tr-stat { position: relative; overflow: hidden; padding: 20px; background: #fff; border: 3px solid var(--plum); border-radius: 24px; transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s; animation: tr-pop-in .6s both; }
-.tr-stat::before { content: ''; position: absolute; width: 110px; height: 110px; border-radius: 50%; background: var(--pink); top: -55px; right: -55px; transition: transform .6s cubic-bezier(.2,.8,.2,1); }
-.tr-stat:hover { transform: translateY(-6px) rotate(-1deg); box-shadow: 8px 8px 0 var(--plum); }
-.tr-stat:hover::before { transform: scale(2.6); }
-.tr-stat-ic { position: relative; width: 40px; height: 40px; margin-bottom: 12px; border-radius: 13px; background: var(--plum); color: var(--lime); display: grid; place-items: center; }
-.tr-stat small { position: relative; display: block; font-size: 13px; font-weight: 700; color: rgba(42,10,63,.7); }
-.tr-stat strong { position: relative; display: block; margin-top: 4px; font-family: 'Bricolage Grotesque', sans-serif; font-size: 34px; font-weight: 800; line-height: 1; }
-
-/* filters */
-.tr-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 20px; }
-.tr-search { position: relative; flex: 1; min-width: 220px; }
-.tr-search svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); }
-.tr-input { width: 100%; height: 48px; padding: 0 14px 0 40px; font: inherit; font-weight: 500; color: var(--plum); background: #fff; border: 2px solid var(--plum); border-radius: 14px; outline: none; transition: box-shadow .2s, transform .2s; }
-.tr-input:focus { transform: translateY(-2px); box-shadow: 4px 4px 0 var(--lime), 4px 4px 0 2px var(--plum); }
-.tr-input::placeholder { color: rgba(42,10,63,.45); }
-.tr-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.tr-chip { padding: 9px 16px; font: inherit; font-size: 13px; font-weight: 700; color: var(--plum); background: #fff; border: 2px solid var(--plum); border-radius: 999px; cursor: pointer; transition: transform .2s, background .2s, box-shadow .2s; }
-.tr-chip:hover { transform: translateY(-2px) rotate(-1deg); background: var(--pink-soft); }
-.tr-chip.on { background: var(--plum); color: var(--lime); box-shadow: 3px 3px 0 var(--lime); }
-
-/* table card */
-.tr-card { background: #fff; border: 3px solid var(--plum); border-radius: 28px; box-shadow: 10px 10px 0 var(--plum); overflow: hidden; animation: tr-pop-in .7s .1s both; }
-.tr-scroll { overflow-x: auto; }
-.tr-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-.tr-table th { padding: 13px 16px; text-align: left; font-size: 13px; font-weight: 700; white-space: nowrap; background: var(--plum); color: var(--pink); }
-.tr-table td { padding: 13px 16px; border-bottom: 2px dashed rgba(42,10,63,.15); white-space: nowrap; }
-.tr-table tbody tr { transition: background .2s; }
-.tr-table tbody tr:hover { background: var(--cream); }
-.tr-table .ref { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; font-weight: 700; }
-.tr-table .name { font-weight: 700; }
-.tr-table .muted { color: rgba(42,10,63,.6); font-size: 13px; }
-.tr-pill { display: inline-flex; padding: 3px 11px; border-radius: 999px; font-size: 12px; font-weight: 800; background: var(--lime); border: 2px solid var(--plum); }
-
-.tr-state { padding: 56px 16px; text-align: center; font-weight: 600; color: rgba(42,10,63,.7); }
-.tr-state.err { color: #8a0b5c; }
-.tr-state svg { margin-bottom: 10px; }
-.tr-spinner { width: 38px; height: 38px; margin: 0 auto 14px; border-radius: 50%; border: 4px solid var(--pink-soft); border-top-color: var(--plum); animation: tr-spin .8s linear infinite; }
-
-.tr-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; padding: 14px 20px; border-top: 3px solid var(--plum); background: var(--pink-soft); font-size: 13px; font-weight: 600; }
-
-@media (prefers-reduced-motion: reduce) {
-  .tr, .tr *, .tr *::before, .tr *::after { animation: none !important; transition: none !important; }
+async function tx(fn) {
+  const session = await mongoose.startSession();
+  try {
+    let out;
+    await session.withTransaction(async () => { out = await fn(session); });
+    return out;
+  } finally {
+    session.endSession();
+  }
 }
-`;
 
-export default function Registrations() {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [search, setSearch] = useState("");
-  const [batchFilter, setBatchFilter] = useState("All");
+const actor = (req) => ({ id: req.user._id, name: req.user.name || req.user.email, email: req.user.email });
 
-  const load = () => {
-    setLoading(true);
-    setError(null);
-    return fetch(API)
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to fetch");
-        return res.json();
-      })
-      .then((d) => setData(d))
-      .catch((e) => setError(e.message))
-      .finally(() => setLoading(false));
-  };
+/* ===================================================================
+   3. New collections (history + batches)
+=================================================================== */
+const historySchema = new Schema(
+  {
+    registration: { type: Schema.Types.ObjectId, required: true, index: true, immutable: true },
+    refNum: { type: String, immutable: true },
+    action: { type: String, required: true, immutable: true },
+    fromStatus: { type: String, immutable: true },
+    toStatus: { type: String, immutable: true },
+    by: { id: Schema.Types.ObjectId, name: String, email: String },
+    remarks: { type: String, immutable: true },
+    meta: { type: Schema.Types.Mixed, immutable: true },
+    at: { type: Date, default: Date.now, immutable: true },
+  },
+  { versionKey: false }
+);
+// Audit trail is append-only: block every update/delete operation at the model level.
+['updateOne', 'updateMany', 'findOneAndUpdate', 'findOneAndReplace', 'replaceOne', 'deleteOne', 'deleteMany', 'findOneAndDelete']
+  .forEach((op) => historySchema.pre(op, function (next) { next(new Error('Registration history is append-only')); }));
+const History = mongoose.models.RegistrationHistory || mongoose.model('RegistrationHistory', historySchema);
 
-  useEffect(() => {
-    load();
-  }, []);
+// If you already have a Batch model, delete this and make Batch() resolve to yours
+// (it needs: name, timing, capacity, enrolled, active).
+const batchSchema = new Schema(
+  {
+    name: { type: String, required: true, unique: true, trim: true },
+    timing: { type: String, trim: true },
+    description: { type: String, trim: true },
+    capacity: { type: Number, required: true, min: 1 },
+    enrolled: { type: Number, default: 0, min: 0 },
+    active: { type: Boolean, default: true },
+  },
+  { timestamps: true }
+);
+const Batch = mongoose.models.Batch || mongoose.model('Batch', batchSchema);
 
-  const batches = ["All", ...Array.from(new Set(data.map((r) => r.batch).filter(Boolean)))];
+const Counter = mongoose.models.RegistrationCounter ||
+  mongoose.model('RegistrationCounter', new Schema({ _id: String, seq: { type: Number, default: 0 } }));
 
-  const filtered = data.filter((r) => {
-    const name = `${r.fname} ${r.lname}`.toLowerCase();
-    const matchSearch =
-      name.includes(search.toLowerCase()) ||
-      (r.phone || "").includes(search) ||
-      (r.refNum || "").toLowerCase().includes(search.toLowerCase());
-    const matchBatch = batchFilter === "All" || r.batch === batchFilter;
-    return matchSearch && matchBatch;
-  });
+// ADAPT if your existing student ID format differs.
+async function nextStudentId(session) {
+  const year = new Date().getFullYear();
+  const c = await Counter.findOneAndUpdate({ _id: `student-${year}` }, { $inc: { seq: 1 } }, { new: true, upsert: true, session });
+  return `TCG-${year}-${String(c.seq).padStart(4, '0')}`;
+}
 
-  const stats = [
-    { label: "Total registrations", value: data.length, Icon: Users },
-    { label: "Evening batch", value: data.filter((r) => r.batch?.toLowerCase().includes("evening")).length, Icon: ClipboardList },
-    { label: "Weekend batch", value: data.filter((r) => r.batch?.toLowerCase().includes("weekend")).length, Icon: Sun },
-    {
-      label: "This month",
-      value: data.filter((r) => {
-        const d = new Date(r.createdAt);
-        const now = new Date();
-        return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-      }).length,
-      Icon: CalendarDays,
-    },
-  ];
-
-  return (
-    <div className="tr">
-      <style>{styles}</style>
-      <div className="tr-grid" />
-      <div className="tr-ball" style={{ width: 34, height: 34, top: "22%", right: "5%", animation: "tr-float 6s ease-in-out infinite" }} />
-      <div className="tr-ball" style={{ width: 22, height: 22, bottom: "10%", left: "4%", animation: "tr-float 5s ease-in-out infinite .8s" }} />
-
-      {/* Header */}
-      <header className="tr-header">
-        <div className="tr-brand">
-          <div className="tr-logo"><img src={LOGO} alt="TCG logo" /></div>
-          <div>
-            <h1>Tikone Cricket Gurukul</h1>
-            <p>Admin — registrations dashboard</p>
-          </div>
-        </div>
-        <button className={`tr-btn ${loading ? "spinning" : ""}`} onClick={load} disabled={loading}>
-          <RefreshCw size={15} />
-          Refresh
-        </button>
-      </header>
-
-      <div className="tr-body">
-        {/* Stat cards */}
-        <div className="tr-stats">
-          {stats.map((s, i) => (
-            <div key={s.label} className="tr-stat" style={{ animationDelay: `${i * 80}ms` }}>
-              <div className="tr-stat-ic"><s.Icon size={19} /></div>
-              <small>{s.label}</small>
-              <strong>{s.value}</strong>
-            </div>
-          ))}
-        </div>
-
-        {/* Filters */}
-        <div className="tr-filters">
-          <div className="tr-search">
-            <Search size={16} color="#2A0A3F" />
-            <input
-              className="tr-input"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by name, phone or ref no..."
-              aria-label="Search registrations"
-            />
-          </div>
-          <div className="tr-chips">
-            {batches.map((b) => (
-              <button key={b} className={`tr-chip ${batchFilter === b ? "on" : ""}`} onClick={() => setBatchFilter(b)}>
-                {b}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Table card */}
-        <div className="tr-card">
-          {loading ? (
-            <div className="tr-state">
-              <div className="tr-spinner" />
-              Loading registrations...
-            </div>
-          ) : error ? (
-            <div className="tr-state err" role="alert">
-              <AlertCircle size={34} />
-              <div>Could not load data: {error}</div>
-            </div>
-          ) : filtered.length === 0 ? (
-            <div className="tr-state">No registrations found.</div>
-          ) : (
-            <div className="tr-scroll">
-              <table className="tr-table">
-                <thead>
-                  <tr>
-                    {["Ref no", "Player name", "Phone", "Email", "Batch", "Level", "Role", "Program", "Registered"].map((h) => (
-                      <th key={h}>{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered.map((r) => (
-                    <tr key={r._id}>
-                      <td className="ref">{r.refNum || "—"}</td>
-                      <td className="name">{r.fname} {r.lname}</td>
-                      <td>{r.phone || "—"}</td>
-                      <td>{r.email || "—"}</td>
-                      <td>{r.batch ? <span className="tr-pill">{r.batch}</span> : "—"}</td>
-                      <td>{r.level || "—"}</td>
-                      <td>{r.role || "—"}</td>
-                      <td>{r.duration || "—"}</td>
-                      <td className="muted">
-                        {r.createdAt ? new Date(r.createdAt).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }) : "—"}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {!loading && !error && (
-            <div className="tr-foot">
-              <span>Showing <strong>{filtered.length}</strong> of <strong>{data.length}</strong> registrations</span>
-              <span>Tikone Cricket Gurukul — Admin</span>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+async function logHistory(session, reg, action, { from, to, remarks, meta } = {}, req) {
+  await History.create(
+    [{ registration: reg._id, refNum: reg.refNum, action, fromStatus: from, toStatus: to, by: req ? actor(req) : undefined, remarks: clean(remarks || '', 1000), meta }],
+    { session }
   );
 }
+
+/* ===================================================================
+   4. Status workflow (server is the source of truth)
+=================================================================== */
+const TRANSITIONS = {
+  pending: ['under_review', 'approved', 'rejected', 'waitlisted'],
+  under_review: ['approved', 'rejected', 'waitlisted'],
+  waitlisted: ['under_review', 'approved', 'rejected'],
+  rejected: ['under_review'],
+  approved: ['payment_pending', 'rejected'],
+  payment_pending: ['payment_submitted', 'rejected'],
+  payment_submitted: ['payment_verified', 'payment_pending'],
+  payment_verified: ['admission_confirmed'],
+  admission_confirmed: [],
+};
+const statusOf = (r) => r.status || 'pending';
+function assertTransition(reg, to) {
+  const from = statusOf(reg);
+  if (!(TRANSITIONS[from] || []).includes(to)) {
+    throw new HttpError(409, `Invalid status change: ${from.replace(/_/g, ' ')} → ${to.replace(/_/g, ' ')}`);
+  }
+}
+const ACTION_TO_STATUS = { review: 'under_review', approve: 'approved', reject: 'rejected', waitlist: 'waitlisted', reopen: 'under_review' };
+const ACTION_LOG = { review: 'review_started', approve: 'approved', reject: 'rejected', waitlist: 'waitlisted', reopen: 'reopened' };
+
+async function getReg(id, session) {
+  const q = Reg().findById(id);
+  if (session) q.session(session);
+  const reg = await q;
+  if (!reg) throw new HttpError(404, 'Registration not found');
+  return reg;
+}
+
+async function acquireSeat(batchId, session) {
+  const b = await Batch.findOneAndUpdate(
+    { _id: batchId, active: true, $expr: { $lt: ['$enrolled', '$capacity'] } },
+    { $inc: { enrolled: 1 } },
+    { new: true, session }
+  );
+  if (!b) {
+    const exists = await Batch.findById(batchId).session(session);
+    if (!exists) throw new HttpError(404, 'Batch not found');
+    throw new HttpError(409, exists.active ? `Batch "${exists.name}" is full` : `Batch "${exists.name}" is not active`);
+  }
+  return b;
+}
+async function releaseSeat(batchId, session) {
+  if (!batchId) return;
+  await Batch.updateOne({ _id: batchId, enrolled: { $gt: 0 } }, { $inc: { enrolled: -1 } }, { session });
+}
+
+/* ===================================================================
+   5. Notifications (email via SMTP only when configured)
+=================================================================== */
+const TEMPLATES = {
+  approved: (r) => ['Registration approved', `Hi ${r.fname}, your registration (${r.refNum}) at Tikone Cricket Gurukul has been approved. We will contact you about batch and fee details.`],
+  rejected: (r) => ['Registration update', `Hi ${r.fname}, we are unable to offer admission for registration ${r.refNum} at this time.${r.rejectionReason ? ' Reason: ' + r.rejectionReason : ''}`],
+  waitlisted: (r) => ['You are on the waiting list', `Hi ${r.fname}, registration ${r.refNum} has been placed on our waiting list. We will contact you when a seat opens.`],
+  batch_assigned: (r) => ['Batch assigned', `Hi ${r.fname}, you have been assigned to batch "${r.batchName}" (registration ${r.refNum}).`],
+  payment_instructions: (r) => ['Payment instructions', `Hi ${r.fname}, please complete your admission fee payment for registration ${r.refNum} and share the payment proof with the academy.`],
+  payment_confirmed: (r) => ['Payment confirmed', `Hi ${r.fname}, we have verified your payment for registration ${r.refNum}. Thank you!`],
+  admission_confirmed: (r) => ['Admission confirmed', `Hi ${r.fname}, welcome to Tikone Cricket Gurukul! Your admission (${r.refNum}) is confirmed.`],
+};
+
+async function sendEmail(to, subject, text) {
+  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, MAIL_FROM } = process.env;
+  if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) return { sent: false, reason: 'not_configured' };
+  let nodemailer;
+  try { nodemailer = require('nodemailer'); } catch { return { sent: false, reason: 'nodemailer_missing' }; }
+  const transport = nodemailer.createTransport({ host: SMTP_HOST, port: Number(SMTP_PORT) || 587, secure: Number(SMTP_PORT) === 465, auth: { user: SMTP_USER, pass: SMTP_PASS } });
+  await transport.sendMail({ from: MAIL_FROM || SMTP_USER, to, subject, text });
+  return { sent: true };
+}
+
+/* ===================================================================
+   6. Routes — everything below requires an authenticated admin
+=================================================================== */
+router.use(protect, requireAdmin);
+
+router.param('id', (req, res, next, id) => (isId(id) ? next() : res.status(400).json({ success: false, message: 'Invalid id' })));
+
+const PROTECTED = new Set([
+  '_id', '__v', 'refNum', 'status', 'statusUpdatedAt', 'createdAt', 'updatedAt', 'adminRemarks', 'assignedBatch', 'batchName', 'feePlan',
+  'approvedBy', 'approvedAt', 'rejectedBy', 'rejectedAt', 'rejectionReason', 'waitlistReason', 'convertedStudent', 'convertedAt',
+]);
+
+/* ---------- list + stats ---------- */
+router.get('/', asyncH(async (req, res) => {
+  const { search = '', status = '', batch = '', level = '', duration = '', from = '', to = '', sort = 'newest' } = req.query;
+  const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+  const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 10, 1), 100);
+  const R = Reg();
+  const and = [];
+
+  clean(search, 100).split(/\s+/).filter(Boolean).forEach((t) => {
+    const rx = new RegExp(esc(t), 'i');
+    and.push({ $or: [{ fname: rx }, { lname: rx }, { phone: rx }, { email: rx }, { refNum: rx }] });
+  });
+  if (status === 'pending') and.push({ $or: [{ status: 'pending' }, { status: { $exists: false } }] });
+  else if (status === 'converted') and.push({ convertedStudent: { $exists: true, $ne: null } });
+  else if (TRANSITIONS[status]) and.push({ status });
+  if (batch) and.push({ $or: [{ batch }, { batchName: batch }] });
+  if (level) and.push({ level });
+  if (duration) and.push({ duration });
+  if (from || to) {
+    const r = {};
+    if (from && !isNaN(new Date(from))) r.$gte = new Date(from);
+    if (to && !isNaN(new Date(to))) { const d = new Date(to); d.setHours(23, 59, 59, 999); r.$lte = d; }
+    and.push({ createdAt: r });
+  }
+  const filter = and.length ? { $and: and } : {};
+
+  const [rows, total, counts, batches, levels, durations] = await Promise.all([
+    R.find(filter).sort({ createdAt: sort === 'oldest' ? 1 : -1 }).skip((page - 1) * limit).limit(limit).select('-__v').lean(),
+    R.countDocuments(filter),
+    Promise.all([
+      R.countDocuments({}),
+      R.countDocuments({ $or: [{ status: 'pending' }, { status: { $exists: false } }] }),
+      R.countDocuments({ status: 'approved' }),
+      R.countDocuments({ status: 'rejected' }),
+      R.countDocuments({ status: 'waitlisted' }),
+      R.countDocuments({ convertedStudent: { $exists: true, $ne: null } }),
+      R.countDocuments({ status: 'payment_pending' }),
+    ]),
+    R.distinct('batch'), R.distinct('level'), R.distinct('duration'),
+  ]);
+
+  res.json({
+    success: true,
+    data: rows.map((r) => ({ ...r, status: r.status || 'pending' })),
+    pagination: { page, limit, total, pages: Math.max(Math.ceil(total / limit), 1) },
+    stats: { total: counts[0], pending: counts[1], approved: counts[2], rejected: counts[3], waitlisted: counts[4], converted: counts[5], paymentPending: counts[6] },
+    filters: { batches: batches.filter(Boolean).sort(), levels: levels.filter(Boolean).sort(), durations: durations.filter(Boolean).sort() },
+    permissions: { canDelete: DELETE_ROLES.includes(req.user.role), canManageBatches: true },
+  });
+}));
+
+/* ---------- meta: batches + fee plans (declared before /:id) ---------- */
+router.get('/meta/batches', asyncH(async (req, res) => {
+  const list = await Batch.find({ active: true }).sort({ name: 1 }).lean();
+  res.json({ success: true, data: list.map((b) => ({ ...b, available: Math.max(b.capacity - b.enrolled, 0) })) });
+}));
+
+router.post('/meta/batches', asyncH(async (req, res) => {
+  const name = clean(req.body.name, 80);
+  const capacity = parseInt(req.body.capacity, 10);
+  if (!name) throw new HttpError(422, 'Batch name is required');
+  if (!Number.isInteger(capacity) || capacity < 1 || capacity > 500) throw new HttpError(422, 'Capacity must be between 1 and 500');
+  try {
+    const b = await Batch.create({ name, timing: clean(req.body.timing, 80), description: clean(req.body.description, 200), capacity });
+    res.status(201).json({ success: true, data: { ...b.toObject(), available: capacity }, message: 'Batch created' });
+  } catch (e) {
+    if (e.code === 11000) throw new HttpError(409, 'A batch with this name already exists');
+    throw e;
+  }
+}));
+
+router.get('/meta/fee-plans', asyncH(async (req, res) => {
+  const plans = await FeePlan().find({}).sort({ amount: 1 }).lean();
+  res.json({ success: true, data: plans });
+}));
+
+/* ---------- single registration ---------- */
+router.get('/:id', asyncH(async (req, res) => {
+  const reg = await getReg(req.params.id);
+  const [history, payments, dupes] = await Promise.all([
+    History.find({ registration: reg._id }).sort({ at: 1 }).lean(),
+    PayReq().find({ registration: reg._id }).sort({ createdAt: -1 }).populate('feePlan', 'planName amount durationInDays').lean(),
+    Reg().find({ _id: { $ne: reg._id }, $or: [reg.email ? { email: reg.email } : null, reg.phone ? { phone: reg.phone } : null].filter(Boolean) })
+      .select('refNum fname lname status createdAt').limit(5).lean(),
+  ]);
+
+  const timeline = history.some((h) => h.action === 'submitted')
+    ? history
+    : [{ _id: 'virtual-submitted', action: 'submitted', toStatus: 'pending', at: reg.createdAt, by: { name: 'Applicant' }, virtual: true }, ...history];
+
+  const editableFields = Object.entries(Reg().schema.paths)
+    .filter(([k, p]) => !PROTECTED.has(k) && !k.includes('.') && ['String', 'Number', 'Date', 'Boolean'].includes(p.instance))
+    .map(([key, p]) => ({ key, type: p.instance, required: !!p.isRequired, options: p.enumValues && p.enumValues.length ? p.enumValues : undefined }));
+
+  let assignedBatch = null;
+  if (reg.assignedBatch) assignedBatch = await Batch.findById(reg.assignedBatch).lean();
+
+  res.json({
+    success: true,
+    data: { registration: { ...reg.toObject(), status: statusOf(reg) }, history: timeline, payments, duplicates: dupes, editableFields, assignedBatch },
+  });
+}));
+
+router.get('/:id/history', asyncH(async (req, res) => {
+  const history = await History.find({ registration: req.params.id }).sort({ at: 1 }).lean();
+  res.json({ success: true, data: history });
+}));
+
+/* ---------- edit details ---------- */
+router.patch('/:id', asyncH(async (req, res) => {
+  const changes = req.body && typeof req.body === 'object' ? req.body : {};
+  const out = await tx(async (session) => {
+    const reg = await getReg(req.params.id, session);
+    if (statusOf(reg) === 'admission_confirmed' || reg.convertedStudent) {
+      throw new HttpError(409, 'This registration is already a student. Edit the student record instead.');
+    }
+    const diff = {};
+    for (const [k, raw] of Object.entries(changes)) {
+      const path = Reg().schema.paths[k];
+      if (PROTECTED.has(k) || !path || k.includes('.') || !['String', 'Number', 'Date', 'Boolean'].includes(path.instance)) continue;
+      let v = raw;
+      if (path.instance === 'String') v = clean(String(raw ?? ''), 500);
+      if (k === 'email' && v && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) throw new HttpError(422, 'Invalid email address');
+      if (k === 'phone' && v && !/^[0-9+\-\s()]{7,18}$/.test(v)) throw new HttpError(422, 'Invalid phone number');
+      if (path.instance === 'Number' && raw !== '' && !Number.isFinite(Number(raw))) throw new HttpError(422, `${k} must be a number`);
+      if (String(reg[k] ?? '') === String(v ?? '')) continue;
+      diff[k] = { from: reg[k] ?? null, to: v === '' ? null : v };
+      reg.set(k, v === '' ? undefined : v);
+    }
+    if (!Object.keys(diff).length) throw new HttpError(400, 'No changes to save');
+    await reg.validate();
+    await reg.save({ session });
+    await logHistory(session, reg, 'edited', { meta: { changes: diff } }, req);
+    return reg;
+  });
+  res.json({ success: true, data: out, message: 'Registration updated' });
+}));
+
+/* ---------- status actions: review / approve / reject / waitlist / reopen ---------- */
+router.post('/:id/status', asyncH(async (req, res) => {
+  const { action, reason = '', remarks = '' } = req.body || {};
+  const to = ACTION_TO_STATUS[action];
+  if (!to) throw new HttpError(400, 'Invalid action');
+  if ((action === 'reject' || action === 'waitlist') && clean(reason, 500).length < 3) throw new HttpError(422, 'A reason is required');
+
+  const reg = await tx(async (session) => {
+    const r = await getReg(req.params.id, session);
+    assertTransition(r, to);
+    const from = statusOf(r);
+    const by = actor(req);
+
+    if (to === 'rejected' || to === 'waitlisted') {
+      if (r.assignedBatch) { await releaseSeat(r.assignedBatch, session); r.assignedBatch = undefined; r.batchName = undefined; }
+      await PayReq().updateMany({ registration: r._id, status: 'pending' }, { $set: { status: 'rejected', rejectionReason: `Registration ${to}` } }, { session });
+    }
+    r.status = to;
+    r.statusUpdatedAt = new Date();
+    if (clean(remarks, 1000)) r.adminRemarks = clean(remarks, 1000);
+    if (to === 'approved') { r.approvedBy = by; r.approvedAt = new Date(); r.rejectionReason = undefined; }
+    if (to === 'rejected') { r.rejectedBy = by; r.rejectedAt = new Date(); r.rejectionReason = clean(reason, 500); }
+    if (to === 'waitlisted') r.waitlistReason = clean(reason, 500);
+    await r.save({ session });
+    await logHistory(session, r, ACTION_LOG[action], { from, to, remarks: clean(reason, 500) ? `${clean(reason, 500)}${remarks ? ' — ' + clean(remarks, 500) : ''}` : remarks }, req);
+    return r;
+  });
+  res.json({ success: true, data: reg, message: `Registration ${to.replace(/_/g, ' ')}` });
+}));
+
+/* ---------- batch assignment ---------- */
+router.put('/:id/batch', asyncH(async (req, res) => {
+  const { batchId } = req.body || {};
+  if (!isId(batchId)) throw new HttpError(422, 'Select a batch');
+  const out = await tx(async (session) => {
+    const reg = await getReg(req.params.id, session);
+    if (!['approved', 'payment_pending', 'payment_submitted', 'payment_verified'].includes(statusOf(reg))) {
+      throw new HttpError(409, 'Approve the registration before assigning a batch');
+    }
+    if (String(reg.assignedBatch) === String(batchId)) return { reg, unchanged: true };
+    const newBatch = await acquireSeat(batchId, session);
+    const prev = reg.assignedBatch; const prevName = reg.batchName;
+    if (prev) await releaseSeat(prev, session);
+    reg.assignedBatch = newBatch._id;
+    reg.batchName = newBatch.name;
+    await reg.save({ session });
+    await logHistory(session, reg, prev ? 'batch_changed' : 'batch_assigned', { remarks: prev ? `${prevName} → ${newBatch.name}` : newBatch.name, meta: { batchId: newBatch._id } }, req);
+    return { reg };
+  });
+  res.json({ success: true, data: out.reg, message: out.unchanged ? 'Batch unchanged' : 'Batch assigned' });
+}));
+
+/* ---------- payments (reuses your PaymentRequest + FeePlan) ---------- */
+router.post('/:id/payment-request', asyncH(async (req, res) => {
+  const { feePlanId, notes = '' } = req.body || {};
+  if (!isId(feePlanId)) throw new HttpError(422, 'Select a fee plan');
+  const out = await tx(async (session) => {
+    const reg = await getReg(req.params.id, session);
+    const from = statusOf(reg);
+    if (!['approved', 'payment_pending'].includes(from)) throw new HttpError(409, 'Registration must be approved before requesting payment');
+    if (!reg.assignedBatch) throw new HttpError(409, 'Assign a batch before creating a payment request');
+    const open = await PayReq().findOne({ registration: reg._id, status: 'pending' }).session(session);
+    if (open) throw new HttpError(409, 'There is already an open payment request for this registration');
+    const plan = await FeePlan().findById(feePlanId).session(session);
+    if (!plan) throw new HttpError(404, 'Fee plan not found');
+
+    const [pr] = await PayReq().create([{
+      registration: reg._id, feePlan: plan._id, amount: plan.amount, status: 'pending',
+      description: `Admission fee — ${plan.planName} (${reg.refNum})`, adminNotes: clean(notes, 500), createdByAdmin: actor(req),
+    }], { session });
+    reg.feePlan = plan._id;
+    if (from === 'approved') { reg.status = 'payment_pending'; reg.statusUpdatedAt = new Date(); }
+    await reg.save({ session });
+    await logHistory(session, reg, 'payment_request_created', { from, to: 'payment_pending', remarks: `${plan.planName} — ₹${plan.amount}`, meta: { paymentRequest: pr._id } }, req);
+    return pr;
+  });
+  res.status(201).json({ success: true, data: out, message: 'Payment request created' });
+}));
+
+// Admin records the proof on behalf of the applicant (screenshot and/or receipt/transaction reference).
+// This NEVER verifies the payment.
+router.post('/:id/payment/proof', asyncH(async (req, res) => {
+  const { paymentRequestId, screenshot, transactionId = '' } = req.body || {};
+  if (!isId(paymentRequestId)) throw new HttpError(422, 'Invalid payment request');
+  const txn = clean(transactionId, 100);
+  if (!screenshot && !txn) throw new HttpError(422, 'Provide a payment screenshot or a transaction/receipt reference');
+  if (screenshot && (!/^data:image\/(png|jpe?g|webp);base64,/.test(screenshot) || screenshot.length > 2.6 * 1024 * 1024)) {
+    throw new HttpError(422, 'Screenshot must be a PNG/JPG/WebP image under ~1.9 MB');
+  }
+  await tx(async (session) => {
+    const reg = await getReg(req.params.id, session);
+    const from = statusOf(reg);
+    if (!['payment_pending', 'payment_submitted'].includes(from)) throw new HttpError(409, 'Payment is not awaiting proof');
+    const pr = await PayReq().findOne({ _id: paymentRequestId, registration: reg._id, status: 'pending' }).session(session);
+    if (!pr) throw new HttpError(404, 'Open payment request not found');
+    if (screenshot) pr.screenshot = screenshot;
+    if (txn) pr.transactionId = txn;
+    pr.proofSubmittedAt = new Date();
+    pr.proofRecordedBy = actor(req);
+    await pr.save({ session });
+    if (from === 'payment_pending') { reg.status = 'payment_submitted'; reg.statusUpdatedAt = new Date(); await reg.save({ session }); }
+    await logHistory(session, reg, 'payment_proof_recorded', { from, to: 'payment_submitted', remarks: txn || 'Screenshot attached', meta: { paymentRequest: pr._id } }, req);
+  });
+  res.json({ success: true, message: 'Payment proof recorded. It still needs to be verified.' });
+}));
+
+router.post('/:id/payment/verify', asyncH(async (req, res) => {
+  const { paymentRequestId, transactionId = '', remarks = '' } = req.body || {};
+  if (!isId(paymentRequestId)) throw new HttpError(422, 'Invalid payment request');
+  await tx(async (session) => {
+    const reg = await getReg(req.params.id, session);
+    assertTransition(reg, 'payment_verified');
+    const pr = await PayReq().findOne({ _id: paymentRequestId, registration: reg._id, status: 'pending' }).session(session);
+    if (!pr || !pr.proofSubmittedAt) throw new HttpError(409, 'No submitted proof to verify for this payment request');
+    pr.status = 'approved';
+    pr.transactionId = clean(transactionId, 100) || pr.transactionId;
+    pr.adminNotes = clean(remarks, 500) || pr.adminNotes;
+    pr.verifiedBy = actor(req);
+    pr.verifiedAt = new Date();
+    await pr.save({ session });
+    reg.status = 'payment_verified'; reg.statusUpdatedAt = new Date();
+    await reg.save({ session });
+    await logHistory(session, reg, 'payment_verified', { from: 'payment_submitted', to: 'payment_verified', remarks: pr.transactionId, meta: { paymentRequest: pr._id } }, req);
+  });
+  res.json({ success: true, message: 'Payment verified' });
+}));
+
+router.post('/:id/payment/reject', asyncH(async (req, res) => {
+  const { paymentRequestId, reason = '' } = req.body || {};
+  if (!isId(paymentRequestId)) throw new HttpError(422, 'Invalid payment request');
+  if (clean(reason, 500).length < 3) throw new HttpError(422, 'A rejection reason is required');
+  await tx(async (session) => {
+    const reg = await getReg(req.params.id, session);
+    assertTransition(reg, 'payment_pending');
+    const pr = await PayReq().findOne({ _id: paymentRequestId, registration: reg._id, status: 'pending' }).session(session);
+    if (!pr) throw new HttpError(404, 'Open payment request not found');
+    pr.status = 'rejected';
+    pr.rejectionReason = clean(reason, 500);
+    pr.rejectedBy = actor(req);
+    pr.rejectedAt = new Date();
+    await pr.save({ session });
+    reg.status = 'payment_pending'; reg.statusUpdatedAt = new Date();
+    await reg.save({ session });
+    await logHistory(session, reg, 'payment_rejected', { from: 'payment_submitted', to: 'payment_pending', remarks: clean(reason, 500), meta: { paymentRequest: pr._id } }, req);
+  });
+  res.json({ success: true, message: 'Payment rejected. Create a new payment request to continue.' });
+}));
+
+/* ---------- convert to student (transactional + idempotent) ---------- */
+router.post('/:id/convert', asyncH(async (req, res) => {
+  const { skipPayment = false, remarks = '' } = req.body || {};
+  const out = await tx(async (session) => {
+    const reg = await getReg(req.params.id, session);
+    const S = Student();
+
+    // Idempotent: second click returns the existing student, never creates another.
+    if (reg.convertedStudent) {
+      const s = await S.findById(reg.convertedStudent).session(session).select('name email studentId');
+      return { already: true, student: s };
+    }
+    const st = statusOf(reg);
+    if (!reg.assignedBatch) throw new HttpError(409, 'Assign a batch before converting to a student');
+    if (st === 'approved') {
+      if (skipPayment !== true) throw new HttpError(409, 'Payment has not been verified. Request and verify payment, or explicitly confirm admission without a payment.');
+      if (await PayReq().findOne({ registration: reg._id, status: 'pending' }).session(session)) {
+        throw new HttpError(409, 'An open payment request exists. Verify or reject it first.');
+      }
+    } else if (st !== 'payment_verified') {
+      throw new HttpError(409, `Cannot convert a registration that is ${st.replace(/_/g, ' ')}`);
+    }
+    if (!reg.email) throw new HttpError(422, 'Registration has no email address — add one before converting');
+
+    const email = reg.email.toLowerCase().trim();
+    const or = [{ email }]; if (reg.phone) or.push({ phone: reg.phone });
+    const dup = await S.findOne({ $or: or }).session(session);
+    if (dup && String(dup.registration) !== String(reg._id)) {
+      throw new HttpError(409, `A student with the same email/phone already exists (${dup.name}). Resolve the duplicate first.`);
+    }
+
+    let student = dup; let tempPassword;
+    if (!student) {
+      tempPassword = crypto.randomBytes(6).toString('base64url');
+      const studentId = await nextStudentId(session);
+      [student] = await S.create([{
+        name: `${reg.fname} ${reg.lname || ''}`.trim(), email, phone: reg.phone, password: tempPassword, role: 'student', status: 'active',
+        studentId, registration: reg._id, registrationRef: reg.refNum, batch: reg.batchName, assignedBatch: reg.assignedBatch,
+      }], { session });
+    }
+
+    const now = new Date();
+    if (reg.feePlan) {
+      const plan = await FeePlan().findById(reg.feePlan).session(session);
+      if (plan) {
+        await Subscription().create([{ user: student._id, plan: plan._id, startDate: now, endDate: new Date(now.getTime() + plan.durationInDays * 86400000), status: 'active' }], { session });
+      }
+    }
+    const paid = await PayReq().findOne({ registration: reg._id, status: 'approved' }).session(session);
+    if (paid) {
+      paid.user = student._id; await paid.save({ session });
+      await Payment().create([{ user: student._id, email, amount: paid.amount, method: 'online', description: `Admission fee (${reg.refNum})` }], { session });
+    }
+
+    const from = st;
+    reg.convertedStudent = student._id; reg.convertedAt = now; reg.status = 'admission_confirmed'; reg.statusUpdatedAt = now;
+    if (clean(remarks, 1000)) reg.adminRemarks = clean(remarks, 1000);
+    await reg.save({ session });
+    await logHistory(session, reg, 'converted_to_student', { from, to: 'admission_confirmed', remarks: skipPayment ? `Admitted without payment. ${clean(remarks, 300)}` : clean(remarks, 300), meta: { student: student._id, studentId: student.studentId } }, req);
+    return { already: false, student, tempPassword };
+  });
+
+  res.status(out.already ? 200 : 201).json({
+    success: true,
+    message: out.already ? 'Already converted — no duplicate created' : 'Student created and admission confirmed',
+    data: { alreadyConverted: out.already, student: { _id: out.student?._id, name: out.student?.name, email: out.student?.email, studentId: out.student?.studentId }, tempPassword: out.tempPassword },
+  });
+}));
+
+/* ---------- notifications ---------- */
+router.post('/:id/notify', asyncH(async (req, res) => {
+  const { type } = req.body || {};
+  if (!TEMPLATES[type]) throw new HttpError(400, 'Unknown notification type');
+  const reg = await getReg(req.params.id);
+  if (!reg.email) throw new HttpError(422, 'This registration has no email address');
+  const [subject, text] = TEMPLATES[type](reg);
+  const result = await sendEmail(reg.email, `Tikone Cricket Gurukul — ${subject}`, text);
+  if (!result.sent) {
+    return res.status(501).json({ success: false, code: result.reason, message: 'Email is not configured on the server (set SMTP_* variables and install nodemailer). Nothing was sent.' });
+  }
+  await tx(async (session) => logHistory(session, reg, 'notification_sent', { remarks: `${type} → ${reg.email}` }, req));
+  res.json({ success: true, message: `Email sent to ${reg.email}` });
+}));
+
+/* ---------- delete (confirmation + reason, audit kept) ---------- */
+router.delete('/:id', asyncH(async (req, res) => {
+  if (!DELETE_ROLES.includes(req.user.role)) throw new HttpError(403, 'You are not allowed to delete registrations');
+  const reason = clean(req.body?.reason, 500);
+  if (reason.length < 3) throw new HttpError(422, 'A reason is required');
+  await tx(async (session) => {
+    const reg = await getReg(req.params.id, session);
+    if (reg.convertedStudent) throw new HttpError(409, 'This registration was converted to a student and cannot be deleted');
+    if (reg.assignedBatch) await releaseSeat(reg.assignedBatch, session);
+    await PayReq().updateMany({ registration: reg._id, status: 'pending' }, { $set: { status: 'rejected', rejectionReason: 'Registration deleted' } }, { session });
+    await logHistory(session, reg, 'deleted', { from: statusOf(reg), remarks: reason, meta: { snapshot: { name: `${reg.fname} ${reg.lname || ''}`.trim(), phone: reg.phone, email: reg.email } } }, req);
+    await Reg().deleteOne({ _id: reg._id }, { session });
+  });
+  res.json({ success: true, message: 'Registration deleted' });
+}));
+
+/* ---------- consistent error responses ---------- */
+// eslint-disable-next-line no-unused-vars
+router.use((err, req, res, next) => {
+  if (err instanceof HttpError) return res.status(err.status).json({ success: false, message: err.message });
+  if (err.name === 'ValidationError') return res.status(422).json({ success: false, message: Object.values(err.errors).map((e) => e.message).join('. ') });
+  if (err.name === 'CastError') return res.status(400).json({ success: false, message: 'Invalid value supplied' });
+  console.error('[registrations]', err);
+  res.status(500).json({ success: false, message: 'Something went wrong. Please try again.' });
+});
+
+module.exports = router;
