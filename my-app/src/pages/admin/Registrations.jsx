@@ -269,10 +269,17 @@ export default function Registrations() {
           </div>
           <div className="tr-chips">
             {batches.map((b) => (
-              <button key={b} className={`tr-chip ${batchFilter === b ? "on" : ""}`} onClick={() => { setBatchFilter(b); setPage(1); }}
-                {b}
-              </button>
-            ))}
+  <button
+    key={b}
+    className={`tr-chip ${batchFilter === b ? "on" : ""}`}
+    onClick={() => {
+      setBatchFilter(b);
+      setPage(1);
+    }}
+  >
+    {b}
+  </button>
+))}
           </div>
         </div>
 
