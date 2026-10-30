@@ -1,116 +1,110 @@
 import mongoose from "mongoose";
 
 const paymentRequestSchema = new mongoose.Schema(
-{
-// Existing user payment support.
-// Optional because admission payment requests can be created
-// before a User account exists.
-user: {
-type: mongoose.Schema.Types.ObjectId,
-ref: "User",
-default: null
-},
+  {
+    // Existing user payment support
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null
+    },
 
-```
-// Link payment request to an admission registration.
-registration: {
-  type: mongoose.Schema.Types.ObjectId,
-  ref: "Registration",
-  default: null,
-  index: true
-},
+    // Link payment request to an admission registration
+    registration: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Registration",
+      default: null,
+      index: true
+    },
 
-amount: {
-  type: Number,
-  required: true
-},
+    amount: {
+      type: Number,
+      required: true
+    },
 
-description: {
-  type: String,
-  required: true
-},
+    description: {
+      type: String,
+      required: true
+    },
 
-// Optional until payment proof is submitted.
-screenshot: {
-  type: String,
-  default: ""
-},
+    // Optional until payment proof is submitted
+    screenshot: {
+      type: String,
+      default: ""
+    },
 
-status: {
-  type: String,
-  enum: ["pending", "approved", "rejected"],
-  default: "pending"
-},
+    status: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending"
+    },
 
-adminNotes: {
-  type: String,
-  default: ""
-},
+    adminNotes: {
+      type: String,
+      default: ""
+    },
 
-approvedBy: {
-  type: mongoose.Schema.Types.ObjectId,
-  ref: "Admin"
-},
+    approvedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Admin"
+    },
 
-approvedAt: {
-  type: Date
-},
+    approvedAt: {
+      type: Date
+    },
 
-paymentMethod: {
-  type: String,
-  default: "upi"
-},
+    paymentMethod: {
+      type: String,
+      default: "upi"
+    },
 
-transactionId: {
-  type: String,
-  default: ""
-},
+    transactionId: {
+      type: String,
+      default: ""
+    },
 
-feePlan: {
-  type: mongoose.Schema.Types.ObjectId,
-  ref: "FeePlan"
-},
+    feePlan: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "FeePlan"
+    },
 
-// Admission management fields.
+    // Admission management fields
+    createdByAdmin: {
+      type: mongoose.Schema.Types.Mixed
+    },
 
-createdByAdmin: {
-  type: mongoose.Schema.Types.Mixed
-},
+    proofSubmittedAt: {
+      type: Date
+    },
 
-proofSubmittedAt: {
-  type: Date
-},
+    proofRecordedBy: {
+      type: mongoose.Schema.Types.Mixed
+    },
 
-proofRecordedBy: {
-  type: mongoose.Schema.Types.Mixed
-},
+    verifiedBy: {
+      type: mongoose.Schema.Types.Mixed
+    },
 
-verifiedBy: {
-  type: mongoose.Schema.Types.Mixed
-},
+    verifiedAt: {
+      type: Date
+    },
 
-verifiedAt: {
-  type: Date
-},
+    rejectionReason: {
+      type: String,
+      default: ""
+    },
 
-rejectionReason: {
-  type: String,
-  default: ""
-},
+    rejectedBy: {
+      type: mongoose.Schema.Types.Mixed
+    },
 
-rejectedBy: {
-  type: mongoose.Schema.Types.Mixed
-},
-
-rejectedAt: {
-  type: Date
-}
-```
-
-},
-{
-timestamps: true
-}
+    rejectedAt: {
+      type: Date
+    }
+  },
+  {
+    timestamps: true
+  }
 );
 
 export default mongoose.model("PaymentRequest", paymentRequestSchema);
