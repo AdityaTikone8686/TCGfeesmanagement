@@ -864,5 +864,5 @@ delete: async (token, id, reason) => {
 	);
 
 	return handleResponse(response);
-
+ },
 };
