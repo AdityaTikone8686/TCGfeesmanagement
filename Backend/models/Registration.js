@@ -141,7 +141,7 @@ const registrationSchema = new mongoose.Schema({
   }
 
 }, {
-  versionKey: true
+  versionKey: '__v'
 });
 
 export default mongoose.model("Registration", registrationSchema);
