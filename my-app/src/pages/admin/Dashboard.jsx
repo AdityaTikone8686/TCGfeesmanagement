@@ -73,6 +73,25 @@ const styles = `
     display: none;
   }
 }
+
+@media (max-width: 767px) {
+  .td-side {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 272px;
+    transform: translateX(-100%);
+  }
+
+  .td-side.open {
+    transform: translateX(0);
+  }
+
+  .td-main {
+    margin-left: 0;
+  }
+}
 .td-brand { display: flex; align-items: center; gap: 12px; padding: 20px 18px; border-bottom: 2px dashed rgba(255,255,255,.2); }
 .td-logo { flex-shrink: 0; width: 56px; height: 56px; border-radius: 16px; background: #fff; border: 3px solid var(--lime); overflow: hidden; transform: rotate(-3deg); }
 .td-logo img { width: 100%; height: 100%; object-fit: contain; display: block; }
