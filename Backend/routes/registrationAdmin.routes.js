@@ -14,6 +14,8 @@ import express from 'express';
 import mongoose from 'mongoose';
 import crypto from 'node:crypto';
 import { protect, adminOnly } from '../middleware/authMiddleware.js';
+import { sendEmail } from '../services/emailService.js';
+import TEMPLATES from '../utils/emailTemplates.js';
 
 const { Schema } = mongoose;
 const router = express.Router();
