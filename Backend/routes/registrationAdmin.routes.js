@@ -13,7 +13,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import crypto from 'node:crypto';
-import { protect } from '../middleware/auth.js';
+import authenticate from '../middleware/auth.js';
 
 const { Schema } = mongoose;
 const router = express.Router();
@@ -22,21 +22,26 @@ const router = express.Router();
    1. ADAPT: your existing auth middleware (must populate req.user)
 =================================================================== */
 
-const ADMIN_ROLES = (process.env.REGISTRATION_ADMIN_ROLES || 'admin,superadmin')
-  .split(',')
-  .map((s) => s.trim());
+const requireAdmin = (req, res, next) => {
+  if (req.user && (
+    req.user.isAdmin === true ||
+    req.user.role === 'admin' ||
+    req.user.role === 'superadmin'
+  )) {
+    return next();
+  }
 
-const DELETE_ROLES = (process.env.REGISTRATION_DELETE_ROLES || 'admin,superadmin')
-  .split(',')
-  .map((s) => s.trim());
+  return res.status(403).json({
+    success: false,
+    message: 'Admin access required'
+  });
+};
 
-const requireAdmin = (req, res, next) =>
-  req.user && ADMIN_ROLES.includes(req.user.role)
-    ? next()
-    : res.status(403).json({
-        success: false,
-        message: 'Admin access required'
-      });
+const canDelete = (user) =>
+  user && (
+    user.role === 'admin' ||
+    user.role === 'superadmin'
+  );
 
 /* ===================================================================
    2. Helpers
@@ -95,7 +100,7 @@ async function tx(fn) {
 }
 
 const actor = (req) => ({
-  id: req.user._id,
+  id: req.user._id || req.user.id,
   name: req.user.name || req.user.email,
   email: req.user.email
 });
@@ -489,7 +494,7 @@ async function sendEmail(to, subject, text) {
    6. Routes — everything below requires an authenticated admin
 =================================================================== */
 
-router.use(protect, requireAdmin);
+router.use(authenticate, requireAdmin);
 
 router.param('id', (req, res, next, id) =>
   isId(id)
@@ -1758,7 +1763,7 @@ router.post('/:id/notify', asyncH(async (req, res) => {
 /* ---------- delete (confirmation + reason, audit kept) ---------- */
 
 router.delete('/:id', asyncH(async (req, res) => {
-  if (!DELETE_ROLES.includes(req.user.role)) {
+  if (!canDelete(req.user)) {
     throw new HttpError(
       403,
       'You are not allowed to delete registrations'
