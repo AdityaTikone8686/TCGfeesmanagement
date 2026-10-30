@@ -683,7 +683,7 @@ router.get('/', asyncH(async (req, res) => {
     },
 
     permissions: {
-      canDelete: canDelete(req.user),
+      ccanDelete(req.admin || req.user),
       canManageBatches: true
     }
   });
