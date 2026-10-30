@@ -20,6 +20,7 @@ import { initIO } from "./socket.js";
 import visitorRoutes from "./routes/visitorRoutes.js";
 import registrationRoutes from "./routes/registrationRoutes.js";
 import registerRoutes from "./routes/registerRoutes.js";
+import registrationAdminRoutes from "./routes/registrationAdmin.routes.js";
 
 
 
