@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useAuth } from "../../context/AuthContext";
 import { Search, RefreshCw, AlertCircle, Users, Sun, CalendarDays, ClipboardList } from "lucide-react";
 
 const LOGO = "/cropped_circle_image-removebg-preview.png";
@@ -100,55 +101,122 @@ const styles = `
 `;
 
 export default function Registrations() {
+
+   const { token, isAdmin } = useAuth();
+
+   const [statsData, setStatsData] = useState({});
+   const [availableBatches, setAvailableBatches] = useState([]);
+   const [pagination, setPagination] = useState({
+     page: 1,
+     limit: 10,
+     total: 0,
+     pages: 1,
+   });
+  const [page, setPage] = useState(1);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
   const [batchFilter, setBatchFilter] = useState("All");
 
-  const load = () => {
-    setLoading(true);
-    setError(null);
-    return fetch(API)
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to fetch");
-        return res.json();
-      })
-      .then((d) => setData(d))
-      .catch((e) => setError(e.message))
-      .finally(() => setLoading(false));
-  };
+  const load = useCallback(async (requestedPage) => {
+  setLoading(true);
+  setError(null);
 
-  useEffect(() => {
-    load();
-  }, []);
+  try {
+    if (!token || !isAdmin) {
+      throw new Error("Please log in using your admin account.");
+    }
 
-  const batches = ["All", ...Array.from(new Set(data.map((r) => r.batch).filter(Boolean)))];
+    const params = new URLSearchParams({
+      page: String(requestedPage),
+      limit: "10",
+    });
 
-  const filtered = data.filter((r) => {
-    const name = `${r.fname} ${r.lname}`.toLowerCase();
-    const matchSearch =
-      name.includes(search.toLowerCase()) ||
-      (r.phone || "").includes(search) ||
-      (r.refNum || "").toLowerCase().includes(search.toLowerCase());
-    const matchBatch = batchFilter === "All" || r.batch === batchFilter;
-    return matchSearch && matchBatch;
-  });
+    if (search.trim()) {
+      params.append("search", search.trim());
+    }
+
+    if (batchFilter !== "All") {
+      params.append("batch", batchFilter);
+    }
+
+    const response = await fetch(`${API}?${params.toString()}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        result.message || "Failed to fetch registrations"
+      );
+    }
+
+    setData(Array.isArray(result.data) ? result.data : []);
+
+    setStatsData(result.stats || {});
+
+    setAvailableBatches(
+      Array.isArray(result.filters?.batches)
+        ? result.filters.batches
+        : []
+    );
+
+    setPagination(
+      result.pagination || {
+        page: 1,
+        limit: 10,
+        total: 0,
+        pages: 1,
+      }
+    );
+
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+}, [token, isAdmin, search, batchFilter]);
+
+ useEffect(() => {
+  const timer = setTimeout(() => {
+    load(page);
+  }, 300);
+
+  return () => clearTimeout(timer);
+}, [load, page]);
+
+  const batches = ["All", ...availableBatches];
+
+  const filtered = data;
 
   const stats = [
-    { label: "Total registrations", value: data.length, Icon: Users },
-    { label: "Evening batch", value: data.filter((r) => r.batch?.toLowerCase().includes("evening")).length, Icon: ClipboardList },
-    { label: "Weekend batch", value: data.filter((r) => r.batch?.toLowerCase().includes("weekend")).length, Icon: Sun },
-    {
-      label: "This month",
-      value: data.filter((r) => {
-        const d = new Date(r.createdAt);
-        const now = new Date();
-        return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-      }).length,
-      Icon: CalendarDays,
-    },
-  ];
+  {
+    label: "Total registrations",
+    value: statsData.total || 0,
+    Icon: Users,
+  },
+  {
+    label: "Pending applications",
+    value: statsData.pending || 0,
+    Icon: ClipboardList,
+  },
+  {
+    label: "Approved registrations",
+    value: statsData.approved || 0,
+    Icon: Sun,
+  },
+  {
+    label: "Converted students",
+    value: statsData.converted || 0,
+    Icon: CalendarDays,
+  },
+];
 
   return (
     <div className="tr">
@@ -191,14 +259,17 @@ export default function Registrations() {
             <input
               className="tr-input"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                 setSearch(e.target.value);
+                 setPage(1);
+               }}
               placeholder="Search by name, phone or ref no..."
               aria-label="Search registrations"
             />
           </div>
           <div className="tr-chips">
             {batches.map((b) => (
-              <button key={b} className={`tr-chip ${batchFilter === b ? "on" : ""}`} onClick={() => setBatchFilter(b)}>
+              <button key={b} className={`tr-chip ${batchFilter === b ? "on" : ""}`} onClick={() => { setBatchFilter(b); setPage(1); }}
                 {b}
               </button>
             ))}
@@ -236,7 +307,13 @@ export default function Registrations() {
                       <td className="name">{r.fname} {r.lname}</td>
                       <td>{r.phone || "—"}</td>
                       <td>{r.email || "—"}</td>
-                      <td>{r.batch ? <span className="tr-pill">{r.batch}</span> : "—"}</td>
+                      <td>
+                       {(r.batchName || r.batch) ? (
+                         <span className="tr-pill">{r.batchName || r.batch}</span>
+                       ) : (
+                         "—"
+                       )}
+                     </td>
                       <td>{r.level || "—"}</td>
                       <td>{r.role || "—"}</td>
                       <td>{r.duration || "—"}</td>
@@ -252,7 +329,33 @@ export default function Registrations() {
 
           {!loading && !error && (
             <div className="tr-foot">
-              <span>Showing <strong>{filtered.length}</strong> of <strong>{data.length}</strong> registrations</span>
+              <span>
+                Showing <strong>{filtered.length}</strong> registrations
+                out of <strong>{pagination.total}</strong>
+              </span>
+            
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <button
+                  className="tr-btn"
+                  disabled={page <= 1 || loading}
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                >
+                  Previous
+                </button>
+            
+                <strong>
+                  {pagination.page} / {pagination.pages}
+                </strong>
+            
+                <button
+                  className="tr-btn"
+                  disabled={page >= pagination.pages || loading}
+                  onClick={() => setPage((p) => Math.min(pagination.pages, p + 1))}
+                >
+                  Next
+                </button>
+              </div>
+            
               <span>Tikone Cricket Gurukul — Admin</span>
             </div>
           )}
