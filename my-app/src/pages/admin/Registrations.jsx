@@ -99,15 +99,21 @@ const styles = `
 
 /* table card */
 .tr-card { background: #fff; border: 3px solid var(--plum); border-radius: 28px; box-shadow: 10px 10px 0 var(--plum); overflow: hidden; animation: tr-pop-in .7s .1s both; }
-.tr-scroll { overflow-x: auto; }
-.tr-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.tr-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.tr-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 14px; }
 .tr-table th { padding: 13px 16px; text-align: left; font-size: 13px; font-weight: 700; white-space: nowrap; background: var(--plum); color: var(--pink); }
-.tr-table td { padding: 13px 16px; border-bottom: 2px dashed rgba(42,10,63,.15); white-space: nowrap; }
-.tr-table tbody tr { transition: background .2s; }
-.tr-table tbody tr:hover { background: var(--cream); }
+.tr-table td { padding: 13px 16px; border-bottom: 2px dashed rgba(42,10,63,.15); white-space: nowrap; background: #fff; transition: background .2s; }
+.tr-table tbody tr:hover td { background: var(--cream); }
 .tr-table .ref { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; font-weight: 700; }
 .tr-table .name { font-weight: 700; }
 .tr-table .muted { color: rgba(42,10,63,.6); font-size: 13px; }
+.tr-table .clip { max-width: 210px; overflow: hidden; text-overflow: ellipsis; }
+
+/* ACTION column: pinned to the right edge so Manage is always visible while scrolling */
+.tr-table th.tr-act, .tr-table td.tr-act { position: sticky; right: 0; z-index: 2; text-align: center; box-shadow: -10px 0 14px -10px rgba(42,10,63,.45); }
+.tr-table th.tr-act { z-index: 3; background: var(--plum); }
+.tr-manage { padding: 8px 14px; }
+
 .tr-pill { display: inline-flex; padding: 3px 11px; border-radius: 999px; font-size: 12px; font-weight: 800; background: var(--lime); border: 2px solid var(--plum); }
 
 .tr-state { padding: 56px 16px; text-align: center; font-weight: 600; color: rgba(42,10,63,.7); }
@@ -244,6 +250,7 @@ export default function Registrations() {
     } finally {
       setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, isAdmin, search, batchFilter]);
 
   useEffect(() => {
@@ -268,6 +275,7 @@ export default function Registrations() {
     }
   };
 
+  // Opens the registration details modal (used by the Manage button)
   const openRegistration = async (id) => {
     try {
       setActionLoading(true);
@@ -849,10 +857,10 @@ export default function Registrations() {
                       "Program",
                       "Status",
                       "Registered",
-                      "Action",
                     ].map((h) => (
                       <th key={h}>{h}</th>
                     ))}
+                    <th className="tr-act">Action</th>
                   </tr>
                 </thead>
 
@@ -869,7 +877,9 @@ export default function Registrations() {
                       </td>
 
                       <td>{r.phone || "—"}</td>
-                      <td>{r.email || "—"}</td>
+                      <td className="clip" title={r.email || ""}>
+                        {r.email || "—"}
+                      </td>
 
                       <td>
                         {(r.batchName || r.batch) ? (
@@ -904,12 +914,16 @@ export default function Registrations() {
                           : "—"}
                       </td>
 
-                      <td>
+                      {/* ACTION: Manage opens the existing details modal */}
+                      <td className="tr-act">
                         <button
-                          className="tr-btn"
-                          style={{ padding: "7px 12px" }}
+                          type="button"
+                          className="tr-btn tr-manage"
                           onClick={() => openRegistration(r._id)}
                           disabled={actionLoading}
+                          aria-label={`Manage registration ${
+                            r.refNum || r.registrationNumber || ""
+                          }`}
                         >
                           <Eye size={15} />
                           Manage
@@ -1858,6 +1872,10 @@ export default function Registrations() {
             Please wait...
           </div>
         </div>
+      )}
+    </div>
+  );
+}
       )}
     </div>
   );
