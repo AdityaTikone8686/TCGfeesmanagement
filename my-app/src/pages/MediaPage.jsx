@@ -82,7 +82,20 @@ const styles = `
 .tcgg-lb-cap { margin-top: 20px; text-align: center; color: #fff; }
 .tcgg-lb-cap p:first-child { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: clamp(1.1rem, 3vw, 1.4rem); }
 .tcgg-lb-count { display: inline-block; margin-top: 8px; padding: 4px 14px; border-radius: 999px; background: var(--lime); color: var(--plum); font-size: 13px; font-weight: 800; }
-.tcgg-lb-btn { z-index: 20; width: 52px; height: 52px; border-radius: 16px; border: 3px solid var(--plum); background: var(--pink); color: var(--plum); box-shadow: 3px 3px 0 var(--plum); display: grid; place-items: center; cursor: pointer; transition: transform .25s cubic-bezier(.3,1.6,.5,1), background .2s, color .2s; }
+.tcgg-lb-btn {
+  z-index: 20;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  border: 3px solid var(--pink);
+  background: var(--pink);
+  color: #ffffff;
+  box-shadow: 3px 3px 0 var(--pink);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: transform .25s cubic-bezier(.3,1.6,.5,1), background .2s, color .2s;
+}
 .tcgg-lb-btn:hover { background: var(--lime); transform: scale(1.12); }
 .tcgg-lb-btn:focus-visible { outline: 3px solid var(--lime); outline-offset: 3px; }
 .tcgg-lb-x { position: absolute; top: 18px; right: 18px; }
