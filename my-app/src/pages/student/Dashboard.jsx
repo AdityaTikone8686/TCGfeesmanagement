@@ -242,7 +242,6 @@ const styles = `
   .tcgd-mini { min-width: 86px; }
 }
 @media (prefers-reduced-motion: reduce) { .tcgd-root *, .tcgd-gate * { animation: none !important; transition: none !important; } }
-`
 @media (max-width: 768px) {
   .tcgd-side {
     left: -280px;
@@ -257,6 +256,8 @@ const styles = `
     margin-left: 0;
   }
 }
+`
+
 
 const SIDEBAR_ITEMS = [
   { id: 'overview', label: 'Overview', icon: <Home size={19} /> },
