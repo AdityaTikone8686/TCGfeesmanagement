@@ -28,20 +28,22 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
   const { isAuthenticated, isAdmin, loading } = useAuth()
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="tcg-loader">
-  <div className="tcg-loader-card">
-    <div className="tcg-cricket-ball">🏏</div>
-    <h2>Tikone Cricket Gurukul</h2>
-    <p>Getting your dashboard ready...</p>
-    <div className="tcg-loader-track">
-      <div className="tcg-loader-progress"></div>
+  return (
+    <div className="tcg-loader">
+      <div className="tcg-loader-card">
+        <div className="tcg-cricket-ball">🏏</div>
+
+        <h2>Tikone Cricket Gurukul</h2>
+
+        <p>Getting your dashboard ready...</p>
+
+        <div className="tcg-loader-track">
+          <div className="tcg-loader-progress"></div>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
-    )
-  }
+  );
+}
 
   if (!isAuthenticated) {
     return <Navigate to="/" replace />
