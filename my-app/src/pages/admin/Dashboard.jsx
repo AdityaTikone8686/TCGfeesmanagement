@@ -12,9 +12,11 @@ import {
 } from '../../services/api'
 
 import {
-  Users, CreditCard, Book, Settings, LogOut, Trash2, DollarSign, Award, Menu, X, Plus, Edit, Eye,
+  Users, Images, CreditCard, Book, Settings, LogOut, Trash2, DollarSign, Award, Menu, X, Plus, Edit, Eye,
   CalendarCheck, CheckCircle, Star, History, BarChart3, ClipboardList, Search, AlertCircle, Check
 } from 'lucide-react'
+
+import MediaManagement from "../../admin/MediaManagement";
 
 /* ------------------------------------------------------------------
    THEME (same as LandingPage / AdminLogin)
@@ -256,6 +258,7 @@ const SIDEBAR_ITEMS = [
   { id: 'subscriptions', label: 'Subscriptions', Icon: CreditCard },
   { id: 'reports', label: 'Reports', Icon: BarChart3 },
   { id: 'registrations', label: 'Registrations', Icon: ClipboardList },
+  { id: 'media', label: 'Media', Icon: Images },
   { id: 'settings', label: 'Settings', Icon: Settings },
 ]
 
@@ -1280,7 +1283,7 @@ const handleConvertRegistration = async () => {
 
           {/* Media Management Tab */}
             {activeTab === "media" && (
-              <MediaManagement token={token} />
+              <MediaManagement token={localStorage.getItem('token')} />
             )}
 
           {/* Settings Tab */}
