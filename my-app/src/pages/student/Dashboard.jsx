@@ -241,6 +241,12 @@ overflow-x: clip;
 
 .tcgd-inline-spin { text-align: center; padding: 18px; font-weight: 700; }
 
+@keyframes tcgd-spin { to { transform: rotate(360deg) } }
+
+.tcgd-spinner { width: 54px; height: 54px; margin: 0 auto 16px; border-radius: 50%; border: 5px solid var(--pink-soft); border-top-color: var(--plum); border-right-color: #b0108a; animation: tcgd-spin .9s linear infinite; }
+
+.tcgd-gate h2 { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: clamp(1.4rem, 5vw, 2rem); margin: 0 0 16px; color: var(--plum); }
+
 @media (max-width: 520px) {
   .tcgd-hero { padding: 20px; border-radius: 24px; box-shadow: 5px 5px 0 var(--plum); }
   .tcgd-hero-left { gap: 14px; }
@@ -511,12 +517,11 @@ const StudentDashboard = () => {
   if (loading) {
     return (
       <div className="tcgd-gate">
-        <style>{styles}</style>
-        <div className="tcgd-gate-card">
-          <div className="tcgd-spinner"></div>
-          <h2 style={{ marginBottom: 0 }}>Loading...</h2>
-        </div>
+      <div className="tcgd-gate-card">
+        <div className="tcgd-spinner"></div>
+        <h2 style={{ marginBottom: 0 }}>Loading...</h2>
       </div>
+    </div>
     )
   }
 
