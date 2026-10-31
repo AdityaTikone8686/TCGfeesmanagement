@@ -29,7 +29,6 @@ try {
 setLoading(true);
 setError("");
 
-```
     const data = await mediaAPI.getAll();
 
     const formattedMedia = data.map((item) => ({
@@ -52,7 +51,6 @@ setError("");
 };
 
 fetchMedia();
-```
 
 }, []);
 
@@ -87,7 +85,6 @@ current === images.length - 1 ? 0 : current + 1
 useEffect(() => {
 if (selectedImage === null) return;
 
-```
 const handleKeyDown = (e) => {
   if (e.key === "Escape") closeImage();
   if (e.key === "ArrowLeft") showPrevious();
@@ -101,17 +98,17 @@ return () => {
   document.removeEventListener("keydown", handleKeyDown);
   document.body.style.overflow = "";
 };
-```
 
 }, [selectedImage, images.length]);
 
-return ( <Layout> <style>{`
+return (
+<Layout>
+<style>{`
 @keyframes galleryFade {
 from { opacity: 0; }
 to { opacity: 1; }
 }
 
-```
     @keyframes galleryZoom {
       from { opacity: 0; transform: scale(.88) translateY(15px); }
       to { opacity: 1; transform: scale(1) translateY(0); }
@@ -333,10 +330,10 @@ to { opacity: 1; }
   )}
 
 </Layout>
-```
 
 );
 };
 
+export default MediaPage;
 export default MediaPage;
 
