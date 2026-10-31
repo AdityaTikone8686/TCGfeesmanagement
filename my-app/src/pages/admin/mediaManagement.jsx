@@ -176,11 +176,10 @@ const MediaManagement = ({ token }) => {
   const handleUpload = async (e) => {
     e.preventDefault();
 
-    if (!title.trim() || !file) {
-      setError("Please enter a title and select a file.");
-      return;
-    }
-
+    if (!file) {
+        setError("Please select an image or video.");
+        return;
+      }
     try {
       setUploading(true);
       setError("");
@@ -301,7 +300,7 @@ const MediaManagement = ({ token }) => {
 
           <div className="tcg-group">
             <label className="tcg-label" htmlFor="media-title">
-              Title *
+              Title (Optional)
             </label>
             <input
               id="media-title"
@@ -310,13 +309,12 @@ const MediaManagement = ({ token }) => {
               placeholder="Enter media title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              required
             />
           </div>
 
           <div className="tcg-group">
             <label className="tcg-label" htmlFor="media-desc">
-              Description
+              Description (Optional)
             </label>
             <textarea
               id="media-desc"
@@ -329,7 +327,7 @@ const MediaManagement = ({ token }) => {
 
           <div className="tcg-group">
             <label className="tcg-label" htmlFor="media-file">
-              Select Image or Video *
+              Select Image or Video (Optional)
             </label>
             <input
               id="media-file"
@@ -337,7 +335,6 @@ const MediaManagement = ({ token }) => {
               type="file"
               accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime"
               onChange={(e) => setFile(e.target.files?.[0] || null)}
-              required
             />
           </div>
 
