@@ -87,16 +87,21 @@ const styles = `
   width: 52px;
   height: 52px;
   border-radius: 16px;
-  border: 3px solid var(--pink);
-  background: var(--pink);
+  border: 3px solid #ffffff;
+  background: #FF69B4;
   color: #ffffff;
-  box-shadow: 3px 3px 0 var(--pink);
+  box-shadow: 0 0 12px rgba(255, 105, 180, 0.7);
   display: grid;
   place-items: center;
   cursor: pointer;
-  transition: transform .25s cubic-bezier(.3,1.6,.5,1), background .2s, color .2s;
+  transition: transform .25s, background .2s;
 }
-.tcgg-lb-btn:hover { background: var(--lime); transform: scale(1.12); }
+
+.tcgg-lb-btn:hover {
+  background: #FF1493;
+  color: #ffffff;
+  transform: scale(1.12);
+}
 .tcgg-lb-btn:focus-visible { outline: 3px solid var(--lime); outline-offset: 3px; }
 .tcgg-lb-x { position: absolute; top: 18px; right: 18px; }
 .tcgg-lb-x:hover { transform: rotate(90deg) scale(1.12); }
