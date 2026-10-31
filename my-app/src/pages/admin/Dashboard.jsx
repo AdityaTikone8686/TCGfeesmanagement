@@ -16,7 +16,7 @@ import {
   CalendarCheck, CheckCircle, Star, History, BarChart3, ClipboardList, Search, AlertCircle, Check
 } from 'lucide-react'
 
-import MediaManagement from "../../admin/MediaManagement";
+import MediaManagement from "./mediaManagement";
 
 /* ------------------------------------------------------------------
    THEME (same as LandingPage / AdminLogin)
