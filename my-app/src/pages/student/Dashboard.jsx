@@ -32,7 +32,19 @@ const styles = `
 
 /* ---------- Sidebar ---------- */
 .tcgd-overlay { position: fixed; inset: 0; z-index: 25; background: rgba(42,10,63,.55); backdrop-filter: blur(3px); animation: tcgd-in .25s both; }
-.tcgd-side { position: fixed; z-index: 30; top: 0; bottom: 0; left: 0; width: 280px; display: flex; flex-direction: column; background: #fff; border-right: 3px solid var(--plum); box-shadow: 6px 0 0 var(--plum); transform: translateX(-110%); transition: transform .35s cubic-bezier(.2,.8,.2,1); overflow-y: auto; }
+.tcgd-side {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 280px;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
 .tcgd-side.is-open { transform: none; }
 @media (min-width: 768px) {
   .tcgd-side { position: sticky; height: 100vh; transform: none; flex-shrink: 0; box-shadow: 4px 0 0 var(--plum); }
@@ -81,7 +93,11 @@ const styles = `
 .tcgd-btn:focus-visible, .tcgd-nav-btn:focus-visible, .tcgd-menu-btn:focus-visible, .tcgd-side-x:focus-visible, .tcgd-input:focus-visible { outline: 3px solid var(--plum-2); outline-offset: 3px; }
 
 /* ---------- Main ---------- */
-.tcgd-main { position: relative; z-index: 10; flex: 1; min-width: 0; min-height: 100vh; }
+.tcgd-main {
+  margin-left: 280px;
+  min-width: 0;
+  min-height: 100vh;
+}
 .tcgd-menu-bar { display: flex; align-items: center; padding: 14px 16px 0; }
 .tcgd-menu-btn { width: 46px; height: 46px; border-radius: 14px; border: 3px solid var(--plum); background: #fff; color: var(--plum); box-shadow: 3px 3px 0 var(--plum); display: grid; place-items: center; cursor: pointer; transition: transform .2s, background .2s; }
 .tcgd-menu-btn:hover { background: var(--lime); transform: translateY(-2px); }
@@ -227,6 +243,20 @@ const styles = `
 }
 @media (prefers-reduced-motion: reduce) { .tcgd-root *, .tcgd-gate * { animation: none !important; transition: none !important; } }
 `
+@media (max-width: 768px) {
+  .tcgd-side {
+    left: -280px;
+    transition: left 0.3s ease;
+  }
+
+  .tcgd-side.is-open {
+    left: 0;
+  }
+
+  .tcgd-main {
+    margin-left: 0;
+  }
+}
 
 const SIDEBAR_ITEMS = [
   { id: 'overview', label: 'Overview', icon: <Home size={19} /> },
