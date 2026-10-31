@@ -36,10 +36,14 @@ const styles = `
 .tcgg-chip { display: inline-flex; align-items: center; gap: 8px; padding: 7px 16px; border-radius: 999px; background: var(--plum); color: var(--lime); font-size: 12.5px; font-weight: 800; margin-bottom: 16px; animation: tcgg-wiggle 2.6s ease-in-out infinite; }
 .tcgg-title { font-weight: 800; line-height: 1.02; font-size: clamp(2.3rem, 7vw, 4rem);
   background: linear-gradient(90deg, var(--plum), #b0108a, var(--plum-2), #b0108a, var(--plum)); background-size: 200% auto; -webkit-background-clip: text; background-clip: text; color: transparent; animation: tcgg-shimmer 5s linear infinite; }
-.tcgm-sub {
-  text-align: center;
+.tcgg-sub {
   max-width: 620px;
   margin: 14px auto 0;
+  font-size: clamp(1rem, 2.4vw, 1.15rem);
+  font-weight: 500;
+  line-height: 1.55;
+  color: rgba(42,10,63,.75);
+  text-align: center;
 }
 .tcgg-bar { width: 90px; height: 8px; margin: 22px auto 0; border-radius: 999px; background: var(--lime); border: 2px solid var(--plum); }
 
