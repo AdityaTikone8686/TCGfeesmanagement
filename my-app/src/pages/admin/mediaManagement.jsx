@@ -45,11 +45,10 @@ const MediaManagement = ({ token }) => {
   const handleUpload = async (e) => {
     e.preventDefault();
 
-    if (!title.trim() || !file) {
-      setError("Please enter a title and select a file.");
+    if (!file) {
+      setError("Please select an image or video.");
       return;
     }
-
     try {
       setUploading(true);
       setError("");
