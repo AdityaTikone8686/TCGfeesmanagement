@@ -8,7 +8,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 
-import { mediaAPI } from "../services/mediaAPI";
+import { mediaAPI } from "../../services/mediaAPI";
 
 const BACKEND_URL =
   "https://tikonecricketgurukulbackend.onrender.com";
