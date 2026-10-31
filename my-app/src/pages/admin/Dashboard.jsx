@@ -1278,6 +1278,11 @@ const handleConvertRegistration = async () => {
               <Registrations />
               )}
 
+          {/* Media Management Tab */}
+            {activeTab === "media" && (
+              <MediaManagement token={token} />
+            )}
+
           {/* Settings Tab */}
           {activeTab === 'settings' && (
             <>
