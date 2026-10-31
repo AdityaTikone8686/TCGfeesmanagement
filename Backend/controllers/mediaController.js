@@ -137,29 +137,104 @@ export const streamMedia = async (req, res, next) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
       return res.status(400).json({
+        success: false,
         message: "Invalid media ID",
       });
     }
 
-    const bucket = getGridFSBucket();
     const fileId = new mongoose.Types.ObjectId(req.params.id);
+    const bucket = getGridFSBucket();
 
     const files = await bucket.find({ _id: fileId }).toArray();
 
     if (!files.length) {
       return res.status(404).json({
+        success: false,
         message: "Media not found",
       });
     }
 
     const file = files[0];
+    const fileSize = file.length;
+    const contentType =
+      file.metadata?.mimeType || "application/octet-stream";
 
-    res.set("Content-Type", file.metadata?.mimeType || "application/octet-stream");
-    res.set("Content-Length", file.length);
-    res.set("Accept-Ranges", "bytes");
-    res.set("Cache-Control", "public, max-age=3600");
+    const range = req.headers.range;
 
-    const downloadStream = bucket.openDownloadStream(fileId);
+    res.setHeader("Content-Type", contentType);
+    res.setHeader("Accept-Ranges", "bytes");
+    res.setHeader("Cache-Control", "public, max-age=3600");
+
+    // Normal request: send the complete file
+    if (!range) {
+      res.status(200);
+      res.setHeader("Content-Length", fileSize);
+
+      const downloadStream = bucket.openDownloadStream(fileId);
+
+      downloadStream.on("error", (error) => {
+        if (!res.headersSent) {
+          next(error);
+        } else {
+          res.destroy(error);
+        }
+      });
+
+      return downloadStream.pipe(res);
+    }
+
+    // Handle video byte-range requests
+    const match = range.match(/^bytes=(\d*)-(\d*)$/);
+
+    if (!match || (!match[1] && !match[2])) {
+      res.setHeader("Content-Range", `bytes */${fileSize}`);
+      return res.status(416).end();
+    }
+
+    let start;
+    let end;
+
+    if (!match[1]) {
+      // Suffix range: bytes=-500 means last 500 bytes
+      const suffixLength = Number(match[2]);
+
+      if (suffixLength <= 0) {
+        res.setHeader("Content-Range", `bytes */${fileSize}`);
+        return res.status(416).end();
+      }
+
+      start = Math.max(fileSize - suffixLength, 0);
+      end = fileSize - 1;
+    } else {
+      start = Number(match[1]);
+      end = match[2] ? Number(match[2]) : fileSize - 1;
+    }
+
+    if (
+      start >= fileSize ||
+      start < 0 ||
+      end < start
+    ) {
+      res.setHeader("Content-Range", `bytes */${fileSize}`);
+      return res.status(416).end();
+    }
+
+    end = Math.min(end, fileSize - 1);
+
+    const contentLength = end - start + 1;
+
+    res.status(206);
+    res.setHeader(
+      "Content-Range",
+      `bytes ${start}-${end}/${fileSize}`
+    );
+    res.setHeader("Content-Length", contentLength);
+
+    // GridFS end position is exclusive, so use end + 1
+    const downloadStream = bucket.openDownloadStream(fileId, {
+      start,
+      end: end + 1,
+    });
 
     downloadStream.on("error", (error) => {
       if (!res.headersSent) {
@@ -170,7 +245,6 @@ export const streamMedia = async (req, res, next) => {
     });
 
     downloadStream.pipe(res);
-
   } catch (error) {
     next(error);
   }
