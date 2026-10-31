@@ -21,6 +21,7 @@ import visitorRoutes from "./routes/visitorRoutes.js";
 import registrationRoutes from "./routes/registrationRoutes.js";
 import registerRoutes from "./routes/registerRoutes.js";
 import registrationAdminRoutes from "./routes/registrationAdmin.routes.js";
+import mediaRoutes from "./routes/mediaRoutes.js";
 
 
 
@@ -70,7 +71,7 @@ app.use("/api/visitors", visitorRoutes);
 app.use("/api/register", registrationRoutes);
 app.use("/api/register", registerRoutes);
 app.use("/api/admin/registrations", registrationAdminRoutes);
-
+app.use("/api/media", mediaRoutes);
 
 
 
@@ -101,7 +102,7 @@ const server = http.createServer(app);
 
 initIO(server);
 
-// Start the server
-app.listen(PORT, () => {
+// Start the same HTTP server used by Socket.IO
+server.listen(PORT, () => {
   console.log(`✅ Server running on port ${PORT}`);
 });
