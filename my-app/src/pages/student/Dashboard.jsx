@@ -9,7 +9,10 @@ const styles = `
 .tcgd-root {
   --pink: #FFA8E0; --pink-soft: #FFD3F0; --plum: #2A0A3F; --plum-2: #4A1470; --lime: #C6FF3D; --cream: #FFF6FC;
   font-family: 'DM Sans', system-ui, sans-serif; color: var(--plum);
-  min-height: 100vh; display: flex; position: relative; overflow-x: hidden;
+  min-height: 100vh;
+display: flex;
+position: relative;
+overflow-x: clip;
   background: linear-gradient(135deg, var(--cream) 0%, var(--pink-soft) 55%, var(--pink) 130%);
 }
 .tcgd-root *, .tcgd-root *::before, .tcgd-root *::after { box-sizing: border-box; }
@@ -242,9 +245,43 @@ const styles = `
   .tcgd-mini { min-width: 86px; }
 }
 @media (prefers-reduced-motion: reduce) { .tcgd-root *, .tcgd-gate * { animation: none !important; transition: none !important; } }
+@media (min-width: 769px) {
+  .tcgd-side {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100vh;
+    height: 100dvh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex-shrink: 0;
+    transform: none;
+    box-shadow: 4px 0 0 var(--plum);
+  }
+
+  .tcgd-main {
+    margin-left: 280px;
+    width: calc(100% - 280px);
+  }
+
+  .tcgd-overlay,
+  .tcgd-menu-btn,
+  .tcgd-side-x {
+    display: none !important;
+  }
+}
 @media (max-width: 768px) {
   .tcgd-side {
+    position: fixed;
+    top: 0;
+    bottom: 0;
     left: -280px;
+    width: 280px;
+    height: 100vh;
+    height: 100dvh;
+    overflow-y: auto;
+    z-index: 1000;
     transition: left 0.3s ease;
   }
 
@@ -253,6 +290,7 @@ const styles = `
   }
 
   .tcgd-main {
+    width: 100%;
     margin-left: 0;
   }
 }
