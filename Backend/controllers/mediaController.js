@@ -15,14 +15,8 @@ export const uploadMedia = async (req, res, next) => {
     }
 
     const { title, description } = req.body;
-
-    if (!title || !title.trim()) {
-      fs.unlink(req.file.path, () => {});
-
-      return res.status(400).json({
-        message: "Media title is required",
-      });
-    }
+    const mediaTitle = title?.trim() || "";
+    const mediaDescription = description?.trim() || "";
 
     const mediaType = req.file.mimetype.startsWith("image/")
       ? "image"
@@ -44,8 +38,8 @@ export const uploadMedia = async (req, res, next) => {
       req.file.originalname,
       {
         metadata: {
-          title: title.trim(),
-          description: description?.trim() || "",
+          title: mediaTitle,
+          description: mediaDescription,
           mediaType,
           mimeType: req.file.mimetype,
           uploadedBy: req.user.id,
@@ -65,8 +59,8 @@ export const uploadMedia = async (req, res, next) => {
         message: "Media uploaded successfully",
         media: {
           id: uploadStream.id,
-          title: title.trim(),
-          description: description?.trim() || "",
+          title: mediaTitle,
+          description: mediaDescription,
           mediaType,
           filename: req.file.originalname,
         },
