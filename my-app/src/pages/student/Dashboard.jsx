@@ -233,7 +233,10 @@ overflow-x: clip;
 .tcgd-gate { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; text-align: center; font-family: 'DM Sans', system-ui, sans-serif; color: var(--plum); background: linear-gradient(135deg, var(--cream), var(--pink-soft) 55%, var(--pink) 130%); }
 .tcgd-gate h2 { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: clamp(1.4rem, 5vw, 2rem); margin: 0 0 16px; }
 .tcgd-gate-card { padding: 34px 30px; background: #fff; border: 3px solid var(--plum); border-radius: 28px; box-shadow: 8px 8px 0 var(--plum); animation: tcgd-in .6s both; }
+
+@keyframes tcgd-in { from { opacity: 0; transform: translateY(24px) scale(.97) } to { opacity: 1; transform: none } }
 @keyframes tcgd-spin { to { transform: rotate(360deg) } }
+
 .tcgd-spinner { width: 54px; height: 54px; margin: 0 auto 16px; border-radius: 50%; border: 5px solid var(--pink-soft); border-top-color: var(--plum); border-right-color: #b0108a; animation: tcgd-spin .9s linear infinite; }
 
 .tcgd-inline-spin { text-align: center; padding: 18px; font-weight: 700; }
