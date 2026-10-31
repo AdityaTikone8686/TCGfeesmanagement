@@ -335,5 +335,5 @@ to { opacity: 1; }
 };
 
 export default MediaPage;
-export default MediaPage;
+
 
